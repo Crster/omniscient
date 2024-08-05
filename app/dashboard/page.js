@@ -1,11 +1,16 @@
 import Dashboard from "./components/dashboard";
 import Sidebar from "./components/sidebar";
+import User from "./components/user";
 
 export default function DashboardPage() {
   return (
     <>
       <Sidebar />
-      <Dashboard />
+
+      <div className="flex flex-col gap-8 ml-[22rem] my-10">
+        {/* <Dashboard /> */}
+        <User />
+      </div>
     </>
   );
 }
