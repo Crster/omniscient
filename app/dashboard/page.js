@@ -7,7 +7,7 @@ export default function DashboardPage() {
     <>
       <Sidebar />
 
-      <div className="flex flex-col gap-8 ml-[22rem] my-10">
+      <div className="flex flex-col gap-8 ml-[22rem] my-10 mr-5">
         {/* <Dashboard /> */}
         <User />
       </div>
