@@ -1,4 +1,8 @@
+"use client";
+
+import { Link } from "@nextui-org/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   MdOutlineBarChart,
   MdOutlinePerson,
@@ -12,6 +16,17 @@ import {
 } from "react-icons/md";
 
 export default function Sidebar() {
+  const pathname = usePathname()
+
+  const isActive = (href) => {
+    console.log(pathname)
+    if (pathname === href) {
+      return "flex flex-1 px-4 py-3 gap-3 bg-blue-200 rounded-lg text-blue-800"
+    }
+
+    return "flex flex-1 px-4 py-3 gap-3 text-black"
+  }
+
   return (
     <div className="fixed inset-y-0 left-0 w-80 bg-blue-50/[0.5]">
       <div className="flex flex-col h-full px-6 py-10">
@@ -30,46 +45,67 @@ export default function Sidebar() {
           <span className="text-gray-500 text-xl">Reports</span>
 
           <div className="flex flex-col mt-4">
-            <a
+            <Link
               href="/dashboard"
-              className="flex flex-1 px-4 py-3 gap-3 bg-blue-200 rounded-lg text-blue-800"
+              className={isActive("/dashboard")}
             >
               <MdOutlineBarChart className="text-blue-800 text-xl self-center" />
               Dashboard
-            </a>
-            <a href="/dashboard" className="flex flex-1 px-4 py-3 gap-3">
+            </Link>
+            <Link
+              href="/user"
+              className={isActive("/user")}
+            >
               <MdOutlinePerson className="text-blue-800 text-xl self-center" />
               User Role
-            </a>
-            <a href="/dashboard" className="flex flex-1 px-4 py-3 gap-3">
+            </Link>
+            <Link
+              href="/voter"
+              className={isActive("/voter")}
+            >
               <MdOutlineHowToVote className="text-blue-800 text-xl self-center" />
               Voters
-            </a>
-            <a href="/dashboard" className="flex flex-1 px-4 py-3 gap-3">
+            </Link>
+            <Link
+              href="/heat-map"
+              className={isActive("/heat-map")}
+            >
               <MdOutlinePinDrop className="text-blue-800 text-xl self-center" />
               Heat Map
-            </a>
-            <a href="/dashboard" className="flex flex-1 px-4 py-3 gap-3">
+            </Link>
+            <Link
+              href="/candidate"
+              className={isActive("/candidate")}
+            >
               <MdOutlineGroup className="text-blue-800 text-xl self-center" />
               Candidates
-            </a>
-            <a href="/dashboard" className="flex flex-1 px-4 py-3 gap-3">
+            </Link>
+            <Link
+              href="/death"
+              className={isActive("/death")}
+            >
               <MdOutlineLocalFlorist className="text-blue-800 text-xl self-center" />
               Death
-            </a>
+            </Link>
           </div>
 
           <div aria-hidden="true" className="mt-8 flex-1"></div>
 
           <div className="flex flex-col">
-            <a href="/dashboard" className="flex flex-1 px-4 py-3 gap-3">
+            <Link
+              href="/notification"
+              className={isActive("/notification")}
+            >
               <MdOutlineNotifications className="text-blue-800 text-xl self-center" />
               Notification
-            </a>
-            <a href="/dashboard" className="flex flex-1 px-4 py-3 gap-3">
+            </Link>
+            <Link
+              href="/setting"
+              className={isActive("/setting")}
+            >
               <MdOutlineSettings className="text-blue-800 text-xl self-center" />
               Settings
-            </a>
+            </Link>
           </div>
         </div>
 

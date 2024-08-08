@@ -12,7 +12,7 @@ import {
 } from "@nextui-org/modal";
 import { Input } from "@nextui-org/input";
 
-export default function NewUserDialog() {
+export default function NewUserModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (

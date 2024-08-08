@@ -1,3 +1,5 @@
+import { Button } from "@nextui-org/button";
+import { Link } from "@nextui-org/link";
 import Image from "next/image";
 
 export default function HomePage() {
@@ -12,17 +14,23 @@ export default function HomePage() {
         priority
       />
 
-      <h1 className="font-semibold text-xl mt-5">Welcome to Survey Omniscient!</h1>
-      
+      <h1 className="font-semibold text-xl mt-5">
+        Welcome to Survey Omniscient!
+      </h1>
+
       <p className="text-justify text-sm text-gray-500 my-5">
         The Political Survey App with Profiling is a valuable tool for any
         political campaign. By using the app, you can collect data that will
         help you to target your campaign more effectively and win more votes.
       </p>
 
-      <a href="/dashboard" className="text-center rounded-lg bg-blue-700 py-3 mt-4 text-base text-white">
+      <Button
+        as={Link}
+        href="/dashboard"
+        className="text-center rounded-lg bg-blue-700 py-3 mt-4 text-base text-white"
+      >
         Continue to Dashboard
-      </a>
+      </Button>
     </div>
   );
 }
