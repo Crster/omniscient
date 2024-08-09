@@ -3,14 +3,16 @@ import {
   MdOutlineDelete,
   MdOutlineEdit,
 } from "react-icons/md";
-import NewUserDialog from "../../dialogs/new-user";
+import NewUserModal from "../../../components/modal/new-user";
 
-export default function User() {
+export default async function UserPage() {
+  await new Promise((resolve) => setTimeout(resolve, 8000))
+
   return (
     <>
       <div className="grid grid-cols-2">
         <h2 className="text-4xl text-blue-500 font-medium">User List</h2>
-        <NewUserDialog/>
+        <NewUserModal />
       </div>
 
       <div>

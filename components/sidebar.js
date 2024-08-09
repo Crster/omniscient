@@ -18,7 +18,7 @@ import {
 export default function Sidebar() {
   const pathname = usePathname()
 
-  const isActive = (href) => {
+  const isCurrentPage = (href) => {
     console.log(pathname)
     if (pathname === href) {
       return "flex flex-1 px-4 py-3 gap-3 bg-blue-200 rounded-lg text-blue-800"
@@ -46,43 +46,43 @@ export default function Sidebar() {
 
           <div className="flex flex-col mt-4">
             <Link
-              href="/dashboard"
-              className={isActive("/dashboard")}
+              href="/admin/dashboard"
+              className={isCurrentPage("/admin/dashboard")}
             >
               <MdOutlineBarChart className="text-blue-800 text-xl self-center" />
               Dashboard
             </Link>
             <Link
-              href="/user"
-              className={isActive("/user")}
+              href="/admin/user"
+              className={isCurrentPage("/admin/user")}
             >
               <MdOutlinePerson className="text-blue-800 text-xl self-center" />
               User Role
             </Link>
             <Link
-              href="/voter"
-              className={isActive("/voter")}
+              href="/admin/voter"
+              className={isCurrentPage("/admin/voter")}
             >
               <MdOutlineHowToVote className="text-blue-800 text-xl self-center" />
               Voters
             </Link>
             <Link
-              href="/heat-map"
-              className={isActive("/heat-map")}
+              href="/admin/heat-map"
+              className={isCurrentPage("/admin/heat-map")}
             >
               <MdOutlinePinDrop className="text-blue-800 text-xl self-center" />
               Heat Map
             </Link>
             <Link
-              href="/candidate"
-              className={isActive("/candidate")}
+              href="/admin/candidate"
+              className={isCurrentPage("/admin/candidate")}
             >
               <MdOutlineGroup className="text-blue-800 text-xl self-center" />
               Candidates
             </Link>
             <Link
-              href="/death"
-              className={isActive("/death")}
+              href="/admin/death"
+              className={isCurrentPage("/admin/death")}
             >
               <MdOutlineLocalFlorist className="text-blue-800 text-xl self-center" />
               Death
@@ -93,15 +93,15 @@ export default function Sidebar() {
 
           <div className="flex flex-col">
             <Link
-              href="/notification"
-              className={isActive("/notification")}
+              href="/admin/notification"
+              className={isCurrentPage("/admin/notification")}
             >
               <MdOutlineNotifications className="text-blue-800 text-xl self-center" />
               Notification
             </Link>
             <Link
-              href="/setting"
-              className={isActive("/setting")}
+              href="/admin/setting"
+              className={isCurrentPage("/admin/setting")}
             >
               <MdOutlineSettings className="text-blue-800 text-xl self-center" />
               Settings

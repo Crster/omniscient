@@ -26,7 +26,7 @@ export default function HomePage() {
 
       <Button
         as={Link}
-        href="/dashboard"
+        href="/admin/dashboard"
         className="text-center rounded-lg bg-blue-700 py-3 mt-4 text-base text-white"
       >
         Continue to Dashboard
