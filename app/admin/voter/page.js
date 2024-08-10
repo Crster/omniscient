@@ -1,12 +1,14 @@
 "use client";
 
 import { useDisclosure } from "@nextui-org/modal";
-import { PrimaryButton, SecondaryButton } from "../../../components/theme/Button";
+import { PrimaryButton } from "../../../components/theme/Button";
 import { DataTable } from "../../../components/theme/DataTable";
 import { MdOutlineAdd, MdOutlineFilterAlt } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 export default function VoterPage() {
   const newVoterModal = useDisclosure();
+  const router = useRouter()
 
   const voterTableColumns = [
     {
@@ -98,6 +100,10 @@ export default function VoterPage() {
     ]);
   };
 
+  const handleSelection = (item) => {
+    router.push(`/admin/voter/${item}`)
+  }
+
   return (
     <>
       <div className="grid grid-cols-2">
@@ -130,6 +136,7 @@ export default function VoterPage() {
         title="Voter List"
         columns={voterTableColumns}
         onLoad={handleOnLoad}
+        onSelection={handleSelection}
       />
     </>
   );

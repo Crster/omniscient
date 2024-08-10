@@ -25,7 +25,7 @@ export default function Sidebar() {
       <Link
         href={href}
         className={
-          pathname === href
+          pathname.startsWith(href)
             ? "flex flex-1 px-4 py-3 gap-3 bg-blue-200 rounded-lg text-blue-800"
             : "flex flex-1 px-4 py-3 gap-3 text-black"
         }

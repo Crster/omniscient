@@ -12,8 +12,22 @@ import {
 import React, { useState } from "react";
 import { useAsyncList } from "@react-stately/data";
 
-export function DataTable({ title, columns, onLoad }) {
+export function DataTable({ title, columns, onLoad, onSelection }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+
+  const handleSelection = (selection) => {
+    const lastItem = Array.from(selection)?.at(-1);
+    if (lastItem === "all") return;
+
+    if (onSelection) {
+      if (onSelection(lastItem)) {
+        setSelectedKeys(new Set([lastItem]));
+      }
+    } else {
+      setSelectedKeys(new Set([lastItem]));
+    }
+  };
 
   let list = useAsyncList({
     async load({ signal }) {
@@ -63,13 +77,15 @@ export function DataTable({ title, columns, onLoad }) {
           // last
           "group-data-[last=true]:first:before:rounded-none",
           "group-data-[last=true]:last:before:rounded-none",
-        ]
+        ],
       }}
       removeWrapper
       color="default"
       selectionMode="multiple"
       sortDescriptor={list.sortDescriptor}
       onSortChange={list.sort}
+      selectedKeys={selectedKeys}
+      onSelectionChange={handleSelection}
     >
       <TableHeader>
         {columns?.map((ii) => (
