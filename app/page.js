@@ -1,6 +1,5 @@
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
 import Image from "next/image";
+import { LinkButton } from "../components/theme/Button";
 
 export default function HomePage() {
   return (
@@ -24,13 +23,9 @@ export default function HomePage() {
         help you to target your campaign more effectively and win more votes.
       </p>
 
-      <Button
-        as={Link}
-        href="/admin/dashboard"
-        className="text-center rounded-lg bg-blue-700 py-3 mt-4 text-base text-white"
-      >
+      <LinkButton href="/admin/dashboard" className="py-3 mt-4">
         Continue to Dashboard
-      </Button>
+      </LinkButton>
     </div>
   );
 }

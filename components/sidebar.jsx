@@ -3,6 +3,8 @@
 import { Link } from "@nextui-org/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import React from "react";
+
 import {
   MdOutlineBarChart,
   MdOutlinePerson,
@@ -16,16 +18,23 @@ import {
 } from "react-icons/md";
 
 export default function Sidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  const isCurrentPage = (href) => {
-    console.log(pathname)
-    if (pathname === href) {
-      return "flex flex-1 px-4 py-3 gap-3 bg-blue-200 rounded-lg text-blue-800"
-    }
-
-    return "flex flex-1 px-4 py-3 gap-3 text-black"
-  }
+  const NavLink = ({ href, icon, label }) => {
+    return (
+      <Link
+        href={href}
+        className={
+          pathname === href
+            ? "flex flex-1 px-4 py-3 gap-3 bg-blue-200 rounded-lg text-blue-800"
+            : "flex flex-1 px-4 py-3 gap-3 text-black"
+        }
+      >
+        {React.createElement(icon, { className: "text-blue-800 text-xl self-center" })}
+        {label}
+      </Link>
+    );
+  };
 
   return (
     <div className="fixed inset-y-0 left-0 w-80 bg-blue-50/[0.5]">
@@ -45,67 +54,51 @@ export default function Sidebar() {
           <span className="text-gray-500 text-xl">Reports</span>
 
           <div className="flex flex-col mt-4">
-            <Link
+            <NavLink
               href="/admin/dashboard"
-              className={isCurrentPage("/admin/dashboard")}
-            >
-              <MdOutlineBarChart className="text-blue-800 text-xl self-center" />
-              Dashboard
-            </Link>
-            <Link
+              icon={MdOutlineBarChart}
+              label="Dashboard"
+            />
+            <NavLink
               href="/admin/user"
-              className={isCurrentPage("/admin/user")}
-            >
-              <MdOutlinePerson className="text-blue-800 text-xl self-center" />
-              User Role
-            </Link>
-            <Link
+              icon={MdOutlinePerson}
+              label="User Role"
+            />
+            <NavLink
               href="/admin/voter"
-              className={isCurrentPage("/admin/voter")}
-            >
-              <MdOutlineHowToVote className="text-blue-800 text-xl self-center" />
-              Voters
-            </Link>
-            <Link
+              icon={MdOutlineHowToVote}
+              label="Voters"
+            />
+            <NavLink
               href="/admin/heat-map"
-              className={isCurrentPage("/admin/heat-map")}
-            >
-              <MdOutlinePinDrop className="text-blue-800 text-xl self-center" />
-              Heat Map
-            </Link>
-            <Link
+              icon={MdOutlinePinDrop}
+              label="Heat Map"
+            />
+            <NavLink
               href="/admin/candidate"
-              className={isCurrentPage("/admin/candidate")}
-            >
-              <MdOutlineGroup className="text-blue-800 text-xl self-center" />
-              Candidates
-            </Link>
-            <Link
+              icon={MdOutlineGroup}
+              label="Candidates"
+            />
+            <NavLink
               href="/admin/death"
-              className={isCurrentPage("/admin/death")}
-            >
-              <MdOutlineLocalFlorist className="text-blue-800 text-xl self-center" />
-              Death
-            </Link>
+              icon={MdOutlineLocalFlorist}
+              label="Death"
+            />
           </div>
 
           <div aria-hidden="true" className="mt-8 flex-1"></div>
 
           <div className="flex flex-col">
-            <Link
+            <NavLink
               href="/admin/notification"
-              className={isCurrentPage("/admin/notification")}
-            >
-              <MdOutlineNotifications className="text-blue-800 text-xl self-center" />
-              Notification
-            </Link>
-            <Link
+              icon={MdOutlineNotifications}
+              label="Notification"
+            />
+            <NavLink
               href="/admin/setting"
-              className={isCurrentPage("/admin/setting")}
-            >
-              <MdOutlineSettings className="text-blue-800 text-xl self-center" />
-              Settings
-            </Link>
+              icon={MdOutlineSettings}
+              label="Settings"
+            />
           </div>
         </div>
 
