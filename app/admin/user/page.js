@@ -152,7 +152,7 @@ export default function UserPage() {
           className="px-2 py-2 w-32 justify-self-end"
           onPress={newUserModal.onOpen}
           startContent={
-            <MdOutlineAdd className="inline text-2xl align-top text-white" />
+            <MdOutlineAdd className="inline text-2xl align-top" />
           }
         >
           Add User

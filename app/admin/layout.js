@@ -6,7 +6,7 @@ export default function HomeLayout({ children }) {
     <>
       <Sidebar />
 
-      <div className="flex flex-col gap-8 ml-[22rem] my-10 mr-5">
+      <div className="flex flex-col gap-8 ml-[20rem] px-5 py-10 overflow-y-auto h-screen">
         <Suspense fallback={<p>Loading...</p>}>
           {children}
         </Suspense>

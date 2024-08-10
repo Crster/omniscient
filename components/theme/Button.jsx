@@ -4,6 +4,7 @@ import { Link } from "@nextui-org/link";
 export function PrimaryButton({
   children,
   className,
+  outline,
   type,
   fullWidth,
   startContent,
@@ -13,6 +14,7 @@ export function PrimaryButton({
     <Button
       color="primary"
       radius="sm"
+      variant={outline ? "ghost" : "solid"}
       className={className}
       type={type}
       fullWidth={fullWidth}
@@ -27,6 +29,7 @@ export function PrimaryButton({
 export function DangerButton({
   children,
   className,
+  outline,
   type,
   fullWidth,
   startContent,
@@ -36,6 +39,7 @@ export function DangerButton({
     <Button
       color="danger"
       radius="sm"
+      variant={outline ? "ghost" : "solid"}
       className={className}
       type={type}
       fullWidth={fullWidth}
@@ -50,18 +54,22 @@ export function DangerButton({
 export function SecondaryButton({
   children,
   className,
+  outline,
   type,
   fullWidth,
+  startContent,
   onPress,
 }) {
   return (
     <Button
       color="default"
+      variant={outline ? "ghost" : "solid"}
       radius="sm"
       className={className}
       type={type}
       fullWidth={fullWidth}
       onPress={onPress}
+      startContent={startContent}
     >
       {children}
     </Button>

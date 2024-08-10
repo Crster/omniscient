@@ -52,9 +52,19 @@ export function DataTable({ title, columns, onLoad }) {
       classNames={{
         thead: "[&>tr]:first:shadow-none",
         th: "text-gray-500 bg-transparent font-medium text-base",
-        td: "rouded-0 border-t border-b text-base",
+        td: [
+          "border-t border-b text-base",
+          // changing the rows border radius
+          // first
+          "group-data-[first=true]:first:before:rounded-none",
+          "group-data-[first=true]:last:before:rounded-none",
+          // middle
+          "group-data-[middle=true]:before:rounded-none",
+          // last
+          "group-data-[last=true]:first:before:rounded-none",
+          "group-data-[last=true]:last:before:rounded-none",
+        ]
       }}
-      isHeaderSticky
       removeWrapper
       color="default"
       selectionMode="multiple"
@@ -80,7 +90,7 @@ export function DataTable({ title, columns, onLoad }) {
               const column = columns.find((ii) => ii.name === columnKey);
 
               return (
-                <TableCell className={column?.className}>
+                <TableCell width={column?.width} className={column?.className}>
                   {column?.template
                     ? column.template(getKeyValue(item, columnKey) ?? item)
                     : getKeyValue(item, columnKey)}
