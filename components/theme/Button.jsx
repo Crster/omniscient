@@ -6,6 +6,7 @@ export function PrimaryButton({
   className,
   type,
   fullWidth,
+  startContent,
   onPress,
 }) {
   return (
@@ -16,6 +17,30 @@ export function PrimaryButton({
       type={type}
       fullWidth={fullWidth}
       onPress={onPress}
+      startContent={startContent}
+    >
+      {children}
+    </Button>
+  );
+}
+
+export function DangerButton({
+  children,
+  className,
+  type,
+  fullWidth,
+  startContent,
+  onPress,
+}) {
+  return (
+    <Button
+      color="danger"
+      radius="sm"
+      className={className}
+      type={type}
+      fullWidth={fullWidth}
+      onPress={onPress}
+      startContent={startContent}
     >
       {children}
     </Button>

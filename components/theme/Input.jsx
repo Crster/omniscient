@@ -4,7 +4,7 @@ import { Input } from "@nextui-org/input";
 import { useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
 
-export function PrimaryInput({ label, placeholder, className, startContent }) {
+export function PrimaryInput({ label, placeholder, className, startContent, value }) {
   return (
     <Input
       className={className}
@@ -15,6 +15,7 @@ export function PrimaryInput({ label, placeholder, className, startContent }) {
       color="primary"
       labelPlacement="outside"
       label={label}
+      value={value}
       placeholder={placeholder}
       startContent={startContent}
     />

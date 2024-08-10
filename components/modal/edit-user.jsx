@@ -10,13 +10,19 @@ import {
 import { PrimaryButton, SecondaryButton } from "../theme/Button";
 import { PasswordInput, PrimaryInput } from "../theme/Input";
 
-export default function NewUserModal({ disclosure }) {
-  const { isOpen, onOpenChange } = disclosure
+export default function EditUserModal({ user, disclosure, onClose }) {
+  const { isOpen } = disclosure;
 
   return (
     <Modal
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      onOpenChange={(isOpen) => {
+        if (onClose && !isOpen) {
+          onClose()  
+        }
+        
+        disclosure.onOpenChange(isOpen)
+      }}
       isDismissable={false}
       backdrop="blur"
     >
@@ -24,16 +30,28 @@ export default function NewUserModal({ disclosure }) {
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1 text-2xl">
-              Add User
+              Edit {user.role}
             </ModalHeader>
             <ModalBody>
-              <PrimaryInput label="Name" placeholder="Input Name" />
-              <PrimaryInput label="Barangay" placeholder="Input Barangay" />
+              <PrimaryInput
+                label="Name"
+                placeholder="Input Name"
+                value={user.name}
+              />
+              <PrimaryInput
+                label="Barangay"
+                placeholder="Input Barangay"
+                value={user.barangay}
+              />
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"
               />
-              <PrimaryInput label="User Role" placeholder="Input Role" />
+              <PrimaryInput
+                label="User Role"
+                placeholder="Input Role"
+                value={user.role}
+              />
             </ModalBody>
             <ModalFooter className="flex flex-row justify-evenly">
               <SecondaryButton fullWidth onPress={onClose}>
