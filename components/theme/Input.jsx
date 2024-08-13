@@ -22,6 +22,25 @@ export function PrimaryInput({ label, placeholder, className, startContent, valu
   );
 }
 
+export function SecondaryInput({ label, readOnly, placeholder, className, startContent, value }) {
+  return (
+    <Input
+      classNames={{
+        label: "text-gray-400 text-xl",
+        input: "text-black placeholder:text-gray-400 text-xl focus-visible:bg-transparent focus-visible:border-b group-data-[hover=true]:border-b",
+        inputWrapper: ["shadow-none bg-transparent p-0 group-data-[focus=true]:bg-transparent group-data-[hover=true]:bg-transparent", className],
+      }}
+      color="primary"
+      readOnly={readOnly}
+      labelPlacement="outside"
+      label={label}
+      value={value}
+      placeholder={placeholder}
+      startContent={startContent}
+    />
+  );
+}
+
 export function PasswordInput({ label, placeholder, className, startContent }) {
   const [showPassword, setShowPassword] = useState(false);
 
