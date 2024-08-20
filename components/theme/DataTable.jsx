@@ -108,7 +108,7 @@ export function DataTable({ title, columns, onLoad, onSelection }) {
               return (
                 <TableCell width={column?.width} className={column?.className}>
                   {column?.template
-                    ? column.template(getKeyValue(item, columnKey) ?? item)
+                    ? column.template(getKeyValue(item, columnKey) ?? item, item)
                     : getKeyValue(item, columnKey)}
                 </TableCell>
               );
