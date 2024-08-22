@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { MdLockOutline, MdOutlineMail } from "react-icons/md";
 import { Link } from "@nextui-org/link";
-import { PrimaryButton } from "../components/theme/Button";
-import { PasswordInput, PrimaryInput } from "../components/theme/Input";
+import { PrimaryButton } from "../../modules/components/theme/Button";
+import { PasswordInput, PrimaryInput } from "../../modules/components/theme/Input";
 
 export default function LoginPage() {
   return (

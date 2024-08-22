@@ -2,12 +2,12 @@
 
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { useDisclosure } from "@nextui-org/modal";
-import { DataTable } from "../../components/theme/DataTable";
-import { PrimaryButton } from "../../components/theme/Button";
-import NewUserModal from "../../components/modal/new-user";
-import EditUserModal from "../../components/modal/edit-user";
+import { DataTable } from "../../../modules/components/theme/DataTable";
+import { PrimaryButton } from "../../../modules/components/theme/Button";
+import NewUserModal from "../../../modules/components/modal/new-user";
+import EditUserModal from "../../../modules/components/modal/edit-user";
 import { useState } from "react";
-import RemoveUserModal from "../../components/modal/remove-user";
+import RemoveUserModal from "../../../modules/components/modal/remove-user";
 
 export default function UserPage() {
   const newUserModal = useDisclosure();
