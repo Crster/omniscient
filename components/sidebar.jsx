@@ -15,6 +15,7 @@ import {
   MdOutlineNotifications,
   MdOutlineSettings,
   MdLogout,
+  MdOutlineAnnouncement,
 } from "react-icons/md";
 
 export default function Sidebar() {
@@ -83,6 +84,11 @@ export default function Sidebar() {
               href="/admin/death"
               icon={MdOutlineLocalFlorist}
               label="Death"
+            />
+            <NavLink
+              href="/admin/announcement"
+              icon={MdOutlineAnnouncement}
+              label="Announcement"
             />
           </div>
 

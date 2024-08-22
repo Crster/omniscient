@@ -17,9 +17,14 @@ export function DataTable({ title, columns, onLoad, onSelection }) {
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
 
   const handleSelection = (selection) => {
-    const lastItem = Array.from(selection)?.at(-1);
-    if (lastItem === "all") return;
+    debugger
+    if (selection === "all") {
+      setSelectedKeys(new Set([]))
+      return
+    }
 
+    const lastItem = Array.from(selection)?.at(-1);
+    
     if (onSelection) {
       if (onSelection(lastItem)) {
         setSelectedKeys(new Set([lastItem]));
