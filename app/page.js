@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { LinkButton } from "../components/theme/Button";
+import { LinkButton } from "./components/theme/Button";
 
 export default function HomePage() {
   return (

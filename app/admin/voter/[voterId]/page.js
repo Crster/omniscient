@@ -6,9 +6,9 @@ import { MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import {
   PrimaryInput,
   SecondaryInput,
-} from "../../../../components/theme/Input";
+} from "../../../components/theme/Input";
 import Image from "next/image";
-import { Profile } from "../../../../components/theme/Profile";
+import { Profile } from "../../../components/theme/Profile";
 
 export default function VoterDetailPage() {
   const params = useParams();

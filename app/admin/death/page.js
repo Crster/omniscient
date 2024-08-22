@@ -1,8 +1,8 @@
 "use client";
 
 import { MdOutlineFilterAlt } from "react-icons/md";
-import { PrimaryButton } from "../../../components/theme/Button";
-import { DataTable } from "../../../components/theme/DataTable";
+import { PrimaryButton } from "../../components/theme/Button";
+import { DataTable } from "../../components/theme/DataTable";
 
 export default function DeathPage() {
   const deathTableColumns = [

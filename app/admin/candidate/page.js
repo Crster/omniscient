@@ -1,8 +1,8 @@
 "use client";
 
-import { PrimaryButton } from "../../../components/theme/Button";
-import { DataTable } from "../../../components/theme/DataTable";
-import { Profile } from "../../../components/theme/Profile";
+import { PrimaryButton } from "../../components/theme/Button";
+import { DataTable } from "../../components/theme/DataTable";
+import { Profile } from "../../components/theme/Profile";
 
 export default function CandidatePage() {
   const candidateTableColumns = [
