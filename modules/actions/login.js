@@ -1,12 +1,14 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import loginByEmail from "../services/loginByEmail";
 import connectDB from "../utilities/database";
-import { UserNotFoundError } from "../utilities/error";
 import getSession from "../utilities/session";
+import { UserNotFoundError, ValidationError } from "../utilities/error";
+import { ActionResponse } from "../utilities/actionResponse";
 
-export default async function login(prevState, formData) {
+export default async function login(formData) {
+  const response = new ActionResponse();
+
   try {
     await connectDB();
     const user = await loginByEmail(
@@ -15,15 +17,26 @@ export default async function login(prevState, formData) {
     );
 
     const session = await getSession();
-    session.user = user._id;
+    session.user = user.id;
     await session.save();
 
-    redirect("/");
+    response.success = true;
+    response.data = {
+      user: {
+        name: user.name,
+        role: user.role,
+      },
+      redirect: "/",
+    };
   } catch (err) {
     if (err instanceof UserNotFoundError) {
-      return { message: "User not found" };
+      response.error = "User not found";
+    } else if (err instanceof ValidationError) {
+      response.error = err.message;
     } else {
-      return { message: "Unknown error" };
+      response.error = "Unknown error";
     }
   }
+
+  return response.toJson();
 }

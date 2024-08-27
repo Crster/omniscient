@@ -4,9 +4,17 @@ import { Input } from "@nextui-org/input";
 import { useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
 
-export function PrimaryInput({ label, placeholder, className, startContent, value }) {
+export function PrimaryInput({
+  name,
+  label,
+  placeholder,
+  className,
+  startContent,
+  value,
+}) {
   return (
     <Input
+      name={name}
       className={className}
       classNames={{
         label: "text-black",
@@ -22,13 +30,26 @@ export function PrimaryInput({ label, placeholder, className, startContent, valu
   );
 }
 
-export function SecondaryInput({ label, readOnly, placeholder, className, startContent, value }) {
+export function SecondaryInput({
+  name,
+  label,
+  readOnly,
+  placeholder,
+  className,
+  startContent,
+  value,
+}) {
   return (
     <Input
+      name={name}
       classNames={{
         label: "text-gray-400 text-xl",
-        input: "text-black placeholder:text-gray-400 text-xl focus-visible:bg-transparent focus-visible:border-b group-data-[hover=true]:border-b",
-        inputWrapper: ["shadow-none bg-transparent p-0 group-data-[focus=true]:bg-transparent group-data-[hover=true]:bg-transparent", className],
+        input:
+          "text-black placeholder:text-gray-400 text-xl focus-visible:bg-transparent focus-visible:border-b group-data-[hover=true]:border-b",
+        inputWrapper: [
+          "shadow-none bg-transparent p-0 group-data-[focus=true]:bg-transparent group-data-[hover=true]:bg-transparent",
+          className,
+        ],
       }}
       color="primary"
       readOnly={readOnly}
@@ -41,11 +62,18 @@ export function SecondaryInput({ label, readOnly, placeholder, className, startC
   );
 }
 
-export function PasswordInput({ label, placeholder, className, startContent }) {
+export function PasswordInput({
+  name,
+  label,
+  placeholder,
+  className,
+  startContent,
+}) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Input
+      name={name}
       className={className}
       classNames={{
         label: "text-black",
