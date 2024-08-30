@@ -17,6 +17,7 @@ import {
   MdLogout,
   MdOutlineAnnouncement,
 } from "react-icons/md";
+import logout from "../actions/logout";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -121,7 +122,7 @@ export default function Sidebar() {
             <span className="font-medium">Administrator</span>
             <span className="text-xs text-gray-500">Super Man</span>
           </div>
-          <button className="justify-self-end">
+          <button className="justify-self-end" onClick={() => logout()}>
             <MdLogout className="text-2xl text-gray-500" />
           </button>
         </div>
