@@ -1,5 +1,3 @@
-"use client";
-
 import {
   getKeyValue,
   Table,
@@ -9,62 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/table";
-import React, { useState } from "react";
-import { useAsyncList } from "@react-stately/data";
+import React from "react";
 
-export function DataTable({ title, columns, onLoad, onSelection }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-
-  const handleSelection = (selection) => {
-    debugger
-    if (selection === "all") {
-      setSelectedKeys(new Set([]))
-      return
-    }
-
-    const lastItem = Array.from(selection)?.at(-1);
-    
-    if (onSelection) {
-      if (onSelection(lastItem)) {
-        setSelectedKeys(new Set([lastItem]));
-      }
-    } else {
-      setSelectedKeys(new Set([lastItem]));
-    }
-  };
-
-  let list = useAsyncList({
-    async load({ signal }) {
-      let results = [];
-
-      if (onLoad) {
-        results = await onLoad(signal);
-        setIsLoading(false);
-      }
-
-      return {
-        items: results,
-      };
-    },
-    async sort({ items, sortDescriptor }) {
-      return {
-        items: items.sort((a, b) => {
-          let first = a[sortDescriptor.column];
-          let second = b[sortDescriptor.column];
-          let cmp =
-            (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
-
-          if (sortDescriptor.direction === "descending") {
-            cmp *= -1;
-          }
-
-          return cmp;
-        }),
-      };
-    },
-  });
-
+export function DataTable({
+  title,
+  columns,
+  rows,
+  selectionMode,
+  onSelectionChange,
+}) {
   return (
     <Table
       aria-label={title}
@@ -86,38 +37,30 @@ export function DataTable({ title, columns, onLoad, onSelection }) {
       }}
       removeWrapper
       color="default"
-      selectionMode="multiple"
-      sortDescriptor={list.sortDescriptor}
-      onSortChange={list.sort}
-      selectedKeys={selectedKeys}
-      onSelectionChange={handleSelection}
+      selectionMode={selectionMode}
+      onSortChange={rows.sort}
+      sortDescriptor={rows.sortDescriptor}
+      selectedKeys={rows.initialSelectedKeys}
+      onSelectionChange={onSelectionChange}
     >
-      <TableHeader>
-        {columns?.map((ii) => (
-          <TableColumn key={ii.name} allowsSorting={ii.sortable}>
-            {ii.label}
+      <TableHeader columns={columns}>
+        {(column) => (
+          <TableColumn key={column.key} allowsSorting={column.allowsSorting}>
+            {column.label}
           </TableColumn>
-        ))}
+        )}
       </TableHeader>
       <TableBody
-        items={list.items}
-        isLoading={isLoading}
+        items={rows.items}
+        isLoading={rows.isLoading}
         emptyContent={"No rows to display."}
         loadingContent={<p>Loading...</p>}
       >
         {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => {
-              const column = columns.find((ii) => ii.name === columnKey);
-
-              return (
-                <TableCell width={column?.width} className={column?.className}>
-                  {column?.template
-                    ? column.template(getKeyValue(item, columnKey) ?? item, item)
-                    : getKeyValue(item, columnKey)}
-                </TableCell>
-              );
-            }}
+          <TableRow key={item.rowId}>
+            {(columnKey) => (
+              <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+            )}
           </TableRow>
         )}
       </TableBody>

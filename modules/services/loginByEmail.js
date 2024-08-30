@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { UserModel } from "../models/user";
 import { sha256 } from "../utilities/generator";
-import { UserNotFoundError } from "../utilities/error";
+import { NotFoundError } from "../utilities/error";
 
 const inputSchema = Joi.object({
   email: Joi.string().email(),
@@ -9,15 +9,15 @@ const inputSchema = Joi.object({
 });
 
 export default async function loginByEmail(email, password) {
-  const input = await inputSchema.validateAsync({ email, password })
+  const input = await inputSchema.validateAsync({ email, password });
   const user = await UserModel.findOne({ email: input.email }).exec();
 
   if (!user) {
-    throw new UserNotFoundError(email);
+    throw new NotFoundError(email);
   }
 
   if (user.password !== sha256(input.password)) {
-    throw new UserNotFoundError(email);
+    throw new NotFoundError(email);
   }
 
   return user;

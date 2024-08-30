@@ -3,7 +3,7 @@
 import loginByEmail from "../services/loginByEmail";
 import connectDB from "../utilities/database";
 import getSession from "../utilities/session";
-import { UserNotFoundError, ValidationError } from "../utilities/error";
+import { NotFoundError, ValidationError } from "../utilities/error";
 import { ActionResponse } from "../utilities/actionResponse";
 
 export default async function login(formData) {
@@ -29,7 +29,7 @@ export default async function login(formData) {
       redirect: "/",
     };
   } catch (err) {
-    if (err instanceof UserNotFoundError) {
+    if (err instanceof NotFoundError) {
       response.error = "User not found";
     } else if (err instanceof ValidationError) {
       response.error = err.message;
