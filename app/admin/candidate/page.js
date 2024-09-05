@@ -1,24 +1,26 @@
 "use client";
 
+import _ from "lodash";
 import { PrimaryButton } from "../../../modules/components/theme/Button";
 import { DataTable } from "../../../modules/components/theme/DataTable";
 import { Profile } from "../../../modules/components/theme/Profile";
+import { useAsyncList } from "@react-stately/data";
 
 export default function CandidatePage() {
-  const candidateTableColumns = [
+  const columns = [
     {
-      name: "rank",
+      key: "rank",
       label: "Rank",
-      sortable: true,
+      allowSorting: true,
       className: "font-medium",
       template: (value) => {
         return <span>No. {value}</span>;
       },
     },
     {
-      name: "name",
+      key: "name",
       label: "Name",
-      sortable: true,
+      allowSorting: true,
       className: "font-medium",
       template: (value) => {
         return (
@@ -32,9 +34,9 @@ export default function CandidatePage() {
       },
     },
     {
-      name: "vote",
+      key: "vote",
       label: "Votes",
-      sortable: true,
+      allowSorting: true,
       className: "font-medium text-white",
       template: (value, row) => {
         const color = [
@@ -57,9 +59,9 @@ export default function CandidatePage() {
       },
     },
     {
-      name: "popular",
+      key: "popular",
       label: "Popular Vote",
-      sortable: true,
+      allowSorting: true,
       className: "font-medium text-white",
       template: (value, row) => {
         const color = [
@@ -83,52 +85,20 @@ export default function CandidatePage() {
     },
   ];
 
-  const handleOnLoad = () => {
-    return Promise.resolve([
-      {
-        id: Math.random(),
-        rank: 1,
-        name: "Cameron Williamson",
-        vote: 5342521,
-        popular: 88.5,
-      },
-      {
-        id: Math.random(),
-        rank: 2,
-        name: "Katona Beatrix",
-        vote: 4342521,
-        popular: 84.5,
-      },
-      {
-        id: Math.random(),
-        rank: 3,
-        name: "Novák Réka",
-        vote: 3342521,
-        popular: 82.5,
-      },
-      {
-        id: Math.random(),
-        rank: 4,
-        name: "László Cintia",
-        vote: 2342521,
-        popular: 80.5,
-      },
-      {
-        id: Math.random(),
-        rank: 5,
-        name: "Kelemen Krisztina",
-        vote: 1342521,
-        popular: 78.5,
-      },
-      {
-        id: Math.random(),
-        rank: 6,
-        name: "Leslie Alexander",
-        vote: 342521,
-        popular: 70.5,
-      },
-    ]);
-  };
+  const rows = useAsyncList({
+    load: async () => {
+      return { items: [] };
+    },
+    sort: ({ items, sortDescriptor }) => {
+      return {
+        items: _.orderBy(
+          items,
+          sortDescriptor.column,
+          sortDescriptor.direction === "descending" ? "desc" : "asc"
+        ),
+      };
+    },
+  });
 
   return (
     <>
@@ -198,8 +168,8 @@ export default function CandidatePage() {
 
       <DataTable
         title="Candidate List"
-        columns={candidateTableColumns}
-        onLoad={handleOnLoad}
+        columns={columns}
+        rows={rows}
       />
     </>
   );

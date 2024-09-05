@@ -6,11 +6,9 @@ import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import { MdLockOutline, MdOutlineMail } from "react-icons/md";
 import { PrimaryButton } from "../../modules/components/theme/Button";
-import {
-  PasswordInput,
-  PrimaryInput,
-} from "../../modules/components/theme/Input";
+import { PrimaryInput } from "../../modules/components/theme/Input";
 import login from "../../modules/actions/login";
+import PasswordInput from "../../modules/components/theme/PasswordInput";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -61,7 +59,7 @@ export default function LoginPage() {
         </PrimaryButton>
       </form>
 
-      <Toaster position="bottom-center"/>
+      <Toaster position="bottom-center" />
     </div>
   );
 }

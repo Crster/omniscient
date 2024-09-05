@@ -5,43 +5,45 @@ import { PrimaryButton } from "../../../modules/components/theme/Button";
 import { DataTable } from "../../../modules/components/theme/DataTable";
 import { MdOutlineAdd, MdOutlineFilterAlt } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { useAsyncList } from "@react-stately/data";
+import _ from "lodash";
 
 export default function VoterPage() {
   const newVoterModal = useDisclosure();
   const router = useRouter()
 
-  const voterTableColumns = [
+  const columns = [
     {
-      name: "precinct_no",
+      key: "precinct_no",
       label: "Precinct No.",
-      sortable: true,
+      allowsSorting: true,
       className: "text-blue-500",
     },
     {
-      name: "name",
+      key: "name",
       label: "Name",
-      sortable: true,
+      allowsSorting: true,
     },
     {
-      name: "purok",
+      key: "purok",
       label: "Purok",
-      sortable: true,
+      allowsSorting: true,
     },
     {
-      name: "barangay",
+      key: "barangay",
       label: "Brgy",
-      sortable: true,
+      allowsSorting: true,
     },
     {
-      name: "candidate",
+      key: "candidate",
       label: "Candidate",
-      sortable: true,
+      allowsSorting: true,
       className: "text-blue-500",
     },
     {
-      name: "status",
+      key: "status",
       label: "Status",
-      sortable: true,
+      allowsSorting: true,
       template: (value) => {
         if (value === "1# Supporter") {
           return (
@@ -59,46 +61,26 @@ export default function VoterPage() {
       },
     },
     {
-      name: "validator",
+      key: "validator",
       label: "Validated By",
-      sortable: true,
+      allowsSorting: true,
     },
   ];
 
-  const handleOnLoad = () => {
-    return Promise.resolve([
-      {
-        id: Math.random(),
-        precinct_no: "B23465",
-        name: "R.Kimaruu",
-        purok: "Ubalde",
-        barangay: "Ubalde",
-        candidate: "Capt. Rene Ustorga",
-        status: "#1 Supporter",
-        validator: "Claire",
-      },
-      {
-        id: Math.random(),
-        precinct_no: "B23465",
-        name: "P.Jomore",
-        purok: "Lawaan",
-        barangay: "Tunay",
-        candidate: "Capt. Rene Ustorga",
-        status: "#1 Supporter",
-        validator: "Claire",
-      },
-      {
-        id: Math.random(),
-        precinct_no: "A43465",
-        name: "K.Tored",
-        purok: "Molmol",
-        barangay: "Batisan",
-        candidate: "Capt. Luga Wanan",
-        status: "#1 Supporter",
-        validator: "Claire",
-      },
-    ]);
-  };
+  const rows = useAsyncList({
+    load: async () => {
+      return { items: [] };
+    },
+    sort: ({ items, sortDescriptor }) => {
+      return {
+        items: _.orderBy(
+          items,
+          sortDescriptor.column,
+          sortDescriptor.direction === "descending" ? "desc" : "asc"
+        ),
+      };
+    },
+  });
 
   const handleSelection = (item) => {
     router.push(`/admin/voter/${item}`)
@@ -134,9 +116,8 @@ export default function VoterPage() {
 
       <DataTable
         title="Voter List"
-        columns={voterTableColumns}
-        onLoad={handleOnLoad}
-        onSelection={handleSelection}
+        columns={columns}
+        rows={rows}
       />
     </>
   );

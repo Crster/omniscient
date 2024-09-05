@@ -8,20 +8,38 @@ import {
   ModalHeader,
 } from "@nextui-org/modal";
 import { PrimaryButton, SecondaryButton } from "../theme/Button";
-import { PasswordInput, PrimaryInput } from "../theme/Input";
+import { PrimaryInput } from "../theme/Input";
+import PasswordInput from "../theme/PasswordInput";
+import { Select } from "../theme/Select";
 
 export default function EditUserModal({ user, disclosure, onClose }) {
   const { isOpen } = disclosure;
+  
+
+  const roles = [
+    {
+      key: "admin",
+      value: "Admin",
+    },
+    {
+      key: "validator",
+      value: "Validator",
+    },
+    {
+      key: "surveyor",
+      value: "Surveyor",
+    },
+  ];
 
   return (
     <Modal
       isOpen={isOpen}
       onOpenChange={(isOpen) => {
         if (onClose && !isOpen) {
-          onClose()  
+          onClose();
         }
-        
-        disclosure.onOpenChange(isOpen)
+
+        disclosure.onOpenChange(isOpen);
       }}
       isDismissable={false}
       backdrop="blur"
@@ -36,20 +54,22 @@ export default function EditUserModal({ user, disclosure, onClose }) {
               <PrimaryInput
                 label="Name"
                 placeholder="Input Name"
-                value={user.name}
+                defaultValue={user.name}
               />
               <PrimaryInput
-                label="Barangay"
-                placeholder="Input Barangay"
-                value={user.barangay}
+                isReadOnly={true}
+                label="Email"
+                placeholder="Input Email"
+                defaultValue={user.email}
               />
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"
               />
-              <PrimaryInput
+              <Select
                 label="User Role"
-                placeholder="Input Role"
+                placeholder="Select Role"
+                items={roles}
                 value={user.role}
               />
             </ModalBody>

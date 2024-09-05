@@ -58,9 +58,17 @@ export function DataTable({
       >
         {(item) => (
           <TableRow key={item.rowId}>
-            {(columnKey) => (
-              <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-            )}
+            {(columnKey) => {
+              const column = columns.find((ii) => ii.key === columnKey);
+
+              return (
+                <TableCell className={column?.className}>
+                  {column?.template
+                    ? column.template(item)
+                    : getKeyValue(item, columnKey)}
+                </TableCell>
+              );
+            }}
           </TableRow>
         )}
       </TableBody>

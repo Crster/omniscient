@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Sidebar from "../../modules/components/sidebar";
+import Sidebar from "../../modules/components/Sidebar";
 
 export default function HomeLayout({ children }) {
   return (

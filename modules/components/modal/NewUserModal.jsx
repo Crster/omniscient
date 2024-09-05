@@ -8,7 +8,8 @@ import {
   ModalHeader,
 } from "@nextui-org/modal";
 import { PrimaryButton, SecondaryButton } from "../theme/Button";
-import { PasswordInput, PrimaryInput } from "../theme/Input";
+import { PrimaryInput } from "../theme/Input";
+import PasswordInput from "../theme/PasswordInput";
 
 export default function NewUserModal({ disclosure }) {
   const { isOpen, onOpenChange } = disclosure
@@ -28,7 +29,7 @@ export default function NewUserModal({ disclosure }) {
             </ModalHeader>
             <ModalBody>
               <PrimaryInput label="Name" placeholder="Input Name" />
-              <PrimaryInput label="Barangay" placeholder="Input Barangay" />
+              <PrimaryInput label="Email" placeholder="Input Email" />
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"

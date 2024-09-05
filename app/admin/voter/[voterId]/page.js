@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
-import {
-  PrimaryInput,
-  SecondaryInput,
-} from "../../../../modules/components/theme/Input";
+import { SecondaryInput } from "../../../../modules/components/theme/Input";
 import Image from "next/image";
 import { Profile } from "../../../../modules/components/theme/Profile";
 
@@ -85,7 +82,7 @@ export default function VoterDetailPage() {
           />
         </div>
 
-        <hr/>
+        <hr />
 
         <span className="mt-5 text-gray-400 text-xl">Family Number</span>
         <div className="flex flex-row gap-5">

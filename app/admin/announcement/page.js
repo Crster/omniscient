@@ -1,51 +1,56 @@
 "use client";
 
+import _ from "lodash";
 import { MdOutlineAdd, MdOutlineFilterAlt } from "react-icons/md";
 import { PrimaryButton } from "../../../modules/components/theme/Button";
 import { DataTable } from "../../../modules/components/theme/DataTable";
+import { useAsyncList } from "@react-stately/data";
+
 
 export default function AnnouncementPage() {
-  const announcementTableColumns = [
+  const columns = [
     {
-      name: "date",
+      key: "date",
       label: "Date",
-      sortable: true,
-      template: val => val.toLocaleDateString()
+      allowsSorting: true,
+      template: val => val.date.toLocaleDateString()
     },
     {
-      name: "subject",
+      key: "subject",
       label: "Subject",
-      sortable: true,
+      allowsSorting: true,
     },
     {
-      name: "tag",
+      key: "tag",
       label: "Tag",
-      sortable: true,
+      allowsSorting: true,
     },
     {
-      name: "recipient",
+      key: "recipient",
       label: "Recipient",
-      sortable: true,
+      allowsSorting: true,
     },
     {
-      name: "sender",
+      key: "sender",
       label: "Sender",
-      sortable: true,
+      allowsSorting: true,
     },
   ];
 
-  const handleOnload = () => {
-    return Promise.resolve([
-      {
-        id: Math.random(),
-        date: new Date(),
-        subject: "Babala asawa ni Babalu",
-        tag: "test",
-        recipient: "All barangay Tagalog",
-        sender: "Admin",
-      },
-    ]);
-  };
+  const rows = useAsyncList({
+    load: async () => {
+      return { items: [] };
+    },
+    sort: ({ items, sortDescriptor }) => {
+      return {
+        items: _.orderBy(
+          items,
+          sortDescriptor.column,
+          sortDescriptor.direction === "descending" ? "desc" : "asc"
+        ),
+      };
+    },
+  });
 
   return (
     <>
@@ -77,8 +82,8 @@ export default function AnnouncementPage() {
 
       <DataTable
         title="Announcement List"
-        columns={announcementTableColumns}
-        onLoad={handleOnload}
+        columns={columns}
+        rows={rows}
       />
     </>
   );
