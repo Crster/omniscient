@@ -11,36 +11,33 @@ import { PrimaryButton, SecondaryButton } from "../theme/Button";
 import { PrimaryInput } from "../theme/Input";
 import PasswordInput from "../theme/PasswordInput";
 import { Select } from "../theme/Select";
+import { useEffect, useState } from "react";
+import { userRoles } from "../../models/user-role";
 
-export default function EditUserModal({ user, disclosure, onClose }) {
-  const { isOpen } = disclosure;
-  
+export default function EditUserModal({ user, disclosure, onSave }) {
+  const { isOpen, onOpenChange } = disclosure;
 
-  const roles = [
-    {
-      key: "admin",
-      value: "Admin",
-    },
-    {
-      key: "validator",
-      value: "Validator",
-    },
-    {
-      key: "surveyor",
-      value: "Surveyor",
-    },
-  ];
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+      setRole(user.role);
+    }
+  }, [user]);
+
+  const handleOk = () => {
+    if (onSave) {
+      onSave({ name, password, role });
+    }
+  };
 
   return (
     <Modal
       isOpen={isOpen}
-      onOpenChange={(isOpen) => {
-        if (onClose && !isOpen) {
-          onClose();
-        }
-
-        disclosure.onOpenChange(isOpen);
-      }}
+      onOpenChange={onOpenChange}
       isDismissable={false}
       backdrop="blur"
     >
@@ -54,7 +51,8 @@ export default function EditUserModal({ user, disclosure, onClose }) {
               <PrimaryInput
                 label="Name"
                 placeholder="Input Name"
-                defaultValue={user.name}
+                value={name}
+                onValueChange={setName}
               />
               <PrimaryInput
                 isReadOnly={true}
@@ -65,19 +63,22 @@ export default function EditUserModal({ user, disclosure, onClose }) {
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"
+                value={password}
+                onValueChange={setPassword}
               />
               <Select
                 label="User Role"
                 placeholder="Select Role"
-                items={roles}
-                value={user.role}
+                items={userRoles}
+                selectedKeys={role}
+                onSelectionChange={setRole}
               />
             </ModalBody>
             <ModalFooter className="flex flex-row justify-evenly">
               <SecondaryButton fullWidth onPress={onClose}>
                 No
               </SecondaryButton>
-              <PrimaryButton fullWidth onPress={onClose}>
+              <PrimaryButton fullWidth onPress={handleOk}>
                 Save
               </PrimaryButton>
             </ModalFooter>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import { MdLockOutline, MdOutlineMail } from "react-icons/md";
@@ -58,8 +58,6 @@ export default function LoginPage() {
           Login Account
         </PrimaryButton>
       </form>
-
-      <Toaster position="bottom-center" />
     </div>
   );
 }

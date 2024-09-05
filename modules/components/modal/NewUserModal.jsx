@@ -10,9 +10,22 @@ import {
 import { PrimaryButton, SecondaryButton } from "../theme/Button";
 import { PrimaryInput } from "../theme/Input";
 import PasswordInput from "../theme/PasswordInput";
+import { useState } from "react";
+import { Select } from "../theme/Select";
+import { userRoles } from "../../models/user-role";
 
-export default function NewUserModal({ disclosure }) {
-  const { isOpen, onOpenChange } = disclosure
+export default function NewUserModal({ disclosure, onNew }) {
+  const { isOpen, onOpenChange } = disclosure;
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("admin");
+
+  const handleOk = () => {
+    if (onNew) {
+      onNew({ name, email, password, role });
+    }
+  };
 
   return (
     <Modal
@@ -28,19 +41,37 @@ export default function NewUserModal({ disclosure }) {
               Add User
             </ModalHeader>
             <ModalBody>
-              <PrimaryInput label="Name" placeholder="Input Name" />
-              <PrimaryInput label="Email" placeholder="Input Email" />
+              <PrimaryInput
+                label="Name"
+                placeholder="Input Name"
+                value={name}
+                onValueChange={setName}
+              />
+              <PrimaryInput
+                label="Email"
+                placeholder="Input Email"
+                value={email}
+                onValueChange={setEmail}
+              />
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"
+                value={password}
+                onValueChange={setPassword}
               />
-              <PrimaryInput label="User Role" placeholder="Input Role" />
+              <Select
+                label="User Role"
+                placeholder="Select Role"
+                items={userRoles}
+                selectedKeys={role}
+                onSelectionChange={setRole}
+              />
             </ModalBody>
             <ModalFooter className="flex flex-row justify-evenly">
               <SecondaryButton fullWidth onPress={onClose}>
                 No
               </SecondaryButton>
-              <PrimaryButton fullWidth onPress={onClose}>
+              <PrimaryButton fullWidth onPress={handleOk}>
                 Save
               </PrimaryButton>
             </ModalFooter>

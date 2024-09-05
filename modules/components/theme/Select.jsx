@@ -1,27 +1,44 @@
-import * as Option from "@nextui-org/select";
+"use client";
 
-export function Select({ items, value, ...props }) {
-  const selectedItem = items?.find((ii) => ii.key === value);
-  console.log({
-    selectedItem,
-    items,
-    value
-  })
+import * as Option from "@nextui-org/select";
+import { useEffect, useState } from "react";
+
+export function Select({ items, selectedKeys, onSelectionChange, ...props }) {
+  const [keys, setKeys] = useState(new Set([]));
+
+  useEffect(() => {
+    if (selectedKeys) {
+      if (Array.isArray(selectedKeys)) {
+        setKeys(new Set(selectedKeys));
+      } else {
+        setKeys(new Set([selectedKeys]));
+      }
+    }
+  }, [selectedKeys]);
+
+  const handleOnSelect = (selection) => {
+    if (Array.isArray(selectedKeys)) {
+      onSelectionChange(Array.from(selection));
+    } else {
+      const [selected] = selection;
+      onSelectionChange(selected);
+    }
+  };
 
   return (
     <Option.Select
       color="primary"
       classNames={{
         label: "text-black",
-        value: selectedItem ? "text-black" : "text-gray-400",
+        value: "text-black",
       }}
       labelPlacement="outside"
-      items={items}
-      defaultSelectedKeys={new Set([selectedItem?.key])}
       {...props}
+      selectedKeys={keys}
+      onSelectionChange={handleOnSelect}
     >
-      {items && ((item) => (
-        <Option.SelectItem key={item.key}>{item.value}</Option.SelectItem>
+      {items.map((item) => (
+        <Option.SelectItem key={item.key}>{item.label}</Option.SelectItem>
       ))}
     </Option.Select>
   );

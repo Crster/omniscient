@@ -6,7 +6,7 @@ export function PrimaryInput(props) {
       classNames={{
         label: "text-black",
         input: "text-black placeholder:text-gray-400",
-        inputWrapper: "group-data-[readonly=true]:bg-transparent"
+        inputWrapper: "group-data-[readonly=true]:bg-gray-100"
       }}
       color="primary"
       labelPlacement="outside"

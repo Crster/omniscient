@@ -12,6 +12,7 @@ import EditUserModal from "../../../modules/components/modal/EditUserModal";
 import RemoveUserModal from "../../../modules/components/modal/RemoveUserModal";
 import listUser from "../../../modules/actions/listUser";
 import _ from "lodash";
+import addUser from "../../../modules/actions/addUser";
 
 export default function UserPage() {
   const newUserModal = useDisclosure();
@@ -68,7 +69,7 @@ export default function UserPage() {
           </div>
         );
       },
-    }
+    },
   ];
 
   const rows = useAsyncList({
@@ -91,23 +92,39 @@ export default function UserPage() {
     },
   });
 
+  const handleNewUser = async (user) => {
+    const response = await addUser(user);
+    if (response.success) {
+      newUserModal.onClose();
+      rows.append(response.data)
+    } else {
+      toast.error(response.error);
+    }
+  };
+
+  const handleSaveUser = (update) => {
+    console.log({ update });
+    editUserModal.onClose();
+  };
+
+  const handleRemoveUser = (user) => {
+    console.log({ user });
+    removeUserModal.onClose();
+  };
+
   return (
     <>
-      <NewUserModal disclosure={newUserModal} />
-      {userToEdit && (
-        <EditUserModal
-          user={userToEdit}
-          disclosure={editUserModal}
-          onClose={() => setUserToEdit(null)}
-        />
-      )}
-      {userToRemove && (
-        <RemoveUserModal
-          user={userToRemove}
-          disclosure={removeUserModal}
-          onClose={() => setUserToRemove(null)}
-        />
-      )}
+      <NewUserModal disclosure={newUserModal} onNew={handleNewUser} />
+      <EditUserModal
+        user={userToEdit}
+        disclosure={editUserModal}
+        onSave={handleSaveUser}
+      />
+      <RemoveUserModal
+        user={userToRemove}
+        disclosure={removeUserModal}
+        onClose={handleRemoveUser}
+      />
 
       <div className="grid grid-cols-2">
         <h2 className="text-4xl text-blue-500 font-medium">User List</h2>

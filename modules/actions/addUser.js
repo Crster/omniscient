@@ -1,31 +1,30 @@
 "use server";
 
-import { isEmpty } from "lodash";
-import { ActionResponse } from "../utilities/actionResponse";
-import { ListingError } from "../utilities/error";
-import connectDB from "../utilities/database";
 import UserService from "../services/UserService";
+import { ActionResponse } from "../utilities/actionResponse";
+import connectDB from "../utilities/database";
+import { ListingError, ValidationError } from "../utilities/error";
 
-export default async function listUser() {
+export default async function addUser(newUser) {
   const response = new ActionResponse();
   const userService = new UserService();
 
   try {
     await connectDB();
-    const users = await userService.getUsers();
-    if (!isEmpty(users)) {
-      response.data = users.map((ii) => ({
-        rowId: ii.id,
-        name: ii.name,
-        email: ii.email,
-        role: ii.role,
-      }));
-    }
+    const user = await userService.addUser(newUser);
 
+    response.data = {
+      rowId: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
     response.success = true;
   } catch (err) {
     if (err instanceof ListingError) {
       response.error = "Failed to load user";
+    } else if (err instanceof ValidationError) {
+      response.error = err.message;
     } else {
       response.error = "Unknown error";
     }

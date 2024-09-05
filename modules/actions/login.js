@@ -1,20 +1,21 @@
 "use server";
 
-import loginByEmail from "../services/loginByEmail";
 import connectDB from "../utilities/database";
 import getSession from "../utilities/session";
 import { NotFoundError, ValidationError } from "../utilities/error";
 import { ActionResponse } from "../utilities/actionResponse";
+import AuthService from "../services/AuthService";
 
 export default async function login(formData) {
   const response = new ActionResponse();
+  const authService = new AuthService();
 
   try {
     await connectDB();
-    const user = await loginByEmail(
-      formData.get("email"),
-      formData.get("password")
-    );
+    const user = await authService.login({
+      email: formData.get("email"),
+      password: formData.get("password"),
+    });
 
     const session = await getSession();
     session.user = user.id;
