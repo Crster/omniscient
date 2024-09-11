@@ -74,6 +74,9 @@ export default function UserPage() {
   ];
 
   const rows = useAsyncList({
+    getKey: (item) => {
+      return item.rowId;
+    },
     load: async () => {
       const result = await listUser();
       if (!result.success) {
@@ -104,7 +107,7 @@ export default function UserPage() {
   };
 
   const handleSaveUser = async (user, update) => {
-    const response = await editUser({ id: user.rowId, update });
+    const response = await editUser({ id: user.rowId, ...update });
     if (response.success) {
       editUserModal.onClose();
       rows.update(user.rowId, response.data);

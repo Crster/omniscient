@@ -1,9 +1,13 @@
 import Joi from "joi";
 import { UserModel } from "../models/user";
-import { ListingError, SavingError } from "../utilities/error";
-import { sha256 } from "../utilities/generator";
+import { DeleteError, ListingError, SavingError } from "../utilities/error";
+import { objectId, sha256 } from "../utilities/generator";
+import { TrashModel } from "../models/trash";
+import TrashService from "./TrashService";
 
 export default class UserService {
+  _trashService = new TrashService();
+
   toResponse(user) {
     if (user) {
       return {
@@ -48,6 +52,7 @@ export default class UserService {
       .required()
       .hex()
       .length(24)
+      .custom(objectId)
       .validateAsync(userId);
 
     const input = await Joi.object({
@@ -59,7 +64,7 @@ export default class UserService {
     }).validateAsync(data);
 
     try {
-      const user = await UserModel.find({ id: inputId }).exec();
+      const user = await UserModel.findOne({ _id: inputId }).exec();
 
       if (input.name) {
         user.name = input.name;
@@ -76,6 +81,24 @@ export default class UserService {
       return await user.save();
     } catch {
       throw new SavingError();
+    }
+  }
+
+  async removeUser(userId) {
+    const inputId = await Joi.string()
+      .required()
+      .hex()
+      .length(24)
+      .custom(objectId)
+      .validateAsync(userId);
+
+    try {
+      const user = await UserModel.findOne({ _id: inputId }).exec();
+      await this._trashService.add(inputId, UserModel.name, user);
+
+      return await user.remove();
+    } catch {
+      throw new DeleteError();
     }
   }
 }

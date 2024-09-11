@@ -14,7 +14,7 @@ export class ListingError extends Error {
 
 export class SavingError extends Error {
   constructor() {
-    super("Error: failed to add item");
+    super("Error: failed to save item");
   }
 }
 
