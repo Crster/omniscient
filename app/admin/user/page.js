@@ -1,5 +1,6 @@
 "use client";
 
+import _ from "lodash";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAsyncList } from "@react-stately/data";
@@ -11,8 +12,8 @@ import NewUserModal from "../../../modules/components/modal/NewUserModal";
 import EditUserModal from "../../../modules/components/modal/EditUserModal";
 import RemoveUserModal from "../../../modules/components/modal/RemoveUserModal";
 import listUser from "../../../modules/actions/listUser";
-import _ from "lodash";
 import addUser from "../../../modules/actions/addUser";
+import editUser from "../../../modules/actions/editUser";
 
 export default function UserPage() {
   const newUserModal = useDisclosure();
@@ -96,15 +97,20 @@ export default function UserPage() {
     const response = await addUser(user);
     if (response.success) {
       newUserModal.onClose();
-      rows.append(response.data)
+      rows.append(response.data);
     } else {
       toast.error(response.error);
     }
   };
 
-  const handleSaveUser = (update) => {
-    console.log({ update });
-    editUserModal.onClose();
+  const handleSaveUser = async (user, update) => {
+    const response = await editUser({ id: user.rowId, update });
+    if (response.success) {
+      editUserModal.onClose();
+      rows.update(user.rowId, response.data);
+    } else {
+      toast.error(response.error);
+    }
   };
 
   const handleRemoveUser = (user) => {

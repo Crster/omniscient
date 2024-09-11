@@ -1,9 +1,9 @@
 "use server";
 
+import connectDB from "../utilities/database";
 import UserService from "../services/UserService";
 import { ActionResponse } from "../utilities/actionResponse";
-import connectDB from "../utilities/database";
-import { ListingError, ValidationError } from "../utilities/error";
+import { SavingError, ValidationError } from "../utilities/error";
 
 export default async function addUser(newUser) {
   const response = new ActionResponse();
@@ -13,16 +13,11 @@ export default async function addUser(newUser) {
     await connectDB();
     const user = await userService.addUser(newUser);
 
-    response.data = {
-      rowId: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
+    response.data = userService.toResponse(user);
     response.success = true;
   } catch (err) {
-    if (err instanceof ListingError) {
-      response.error = "Failed to load user";
+    if (err instanceof SavingError) {
+      response.error = "Failed to add user";
     } else if (err instanceof ValidationError) {
       response.error = err.message;
     } else {

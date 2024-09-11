@@ -12,10 +12,10 @@ export default class AuthService {
 
     const user = await UserModel.findOne({ email: input.email }).exec();
     if (!user) {
-      throw new NotFoundError(email);
+      throw new NotFoundError(input.email);
     }
     if (user.password !== sha256(input.password)) {
-      throw new NotFoundError(email);
+      throw new NotFoundError(input.email);
     }
 
     return user;

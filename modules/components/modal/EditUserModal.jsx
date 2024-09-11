@@ -30,7 +30,7 @@ export default function EditUserModal({ user, disclosure, onSave }) {
 
   const handleOk = () => {
     if (onSave) {
-      onSave({ name, password, role });
+      onSave(user, { name, password, role });
     }
   };
 

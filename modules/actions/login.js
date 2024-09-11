@@ -2,9 +2,9 @@
 
 import connectDB from "../utilities/database";
 import getSession from "../utilities/session";
-import { NotFoundError, ValidationError } from "../utilities/error";
-import { ActionResponse } from "../utilities/actionResponse";
 import AuthService from "../services/AuthService";
+import { ActionResponse } from "../utilities/actionResponse";
+import { NotFoundError, ValidationError } from "../utilities/error";
 
 export default async function login(formData) {
   const response = new ActionResponse();

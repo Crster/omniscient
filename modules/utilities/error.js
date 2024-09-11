@@ -18,12 +18,6 @@ export class SavingError extends Error {
   }
 }
 
-export class UpdateError extends Error {
-  constructor() {
-    super("Error: item not save");
-  }
-}
-
 export class DeleteError extends Error {
   constructor() {
     super("Error: failed to remove item");
