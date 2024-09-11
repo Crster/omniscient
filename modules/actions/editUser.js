@@ -1,3 +1,5 @@
+"use server";
+
 import connectDB from "../utilities/database";
 import UserService from "../services/UserService";
 import { SavingError, ValidationError } from "../utilities/error";
