@@ -2,7 +2,6 @@ import Joi from "joi";
 import { UserModel } from "../models/user";
 import { DeleteError, ListingError, SavingError } from "../utilities/error";
 import { objectId, sha256 } from "../utilities/generator";
-import { TrashModel } from "../models/trash";
 import TrashService from "./TrashService";
 
 export default class UserService {
@@ -93,11 +92,13 @@ export default class UserService {
       .validateAsync(userId);
 
     try {
-      const user = await UserModel.findOne({ _id: inputId }).exec();
+      const user = await UserModel.findById(inputId).exec()
       await this._trashService.add(inputId, UserModel.name, user);
 
-      return await user.remove();
-    } catch {
+      await user.deleteOne();
+      return user;
+    } catch (err) {
+      console.log(err)
       throw new DeleteError();
     }
   }

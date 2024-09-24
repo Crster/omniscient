@@ -35,9 +35,8 @@ export default function RemoveUserModal({ user, disclosure, onRemove }) {
             </ModalHeader>
             <ModalBody>
               <p>
-                Are you sure wish to delete this{" "}
-                <span className="font-medium">{user.role}</span> member{" "}
-                <span className="font-medium">{user.name}</span>?
+                Are you sure that you want to remove{" "}
+                <span className="font-medium">{user.role} - {user.name}</span>?
               </p>
             </ModalBody>
             <ModalFooter className="flex flex-row justify-evenly">
@@ -45,7 +44,7 @@ export default function RemoveUserModal({ user, disclosure, onRemove }) {
                 No
               </SecondaryButton>
               <DangerButton fullWidth onPress={handleOk}>
-                Delete
+                Remove
               </DangerButton>
             </ModalFooter>
           </>

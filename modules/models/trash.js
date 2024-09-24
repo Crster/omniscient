@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const TrashSchema = mongoose.Schema(
+const TrashSchema = new mongoose.Schema(
   {
     type: String,
     data: mongoose.Mixed,
@@ -10,5 +10,4 @@ const TrashSchema = mongoose.Schema(
   }
 );
 
-export const TrashModel =
-  mongoose.models["trash"] ?? mongoose.model("trash", TrashSchema);
+export const TrashModel = mongoose.model("trash", TrashSchema);

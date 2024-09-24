@@ -14,6 +14,7 @@ import RemoveUserModal from "../../../modules/components/modal/RemoveUserModal";
 import listUser from "../../../modules/actions/listUser";
 import addUser from "../../../modules/actions/addUser";
 import editUser from "../../../modules/actions/editUser";
+import removeUser from "../../../modules/actions/removeUser";
 
 export default function UserPage() {
   const newUserModal = useDisclosure();
@@ -116,9 +117,14 @@ export default function UserPage() {
     }
   };
 
-  const handleRemoveUser = (user) => {
-    console.log({ user });
-    removeUserModal.onClose();
+  const handleRemoveUser = async (user) => {
+    const response = await removeUser({ id: user.rowId });
+    if (response.success) {
+      removeUserModal.onClose();
+      rows.remove(user.rowId);
+    } else {
+      toast.error(response.error);
+    }
   };
 
   return (
@@ -132,7 +138,7 @@ export default function UserPage() {
       <RemoveUserModal
         user={userToRemove}
         disclosure={removeUserModal}
-        onClose={handleRemoveUser}
+        onRemove={handleRemoveUser}
       />
 
       <div className="grid grid-cols-2">
