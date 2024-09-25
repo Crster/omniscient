@@ -1,101 +1,61 @@
 import { Button } from "@nextui-org/button";
+import { Tooltip } from "@nextui-org/tooltip";
 import { Link } from "@nextui-org/link";
 
-export function PrimaryButton({
-  children,
-  className,
-  outline,
-  type,
-  fullWidth,
-  startContent,
-  onPress,
-}) {
+export function PrimaryButton({ children, ...props }) {
   return (
-    <Button
-      color="primary"
-      radius="sm"
-      variant={outline ? "ghost" : "solid"}
-      className={className}
-      type={type}
-      fullWidth={fullWidth}
-      onPress={onPress}
-      startContent={startContent}
-    >
+    <Button color="primary" radius="sm" {...props}>
       {children}
     </Button>
   );
 }
 
-export function DangerButton({
-  children,
-  className,
-  outline,
-  type,
-  fullWidth,
-  startContent,
-  onPress,
-}) {
+export function DangerButton({ children, ...props }) {
   return (
     <Button
       color="danger"
       radius="sm"
       variant={outline ? "ghost" : "solid"}
-      className={className}
-      type={type}
-      fullWidth={fullWidth}
-      onPress={onPress}
-      startContent={startContent}
+      {...props}
     >
       {children}
     </Button>
   );
 }
 
-export function SecondaryButton({
-  children,
-  className,
-  outline,
-  type,
-  fullWidth,
-  startContent,
-  onPress,
-}) {
+export function SecondaryButton({ children, ...props }) {
   return (
     <Button
       color="default"
       variant={outline ? "ghost" : "solid"}
       radius="sm"
-      className={className}
-      type={type}
-      fullWidth={fullWidth}
-      onPress={onPress}
-      startContent={startContent}
+      {...props}
     >
       {children}
     </Button>
   );
 }
 
-export function LinkButton({
-  children,
-  href,
-  className,
-  type,
-  fullWidth,
-  onPress,
-}) {
+export function LinkButton({ children, href, ...props }) {
   return (
-    <Button
-      as={Link}
-      href={href}
-      color="primary"
-      radius="sm"
-      className={className}
-      type={type}
-      fullWidth={fullWidth}
-      onPress={onPress}
-    >
+    <Button as={Link} href={href} color="primary" radius="sm" {...props}>
       {children}
     </Button>
+  );
+}
+
+export function IconButton({ label, icon, children, ...props }) {
+  return (
+    <Tooltip content={label}>
+      <Button
+        isIconOnly
+        aria-label={label}
+        color="primary"
+        radius="sm"
+        {...props}
+      >
+        {icon ?? children}
+      </Button>
+    </Tooltip>
   );
 }

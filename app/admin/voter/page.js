@@ -1,6 +1,5 @@
 "use client";
 
-import { useDisclosure } from "@nextui-org/modal";
 import { PrimaryButton } from "../../../modules/components/theme/Button";
 import { DataTable } from "../../../modules/components/theme/DataTable";
 import { MdOutlineAdd, MdOutlineFilterAlt } from "react-icons/md";
@@ -9,7 +8,6 @@ import { useAsyncList } from "@react-stately/data";
 import _ from "lodash";
 
 export default function VoterPage() {
-  const newVoterModal = useDisclosure();
   const router = useRouter()
 
   const columns = [
@@ -86,6 +84,10 @@ export default function VoterPage() {
     router.push(`/admin/voter/${item}`)
   }
 
+  const handleNew = () => {
+    router.push("/admin/voter/new-voter")
+  }
+
   return (
     <>
       <div className="grid grid-cols-2">
@@ -95,7 +97,6 @@ export default function VoterPage() {
           <PrimaryButton
             outline
             className="px-2 py-2 w-32 text-blue-700"
-            onPress={newVoterModal.onOpen}
             startContent={
               <MdOutlineFilterAlt className="inline text-2xl align-top " />
             }
@@ -104,7 +105,7 @@ export default function VoterPage() {
           </PrimaryButton>
           <PrimaryButton
             className="px-2 py-2 w-32"
-            onPress={newVoterModal.onOpen}
+            onPress={handleNew}
             startContent={
               <MdOutlineAdd className="inline text-2xl align-top" />
             }

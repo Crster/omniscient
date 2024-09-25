@@ -10,4 +10,4 @@ const TrashSchema = new mongoose.Schema(
   }
 );
 
-export const TrashModel = mongoose.model("trash", TrashSchema);
+export const TrashModel = mongoose.models["trash"] ?? mongoose.model("trash", TrashSchema);

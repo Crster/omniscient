@@ -1,14 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
-import { SecondaryInput } from "../../../../modules/components/theme/Input";
 import Image from "next/image";
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { Profile } from "../../../../modules/components/theme/Profile";
+import { SecondaryInput } from "../../../../modules/components/theme/Input";
+import {
+  IconButton,
+  PrimaryButton,
+} from "../../../../modules/components/theme/Button";
+
+const defaultState = {
+  precinctNo: "",
+  name: {
+    firstName: "",
+    middleName: "",
+    lastName: "",
+  },
+  address: {
+    houseNo: "",
+    street: "",
+    subdivision: "",
+    barangay: "",
+    city: "",
+    state: "",
+    zipcode: "",
+  },
+  phone: "",
+  family: [],
+};
 
 export default function VoterDetailPage() {
   const params = useParams();
+  const [voter, setVoter] = useState(defaultState);
 
   return (
     <>
@@ -21,47 +47,72 @@ export default function VoterDetailPage() {
       <h2 className="text-3xl text-blue-500">{params.voterId}</h2>
 
       <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
-        <div className="grid grid-cols-2">
-          <div className="flex flex-1 gap-5">
-            <Image
-              className="border-5 border-blue-500 rounded-full w-16 h-16"
-              src="https://ui-avatars.com/api/?name=Kim+Ring"
-              alt="User Image"
-              width={64}
-              height={64}
-              priority
-            />
-
-            <div className="flex flex-col col-span-4 justify-center">
-              <span className="font-medium text-xl">Rinko Kimaruu</span>
-              <span className="text-gray-400 text-xl">#1 Supporter Voters</span>
-            </div>
-          </div>
-
-          <div className="flex flex-1 gap-2 justify-end text-4xl self-center">
-            <MdOutlineEdit className="text-blue-500" />
-            <MdOutlineDelete className="text-gray-500" />
-          </div>
-        </div>
-
-        <hr />
-
         <SecondaryInput
           className="mt-5"
-          label={"Purok / Subdivs"}
-          value={"Ubalde"}
+          label="First Name"
+          value={voter.name.firstName}
+        />
+        <SecondaryInput
+          className="mt-5"
+          label="Middle Name"
+          value={voter.name.middleName}
+        />
+        <SecondaryInput
+          className="mt-5"
+          label="Last Name"
+          value={voter.name.lastName}
+        />
+      </div>
+
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
+        <SecondaryInput
+          className="mt-5"
+          label="House #"
+          value={voter.address.houseNo}
         />
 
         <SecondaryInput
           className="mt-5"
-          label={"Barangay"}
-          value={"Ubalde Ubalde"}
+          label="Street"
+          value={voter.address.street}
         />
 
         <SecondaryInput
           className="mt-5"
-          label={"Phone Number"}
-          value={"985 1234 1234"}
+          label="Purok/Subdivision"
+          value={voter.address.subdivision}
+        />
+
+        <SecondaryInput
+          className="mt-5"
+          label="Barangay"
+          value={voter.address.barangay}
+        />
+
+        <SecondaryInput
+          className="mt-5"
+          label="City"
+          value={voter.address.city}
+        />
+
+        <SecondaryInput
+          className="mt-5"
+          label="Province"
+          value={voter.address.state}
+        />
+
+        <SecondaryInput
+          className="mt-5"
+          label="Zip Code"
+          value={voter.address.zipcode}
+        />
+      </div>
+
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
+        <SecondaryInput
+          className="mt-5"
+          label="Mobile"
+          value={voter.phone}
           startContent={
             <Image
               src="/ph-phone.svg"
@@ -71,25 +122,24 @@ export default function VoterDetailPage() {
             />
           }
         />
+      </div>
 
-        <span className="mt-5 text-gray-400 text-xl">Candidates</span>
-        <div className="flex flex-col">
-          <Profile
-            src="https://ui-avatars.com/api/?name=Cameron+Williamson"
-            alt="Cameron Williamson Image"
-            name="Cameron Williamson"
-            title="Barangay Captain"
-          />
-        </div>
-
-        <hr />
-
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
         <span className="mt-5 text-gray-400 text-xl">Family Number</span>
         <div className="flex flex-row gap-5">
-          <span className="text-black text-base">1 Black, Marvin</span>
-          <span className="text-black text-base">2 Cooper, Kristin</span>
-          <span className="text-black text-base">3 Henry, Arthur</span>
-          <span className="text-black text-base">4 Miles, Esther</span>
+          {voter.family.forEach((member) => {
+            return (
+              <span className="text-black text-base">
+                {member.name} - {member.relation}
+              </span>
+            );
+          })}
+
+          <IconButton
+            size="small"
+            icon={<MdOutlineAdd className="text-2xl" />}
+            label="Add Family Member"
+          />
         </div>
       </div>
     </>

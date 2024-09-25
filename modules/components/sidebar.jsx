@@ -112,7 +112,7 @@ export default function Sidebar() {
         <div className="grid grid-flow-col justify-items-stretch bg-gray-200 rounded-lg py-6 px-3">
           <Image
             className="rounded-full border-4 border-blue-600"
-            src="https://ui-avatars.com/api/?name=John+Doe"
+            src="https://ui-avatars.com/api/?format=png&name=John+Doe"
             alt="User Image"
             width={48}
             height={48}
