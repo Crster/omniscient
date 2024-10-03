@@ -98,7 +98,7 @@ export default function VoterPage() {
             outline
             className="px-2 py-2 w-32 text-blue-700"
             startContent={
-              <MdOutlineFilterAlt className="inline text-2xl align-top " />
+              <MdOutlineFilterAlt className="inline text-2xl align-top" />
             }
           >
             Filter

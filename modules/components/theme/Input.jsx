@@ -1,3 +1,4 @@
+import { DatePicker } from "@nextui-org/date-picker";
 import { Input } from "@nextui-org/input";
 
 export function PrimaryInput(props) {
@@ -6,7 +7,7 @@ export function PrimaryInput(props) {
       classNames={{
         label: "text-black",
         input: "text-black placeholder:text-gray-400",
-        inputWrapper: "group-data-[readonly=true]:bg-gray-100"
+        inputWrapper: "group-data-[readonly=true]:bg-gray-100",
       }}
       color="primary"
       labelPlacement="outside"
@@ -30,4 +31,21 @@ export function SecondaryInput(props) {
       {...props}
     />
   );
+}
+
+export function DateInput(props) {
+  return (
+    <DatePicker
+      showMonthAndYearPickers
+      dateInputClassNames={{
+        label: "text-xl text-gray-400",
+        input: "text-xl text-black",
+      }}
+      {...props}
+    />
+  );
+}
+
+export function SecondaryDateInput(props) {
+  return <DateInput variant="underlined" {...props} />;
 }

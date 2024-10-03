@@ -1,5 +1,6 @@
 "use client";
 
+import { Radio, RadioGroup } from "@nextui-org/radio";
 import * as Option from "@nextui-org/select";
 import { useEffect, useState } from "react";
 
@@ -41,5 +42,27 @@ export function Select({ items, selectedKeys, onSelectionChange, ...props }) {
         <Option.SelectItem key={item.key}>{item.label}</Option.SelectItem>
       ))}
     </Option.Select>
+  );
+}
+
+export function RadioSelect({
+  items,
+  selectedKeys,
+  onSelectionChange,
+  ...props
+}) {
+  return (
+    <RadioGroup
+      className="text-xl"
+      classNames={{ label: "text-400" }}
+      orientation="horizontal"
+      {...props}
+    >
+      {items.map((item) => (
+        <Radio key={item.key} value={item.key}>
+          {item.label}
+        </Radio>
+      ))}
+    </RadioGroup>
   );
 }

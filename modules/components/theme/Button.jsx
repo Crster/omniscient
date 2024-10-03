@@ -15,7 +15,6 @@ export function DangerButton({ children, ...props }) {
     <Button
       color="danger"
       radius="sm"
-      variant={outline ? "ghost" : "solid"}
       {...props}
     >
       {children}
@@ -27,7 +26,6 @@ export function SecondaryButton({ children, ...props }) {
   return (
     <Button
       color="default"
-      variant={outline ? "ghost" : "solid"}
       radius="sm"
       {...props}
     >

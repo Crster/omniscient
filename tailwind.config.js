@@ -4,7 +4,7 @@ module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./modules/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@nextui-org/theme/dist/components/(button|input|link|modal|select|table|popover|ripple|spinner|listbox|divider|scroll-shadow|checkbox|spacer).js"
+    "./node_modules/@nextui-org/theme/dist/components/(button|date-picker|input|link|modal|radio|select|table|popover|ripple|spinner|calendar|date-input|listbox|divider|scroll-shadow|checkbox|spacer).js"
   ],
   theme: {
     extend: {
