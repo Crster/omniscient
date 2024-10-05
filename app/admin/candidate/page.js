@@ -1,9 +1,9 @@
 "use client";
 
 import _ from "lodash";
-import { PrimaryButton } from "../../../modules/components/theme/Button";
-import { DataTable } from "../../../modules/components/theme/DataTable";
-import { Profile } from "../../../modules/components/theme/Profile";
+import { PrimaryButton } from "../../../components/theme/Button";
+import { DataTable } from "../../../components/theme/DataTable";
+import { Profile } from "../../../components/theme/Profile";
 import { useAsyncList } from "@react-stately/data";
 
 export default function CandidatePage() {

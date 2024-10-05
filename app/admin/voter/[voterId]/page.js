@@ -5,24 +5,17 @@ import Image from "next/image";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Checkbox } from "@nextui-org/checkbox";
-import { CalendarDate, parseDate } from "@internationalized/date";
-import { MdOutlineAdd } from "react-icons/md";
-import {
-  SecondaryDateInput,
-  SecondaryInput,
-} from "../../../../modules/components/theme/Input";
-import {
-  IconButton,
-  PrimaryButton,
-} from "../../../../modules/components/theme/Button";
-import {
-  RadioSelect,
-  Select,
-} from "../../../../modules/components/theme/Select";
-import { familyRelation } from "../../../../modules/models/family-relation";
-import { civilStatus } from "../../../../modules/models/civil-status";
-import { gender } from "../../../../modules/models/gender";
+import { CalendarDate } from "@internationalized/date";
+import { MdOutlineAdd, MdOutlineSave } from "react-icons/md";
+import { SecondaryDateInput, SecondaryInput } from "../../../../components/theme/Input";
+import { IconButton, PrimaryButton } from "../../../../components/theme/Button";
+import { RadioSelect, Select } from "../../../../components/theme/Select";
+import { familyRelation } from "../../../../services/data/family-relation";
+import { civilStatus } from "../../../../services/data/civil-status";
+import { gender } from "../../../../services/data/gender";
 import { flatten, unflatten } from "flat";
+import toast from "react-hot-toast";
+import addVoter from "@/services/actions/addVoter";
 
 const defaultState = {
   name: {
@@ -61,8 +54,8 @@ export default function VoterDetailPage() {
   const params = useParams();
   const [voter, setVoter] = useState(defaultState);
 
-  const handleValueChange = (property) => {
-    return (value) => {
+  const handleValueChange = property => {
+    return value => {
       const tmpData = flatten(voter);
       tmpData[property] = value;
 
@@ -71,8 +64,8 @@ export default function VoterDetailPage() {
     };
   };
 
-  const handleSocialGroupChange = (property) => {
-    return (value) => {
+  const handleSocialGroupChange = property => {
+    return value => {
       const tmpData = { ...voter };
 
       if (value) {
@@ -93,8 +86,13 @@ export default function VoterDetailPage() {
   };
 
   const handleSave = async () => {
-    //const response = await add
-  }
+    const response = await addVoter(voter);
+    if (response.success) {
+      toast.success("Successfully save voter " + voter.lastName);
+    } else {
+      toast.error(response.error);
+    }
+  };
 
   return (
     <>
@@ -106,7 +104,12 @@ export default function VoterDetailPage() {
 
       <div className="grid grid-cols-2">
         <h2 className="text-3xl text-blue-500">{params.voterId}</h2>
-        <PrimaryButton outline className="px-2 py-2 w-32 place-self-end" onPress={handleSave}>
+        <PrimaryButton
+          outline
+          className="px-2 py-2 w-32 place-self-end"
+          startContent={<MdOutlineSave className="inline text-2xl align-top" />}
+          onPress={handleSave}
+        >
           Save
         </PrimaryButton>
       </div>
@@ -150,11 +153,7 @@ export default function VoterDetailPage() {
           value={voter.address.barangay}
           onValueChange={handleValueChange("address.barangay")}
         />
-        <SecondaryInput
-          label="City"
-          value={voter.address.city}
-          onValueChange={handleValueChange("address.city")}
-        />
+        <SecondaryInput label="City" value={voter.address.city} onValueChange={handleValueChange("address.city")} />
         <SecondaryInput
           label="Province"
           value={voter.address.province}
@@ -172,55 +171,23 @@ export default function VoterDetailPage() {
           label="Mobile"
           value={voter.mobileNo}
           onValueChange={handleValueChange("mobileNo")}
-          startContent={
-            <Image
-              src="/ph-phone.svg"
-              alt="Philippines Phone Number"
-              width={76}
-              height={25}
-            />
-          }
+          startContent={<Image src="/ph-phone.svg" alt="Philippines Phone Number" width={76} height={25} />}
         />
 
-        <SecondaryInput
-          label="Email"
-          value={voter.email}
-          onValueChange={handleValueChange("email")}
-        />
+        <SecondaryInput label="Email" value={voter.email} onValueChange={handleValueChange("email")} />
       </div>
 
       <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
-        <SecondaryInput
-          label="Precinct No"
-          value={voter.precinctNo}
-          onValueChange={handleValueChange("precinctNo")}
-        />
-        <SecondaryInput
-          label="Occupation"
-          value={voter.occupation}
-          onValueChange={handleValueChange("occupation")}
-        />
-        <SecondaryInput
-          label="TIN"
-          value={voter.tin}
-          onValueChange={handleValueChange("tin")}
-        />
-        <RadioSelect
-          label="Gender"
-          items={gender}
-          value={voter.gender}
-          onValueChange={handleValueChange("gender")}
-        />
+        <SecondaryInput label="Precinct No" value={voter.precinctNo} onValueChange={handleValueChange("precinctNo")} />
+        <SecondaryInput label="Occupation" value={voter.occupation} onValueChange={handleValueChange("occupation")} />
+        <SecondaryInput label="TIN" value={voter.tin} onValueChange={handleValueChange("tin")} />
+        <RadioSelect label="Gender" items={gender} value={voter.gender} onValueChange={handleValueChange("gender")} />
         <SecondaryDateInput
           label="Date of Birth"
           value={
-            new CalendarDate(
-              voter.birthDate.getFullYear(),
-              voter.birthDate.getMonth() + 1,
-              voter.birthDate.getDate()
-            )
+            new CalendarDate(voter.birthDate.getFullYear(), voter.birthDate.getMonth() + 1, voter.birthDate.getDate())
           }
-          onChange={(val) => handleValueChange("birthDate")(val.toDate())}
+          onChange={val => handleValueChange("birthDate")(val.toDate())}
         />
 
         <div className="grid grid-cols-3 gap-4 mt-5">
@@ -270,10 +237,7 @@ export default function VoterDetailPage() {
         >
           Indigenous People
         </Checkbox>
-        <Checkbox
-          isSelected={voter.socialGroup.has("pwd")}
-          onValueChange={handleSocialGroupChange("pwd")}
-        >
+        <Checkbox isSelected={voter.socialGroup.has("pwd")} onValueChange={handleSocialGroupChange("pwd")}>
           Person with Disability
         </Checkbox>
       </div>
@@ -283,7 +247,7 @@ export default function VoterDetailPage() {
         <div className="flex flex-col gap-5">
           {voter.family.map((member, index) => {
             return (
-              <div className="grid grid-cols-2 gap-4">
+              <div key={index} className="grid grid-cols-2 gap-4">
                 <SecondaryInput
                   label="Name"
                   value={member.name}
@@ -298,9 +262,7 @@ export default function VoterDetailPage() {
                   }}
                   items={familyRelation}
                   selectedKeys={member.relation}
-                  onSelectionChange={handleValueChange(
-                    `family.${index}.relation`
-                  )}
+                  onSelectionChange={handleValueChange(`family.${index}.relation`)}
                 />
               </div>
             );
@@ -317,3 +279,4 @@ export default function VoterDetailPage() {
     </>
   );
 }
+

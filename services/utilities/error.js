@@ -1,0 +1,25 @@
+export { ZodError } from "zod";
+
+export class NotFoundError extends Error {
+  constructor() {
+    super("Error: item not found");
+  }
+}
+
+export class ListingError extends Error {
+  constructor() {
+    super("Error: failed to list item");
+  }
+}
+
+export class SavingError extends Error {
+  constructor() {
+    super("Error: failed to save item");
+  }
+}
+
+export class DeleteError extends Error {
+  constructor() {
+    super("Error: failed to remove item");
+  }
+}

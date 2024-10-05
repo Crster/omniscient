@@ -3,7 +3,7 @@ const { nextui } = require("@nextui-org/theme");
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./modules/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/components/(button|date-picker|input|link|modal|radio|select|table|popover|ripple|spinner|calendar|date-input|listbox|divider|scroll-shadow|checkbox|spacer).js"
   ],
   theme: {

@@ -3,13 +3,13 @@
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { MdOutlineSearch } from "react-icons/md";
-import { PrimaryButton } from "../../../modules/components/theme/Button";
+import { PrimaryButton } from "../../../components/theme/Button";
 
 
 export default function HeatMapPage() {
   const Map = useMemo(
     () =>
-      dynamic(() => import("../../../modules/components/theme/Map"), {
+      dynamic(() => import("../../../components/theme/Map"), {
         loading: () => <p>Loading Map...</p>,
         ssr: false,
       }),

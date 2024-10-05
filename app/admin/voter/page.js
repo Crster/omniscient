@@ -1,7 +1,7 @@
 "use client";
 
-import { PrimaryButton } from "../../../modules/components/theme/Button";
-import { DataTable } from "../../../modules/components/theme/DataTable";
+import { PrimaryButton } from "../../../components/theme/Button";
+import { DataTable } from "../../../components/theme/DataTable";
 import { MdOutlineAdd, MdOutlineFilterAlt } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { useAsyncList } from "@react-stately/data";

@@ -5,10 +5,10 @@ import toast from "react-hot-toast";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import { MdLockOutline, MdOutlineMail } from "react-icons/md";
-import { PrimaryButton } from "../../modules/components/theme/Button";
-import { PrimaryInput } from "../../modules/components/theme/Input";
-import login from "../../modules/actions/login";
-import PasswordInput from "../../modules/components/theme/PasswordInput";
+import { PrimaryButton } from "../../components/theme/Button";
+import { PrimaryInput } from "../../components/theme/Input";
+import login from "../../services/actions/login";
+import PasswordInput from "../../components/theme/PasswordInput";
 
 export default function LoginPage() {
   const router = useRouter();

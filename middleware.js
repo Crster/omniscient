@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import getSession from "./modules/utilities/session";
+import getSession from "./services/utilities/session";
 
 export default async function middleware(req) {
   const session = await getSession();

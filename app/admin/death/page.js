@@ -1,8 +1,8 @@
 "use client";
 
 import { MdOutlineFilterAlt } from "react-icons/md";
-import { PrimaryButton } from "../../../modules/components/theme/Button";
-import { DataTable } from "../../../modules/components/theme/DataTable";
+import { PrimaryButton } from "../../../components/theme/Button";
+import { DataTable } from "../../../components/theme/DataTable";
 import { useAsyncList } from "@react-stately/data";
 import _ from "lodash";
 

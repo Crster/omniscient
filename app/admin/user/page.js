@@ -6,15 +6,15 @@ import toast from "react-hot-toast";
 import { useAsyncList } from "@react-stately/data";
 import { useDisclosure } from "@nextui-org/modal";
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
-import { DataTable } from "../../../modules/components/theme/DataTable";
-import { PrimaryButton } from "../../../modules/components/theme/Button";
-import NewUserModal from "../../../modules/components/modal/NewUserModal";
-import EditUserModal from "../../../modules/components/modal/EditUserModal";
-import RemoveUserModal from "../../../modules/components/modal/RemoveUserModal";
-import listUser from "../../../modules/actions/listUser";
-import addUser from "../../../modules/actions/addUser";
-import editUser from "../../../modules/actions/editUser";
-import removeUser from "../../../modules/actions/removeUser";
+import { DataTable } from "../../../components/theme/DataTable";
+import { PrimaryButton } from "../../../components/theme/Button";
+import NewUserModal from "../../../components/modal/NewUserModal";
+import EditUserModal from "../../../components/modal/EditUserModal";
+import RemoveUserModal from "../../../components/modal/RemoveUserModal";
+import listUser from "../../../services/actions/listUser";
+import addUser from "../../../services/actions/addUser";
+import editUser from "../../../services/actions/editUser";
+import removeUser from "../../../services/actions/removeUser";
 
 export default function UserPage() {
   const newUserModal = useDisclosure();
