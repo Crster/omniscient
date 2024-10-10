@@ -1,0 +1,297 @@
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import { Checkbox } from "@nextui-org/checkbox";
+import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+import { MdOutlineAdd, MdOutlineSave } from "react-icons/md";
+import { flatten, unflatten } from "flat";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+
+import { SecondaryDateInput, SecondaryInput } from "@/components/theme/Input";
+import { IconButton, PrimaryButton } from "@/components/theme/Button";
+import { RadioSelect, Selection } from "@/components/theme/Selection";
+import { CivilStatus, FamilyRelations, Genders } from "@/models/Voter/VoterSchema";
+import useApiRequest from "@/components/hook/useApiRequest";
+import { enumToKeyLabel } from "@/libraries/EnumUtil";
+import { ModifiedVoter } from "@/models/Voter/VoterDto";
+
+const defaultState: ModifiedVoter = {
+  voterId: "",
+  name: {
+    firstName: "",
+    middleName: "",
+    lastName: "",
+  },
+  address: {
+    houseNo: "",
+    street: "",
+    purok: "",
+    barangay: "",
+    city: "",
+    province: "",
+    zipcode: "",
+  },
+  mobileNo: "",
+  email: "",
+  precinctNo: "",
+  gender: Genders.Female,
+  birthDate: new Date("2000-01-01"),
+  placeOfBirth: {
+    barangay: "",
+    city: "",
+    province: "",
+  },
+  civilStatus: CivilStatus.Single,
+  citizenship: "filipino",
+  occupation: "",
+  tin: "",
+  socialGroup: new Set<string>([]),
+  family: [] as Array<{ name: string; relation: FamilyRelations }>,
+};
+
+export default function VoterDetailPage() {
+  const router = useRouter();
+  const api = useApiRequest();
+  const [voter, setVoter] = useState<ModifiedVoter>(defaultState);
+
+  const handleValueChange = (property: string) => {
+    return (value: any) => {
+      const tmpData: Record<string, any> = flatten(voter);
+
+      tmpData[property] = value;
+
+      const newData = unflatten<typeof tmpData, ModifiedVoter>(tmpData);
+
+      setVoter(newData);
+    };
+  };
+
+  const handleSocialGroupChange = (property: string) => {
+    return (value: any) => {
+      const tmpData: ModifiedVoter = { ...voter };
+
+      if (value) {
+        tmpData.socialGroup.add(property);
+      } else {
+        tmpData.socialGroup.delete(property);
+      }
+
+      setVoter(tmpData);
+    };
+  };
+
+  const handleAddFamily = () => {
+    const tmpData = { ...voter };
+
+    tmpData.family.push({ name: "", relation: FamilyRelations.Parent });
+
+    setVoter(tmpData);
+  };
+
+  const handleSave = async () => {
+    const { voterId, ...voterData } = voter;
+    const response = await api(voterId ? "edit-voter" : "add-voter", voterId, voterData);
+
+    if (response.success) {
+      toast.success("Successfully save voter " + voter.name.lastName);
+    } else if (response.error) {
+      toast.error(response.error);
+    }
+  };
+
+  return (
+    <>
+      <div className="flex flex-row gap-3 text-4xl font-medium">
+        <Link href="./">Voter List</Link>
+        <span className="text-gray-500">/</span>
+        <span className="text-blue-500">Profiling</span>
+      </div>
+
+      <div className="grid grid-cols-2">
+        <h2 className="text-3xl text-blue-500">{router.query.voterId}</h2>
+        <PrimaryButton
+          className="px-2 py-2 w-32 place-self-end"
+          startContent={<MdOutlineSave className="inline text-2xl align-top" />}
+          onPress={handleSave}
+        >
+          Save
+        </PrimaryButton>
+      </div>
+
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
+        <SecondaryInput
+          label="First Name"
+          value={voter.name.firstName}
+          onValueChange={handleValueChange("name.firstName")}
+        />
+        <SecondaryInput
+          label="Middle Name"
+          value={voter.name.middleName}
+          onValueChange={handleValueChange("name.middleName")}
+        />
+        <SecondaryInput
+          label="Last Name"
+          value={voter.name.lastName}
+          onValueChange={handleValueChange("name.lastName")}
+        />
+      </div>
+
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
+        <SecondaryInput
+          label="House #"
+          value={voter.address.houseNo}
+          onValueChange={handleValueChange("address.houseNo")}
+        />
+        <SecondaryInput
+          label="Street"
+          value={voter.address.street}
+          onValueChange={handleValueChange("address.street")}
+        />
+        <SecondaryInput
+          label="Purok/Subdivision"
+          value={voter.address.purok}
+          onValueChange={handleValueChange("address.purok")}
+        />
+        <SecondaryInput
+          label="Barangay"
+          value={voter.address.barangay}
+          onValueChange={handleValueChange("address.barangay")}
+        />
+        <SecondaryInput label="City" value={voter.address.city} onValueChange={handleValueChange("address.city")} />
+        <SecondaryInput
+          label="Province"
+          value={voter.address.province}
+          onValueChange={handleValueChange("address.province")}
+        />
+        <SecondaryInput
+          label="Zip Code"
+          value={voter.address.zipcode}
+          onValueChange={handleValueChange("address.zipcode")}
+        />
+      </div>
+
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
+        <SecondaryInput
+          label="Mobile"
+          startContent={<Image alt="Philippines Phone Number" height={25} src="/ph-phone.svg" width={76} />}
+          value={voter.mobileNo}
+          onValueChange={handleValueChange("mobileNo")}
+        />
+
+        <SecondaryInput label="Email" value={voter.email} onValueChange={handleValueChange("email")} />
+      </div>
+
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
+        <SecondaryInput label="Precinct No" value={voter.precinctNo} onValueChange={handleValueChange("precinctNo")} />
+        <SecondaryInput label="Occupation" value={voter.occupation} onValueChange={handleValueChange("occupation")} />
+        <SecondaryInput label="TIN" value={voter.tin} onValueChange={handleValueChange("tin")} />
+        <RadioSelect
+          items={enumToKeyLabel(Genders)}
+          label="Gender"
+          value={voter.gender}
+          onValueChange={handleValueChange("gender")}
+        />
+        <SecondaryDateInput
+          label="Date of Birth"
+          value={
+            voter.birthDate
+              ? new CalendarDate(
+                  voter.birthDate.getFullYear(),
+                  voter.birthDate.getMonth() + 1,
+                  voter.birthDate.getDate(),
+                )
+              : new CalendarDate(2000, 1, 1)
+          }
+          onChange={(val) => handleValueChange("birthDate")(val.toDate(getLocalTimeZone()))}
+        />
+
+        <div className="grid grid-cols-3 gap-4 mt-5">
+          <SecondaryInput
+            label="Place of Birth"
+            placeholder="Enter Barangay"
+            value={voter.placeOfBirth?.barangay}
+            onValueChange={handleValueChange("placeOfBirth.barangay")}
+          />
+          <SecondaryInput
+            label=" "
+            placeholder="Enter City"
+            value={voter.placeOfBirth?.city}
+            onValueChange={handleValueChange("placeOfBirth.city")}
+          />
+          <SecondaryInput
+            label=" "
+            placeholder="Enter Province"
+            value={voter.placeOfBirth?.province}
+            onValueChange={handleValueChange("placeOfBirth.province")}
+          />
+        </div>
+
+        <RadioSelect
+          className="text-xl text-gray-400 mb-5"
+          items={enumToKeyLabel(CivilStatus)}
+          label="Civil Status"
+          value={voter.civilStatus}
+          onValueChange={handleValueChange("civilStatus")}
+        />
+
+        <SecondaryInput
+          label="Citizenship"
+          value={voter.citizenship}
+          onValueChange={handleValueChange("citizenship")}
+        />
+
+        <Checkbox
+          isSelected={voter.socialGroup.has("illiterate")}
+          onValueChange={handleSocialGroupChange("illiterate")}
+        >
+          Illiterate
+        </Checkbox>
+        <Checkbox
+          isSelected={voter.socialGroup.has("indigenous")}
+          onValueChange={handleSocialGroupChange("indigenous")}
+        >
+          Indigenous People
+        </Checkbox>
+        <Checkbox isSelected={voter.socialGroup.has("pwd")} onValueChange={handleSocialGroupChange("pwd")}>
+          Person with Disability
+        </Checkbox>
+      </div>
+
+      <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
+        <span className="mt-5 text-gray-500 text-xl">Family Number</span>
+        <div className="flex flex-col gap-5">
+          {voter.family.map((member, index) => {
+            return (
+              <div key={index} className="grid grid-cols-2 gap-4">
+                <SecondaryInput
+                  label="Name"
+                  value={member.name}
+                  onValueChange={handleValueChange(`family.${index}.name`)}
+                />
+                <Selection
+                  classNames={{
+                    label: "text-xl text-gray-500",
+                    value: "text-xl text-black",
+                  }}
+                  items={enumToKeyLabel(FamilyRelations)}
+                  label="Relation"
+                  placeholder="Relation"
+                  selectedKeys={member.relation}
+                  onSelectionChange={handleValueChange(`family.${index}.relation`)}
+                />
+              </div>
+            );
+          })}
+
+          <IconButton
+            icon={<MdOutlineAdd className="text-2xl" />}
+            label="Add Family Member"
+            size="sm"
+            onPress={handleAddFamily}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
