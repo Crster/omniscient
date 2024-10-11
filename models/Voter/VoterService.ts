@@ -51,10 +51,7 @@ export default class VoterService {
       name: `${voter.name.lastName}, ${voter.name.firstName}`,
       purok: voter.address.purok,
       barangay: voter.address.barangay,
-      precinctNo: "0001",
-      candidate: "",
-      status: "",
-      validator: "",
+      precinctNo: voter.precinctNo,
     };
   }
 

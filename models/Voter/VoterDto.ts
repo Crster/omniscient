@@ -13,9 +13,6 @@ export interface VoterDto {
   name: string;
   purok: string;
   barangay: string;
-  candidate: string;
-  status: string;
-  validator: string;
   precinctNo: string;
 }
 

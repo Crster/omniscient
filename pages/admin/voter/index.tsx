@@ -2,15 +2,19 @@ import { MdOutlineAdd } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { useAsyncList } from "@react-stately/data";
 import _ from "lodash";
+import { useState } from "react";
 
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 import { PrimaryButton } from "@/components/theme/Button";
 import { VoterDto } from "@/models/Voter/VoterDto";
 import useApiRequest from "@/components/hook/useApiRequest";
+import { Selection } from "@/components/theme/Selection";
+import { KeyLabel } from "@/libraries/EnumUtil";
 
 export default function VoterPage() {
   const router = useRouter();
   const api = useApiRequest();
+  const [candidates, setCandidates] = useState<Array<KeyLabel>>([]);
 
   const columns: Array<DataTableColumn<VoterDto>> = [
     {
@@ -39,22 +43,23 @@ export default function VoterPage() {
       label: "Candidate",
       allowsSorting: true,
       className: "text-blue-500",
+      template: () => {
+        return <Selection items={candidates} />;
+      },
     },
     {
       key: "status",
       label: "Status",
       allowsSorting: true,
-      template: (value) => {
-        if (value.status === "pending") {
-          return <span className="bg-blue-100 px-2 py-1 rounded-md text-xs">{value.status}</span>;
-        } else {
-          return <span className="bg-orange-100 px-2 py-1 rounded-md text-xs">{value.status}</span>;
-        }
-      },
+    },
+    {
+      key: "surveyor",
+      label: "Surveyor",
+      allowsSorting: true,
     },
     {
       key: "validator",
-      label: "Validated By",
+      label: "Validator",
       allowsSorting: true,
     },
   ];

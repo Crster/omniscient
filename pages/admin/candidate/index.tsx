@@ -50,25 +50,10 @@ export default function CandidatePage() {
     <>
       <div className="grid grid-cols-2">
         <h2 className="text-4xl text-blue-500 font-medium">Candidates</h2>
-        <PrimaryButton className="px-2 py-2 justify-self-end">Barangay Ubalde</PrimaryButton>
-      </div>
-
-      <h3 className="text-xl font-medium">Barangay Ubalde</h3>
-
-      <div className="flex flex-row gap-5 text-base text-gray-500">
-        <span className="text-blue-500 font-medium">Brgy. Captain</span>
-        <span className="font-gray-300 font-semibold">/</span>
-        <span>Brgy. Kagawad</span>
-        <span className="font-gray-300 font-semibold">/</span>
-        <span>Brgy. Councilor</span>
-        <span className="font-gray-300 font-semibold">/</span>
-        <span>Chairman</span>
-        <span className="font-gray-300 font-semibold">/</span>
-        <span>Youth Council</span>
       </div>
 
       <div className="rounded bg-blue-50 px-5 py-8">
-        <span className="text-xl font-medium">Change of Winning</span>
+        <span className="text-xl font-medium">Chance of Winning</span>
         <p className="text-sm text-gray-400 mt-3">
           IMPORTANT: Total count as of <strong>May 13, 2022 3:19 PM</strong> includes total of
           <strong>474,295</strong> votes from <strong>61.51%</strong> precincts of Overseas Absentee Votes
