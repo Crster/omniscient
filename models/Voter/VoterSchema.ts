@@ -32,7 +32,27 @@ export interface VoterSchema {
     barangay: string;
     city: string;
     province: string;
-    zip?: string;
-    country?: string;
+    zipcode?: string;
   };
+  mobileNo?: string;
+  email?: string;
+  precinctNo: string;
+  gender: Genders;
+  birthDate?: Date;
+  placeOfBirth?: {
+    barangay: string;
+    city: string;
+    province: string;
+  };
+  civilStatus: CivilStatus;
+  citizenship: string;
+  occupation?: string;
+  tin?: string;
+  socialGroup: Set<string>;
+  family?: Array<{
+    name: string;
+    relation: FamilyRelations;
+  }>;
+  createdOn?: Date;
+  modifiedOn?: Date;
 }

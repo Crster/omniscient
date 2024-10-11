@@ -25,7 +25,7 @@ export default class VoterService {
 
     let cursor: FindCursor;
 
-    if (filterDto.name) {
+    if (filterDto?.name) {
       cursor = this.voterCollection.find({
         $or: [
           {
@@ -34,9 +34,9 @@ export default class VoterService {
           },
         ],
       });
-    } else if (filterDto.purok) {
+    } else if (filterDto?.purok) {
       cursor = this.voterCollection.find({ "address.purok": { $regex: filterDto.purok, $options: "i" } });
-    } else if (filterDto.barangay) {
+    } else if (filterDto?.barangay) {
       cursor = this.voterCollection.find({ "address.barangay": { $regex: filterDto.barangay, $options: "i" } });
     } else {
       cursor = this.voterCollection.find();
@@ -68,6 +68,20 @@ export default class VoterService {
     const voter: VoterSchema = {
       name: newVoter.name,
       address: newVoter.address,
+      mobileNo: newVoter.mobileNo,
+      email: newVoter.email,
+      precinctNo: newVoter.precinctNo,
+      gender: newVoter.gender,
+      birthDate: newVoter.birthDate,
+      placeOfBirth: newVoter.placeOfBirth,
+      civilStatus: newVoter.civilStatus,
+      citizenship: newVoter.citizenship,
+      occupation: newVoter.occupation,
+      tin: newVoter.tin,
+      socialGroup: newVoter.socialGroup,
+      family: newVoter.family,
+      createdOn: newVoter.createdOn,
+      modifiedOn: newVoter.modifiedOn,
     };
 
     const result = await this.voterCollection.insertOne(voter);
@@ -81,6 +95,18 @@ export default class VoterService {
     const voter: VoterSchema = {
       name: modifiedVoter.name,
       address: modifiedVoter.address,
+      mobileNo: modifiedVoter.mobileNo,
+      email: modifiedVoter.email,
+      precinctNo: modifiedVoter.precinctNo,
+      gender: modifiedVoter.gender,
+      birthDate: modifiedVoter.birthDate,
+      placeOfBirth: modifiedVoter.placeOfBirth,
+      civilStatus: modifiedVoter.civilStatus,
+      citizenship: modifiedVoter.citizenship,
+      occupation: modifiedVoter.occupation,
+      tin: modifiedVoter.tin,
+      socialGroup: modifiedVoter.socialGroup,
+      family: modifiedVoter.family,
     };
 
     const result = await this.voterCollection.updateOne(

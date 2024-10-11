@@ -32,11 +32,11 @@ export default class UserService {
 
     let cursor: FindCursor;
 
-    if (filterDto.email) {
+    if (filterDto?.email) {
       cursor = this.userCollection.find({ email: { $regex: filterDto.email, $options: "i" } });
-    } else if (filterDto.name) {
+    } else if (filterDto?.name) {
       cursor = this.userCollection.find({ name: { $regex: filterDto.name, $options: "i" } });
-    } else if (filterDto.role) {
+    } else if (filterDto?.role) {
       cursor = this.userCollection.find({ role: filterDto.role });
     } else {
       cursor = this.userCollection.find();

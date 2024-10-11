@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { Checkbox } from "@nextui-org/checkbox";
-import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+import { getLocalTimeZone } from "@internationalized/date";
 import { MdOutlineAdd, MdOutlineSave } from "react-icons/md";
 import { flatten, unflatten } from "flat";
 import toast from "react-hot-toast";
@@ -14,9 +14,10 @@ import { RadioSelect, Selection } from "@/components/theme/Selection";
 import { CivilStatus, FamilyRelations, Genders } from "@/models/Voter/VoterSchema";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { ModifiedVoter } from "@/models/Voter/VoterDto";
+import { ApiResponse } from "@/libraries/ApiHandler";
+import { toCalendar } from "@/libraries/Generator";
 
-const defaultState: ModifiedVoter = {
+const defaultState = {
   voterId: "",
   name: {
     firstName: "",
@@ -35,8 +36,8 @@ const defaultState: ModifiedVoter = {
   mobileNo: "",
   email: "",
   precinctNo: "",
-  gender: Genders.Female,
-  birthDate: new Date("2000-01-01"),
+  gender: Genders.Male,
+  birthDate: new Date(2000, 0, 1),
   placeOfBirth: {
     barangay: "",
     city: "",
@@ -53,7 +54,8 @@ const defaultState: ModifiedVoter = {
 export default function VoterDetailPage() {
   const router = useRouter();
   const api = useApiRequest();
-  const [voter, setVoter] = useState<ModifiedVoter>(defaultState);
+  const [voter, setVoter] = useState(defaultState);
+  const [error, setError] = useState<Record<string, any>>({});
 
   const handleValueChange = (property: string) => {
     return (value: any) => {
@@ -61,7 +63,7 @@ export default function VoterDetailPage() {
 
       tmpData[property] = value;
 
-      const newData = unflatten<typeof tmpData, ModifiedVoter>(tmpData);
+      const newData: typeof defaultState = unflatten(tmpData);
 
       setVoter(newData);
     };
@@ -69,7 +71,7 @@ export default function VoterDetailPage() {
 
   const handleSocialGroupChange = (property: string) => {
     return (value: any) => {
-      const tmpData: ModifiedVoter = { ...voter };
+      const tmpData: typeof defaultState = { ...voter };
 
       if (value) {
         tmpData.socialGroup.add(property);
@@ -82,21 +84,44 @@ export default function VoterDetailPage() {
   };
 
   const handleAddFamily = () => {
-    const tmpData = { ...voter };
+    const tmpData: typeof defaultState = { ...voter };
 
-    tmpData.family.push({ name: "", relation: FamilyRelations.Parent });
+    tmpData.family?.push({ name: "", relation: FamilyRelations.Parent });
 
     setVoter(tmpData);
   };
 
   const handleSave = async () => {
     const { voterId, ...voterData } = voter;
-    const response = await api(voterId ? "edit-voter" : "add-voter", voterId, voterData);
+    let response: ApiResponse;
+
+    if (voterId) {
+      response = await api("edit-voter", voterId, voterData);
+    } else {
+      response = await api("add-voter", voterData);
+    }
 
     if (response.success) {
+      const voterId = response.data as string;
+
       toast.success("Successfully save voter " + voter.name.lastName);
+      setVoter({ ...voter, voterId });
+      router.replace(`/${voterId}`);
     } else if (response.error) {
       toast.error(response.error);
+
+      if (response.data?.errorCode === "ValidationError") {
+        const errRet = new Map<string, any>();
+
+        for (const errField of response.data?.reason) {
+          errRet.set(errField.path.join("."), {
+            isInvalid: true,
+            errorMessage: errField.message,
+          });
+        }
+
+        setError(Object.fromEntries(errRet));
+      }
     }
   };
 
@@ -109,7 +134,7 @@ export default function VoterDetailPage() {
       </div>
 
       <div className="grid grid-cols-2">
-        <h2 className="text-3xl text-blue-500">{router.query.voterId}</h2>
+        <h2 className="text-3xl text-blue-500">{voter.voterId || router.query.voterId}</h2>
         <PrimaryButton
           className="px-2 py-2 w-32 place-self-end"
           startContent={<MdOutlineSave className="inline text-2xl align-top" />}
@@ -121,19 +146,24 @@ export default function VoterDetailPage() {
 
       <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
         <SecondaryInput
+          isRequired
           label="First Name"
           value={voter.name.firstName}
           onValueChange={handleValueChange("name.firstName")}
+          {...error?.["name.firstName"]}
         />
         <SecondaryInput
           label="Middle Name"
           value={voter.name.middleName}
           onValueChange={handleValueChange("name.middleName")}
+          {...error?.["name.middleName"]}
         />
         <SecondaryInput
+          isRequired
           label="Last Name"
           value={voter.name.lastName}
           onValueChange={handleValueChange("name.lastName")}
+          {...error?.["name.lastName"]}
         />
       </div>
 
@@ -142,32 +172,47 @@ export default function VoterDetailPage() {
           label="House #"
           value={voter.address.houseNo}
           onValueChange={handleValueChange("address.houseNo")}
+          {...error?.["address.houseNo"]}
         />
         <SecondaryInput
           label="Street"
           value={voter.address.street}
           onValueChange={handleValueChange("address.street")}
+          {...error?.["address.street"]}
         />
         <SecondaryInput
+          isRequired
           label="Purok/Subdivision"
           value={voter.address.purok}
           onValueChange={handleValueChange("address.purok")}
+          {...error?.["address.purok"]}
         />
         <SecondaryInput
+          isRequired
           label="Barangay"
           value={voter.address.barangay}
           onValueChange={handleValueChange("address.barangay")}
+          {...error?.["address.barangay"]}
         />
-        <SecondaryInput label="City" value={voter.address.city} onValueChange={handleValueChange("address.city")} />
         <SecondaryInput
+          isRequired
+          label="City"
+          value={voter.address.city}
+          onValueChange={handleValueChange("address.city")}
+          {...error?.["address.city"]}
+        />
+        <SecondaryInput
+          isRequired
           label="Province"
           value={voter.address.province}
           onValueChange={handleValueChange("address.province")}
+          {...error?.["address.province"]}
         />
         <SecondaryInput
           label="Zip Code"
           value={voter.address.zipcode}
           onValueChange={handleValueChange("address.zipcode")}
+          {...error?.["address.zipcode"]}
         />
       </div>
 
@@ -177,33 +222,44 @@ export default function VoterDetailPage() {
           startContent={<Image alt="Philippines Phone Number" height={25} src="/ph-phone.svg" width={76} />}
           value={voter.mobileNo}
           onValueChange={handleValueChange("mobileNo")}
+          {...error?.["mobileNo"]}
         />
 
-        <SecondaryInput label="Email" value={voter.email} onValueChange={handleValueChange("email")} />
+        <SecondaryInput
+          label="Email"
+          value={voter.email}
+          onValueChange={handleValueChange("email")}
+          {...error?.["email"]}
+        />
       </div>
 
       <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
-        <SecondaryInput label="Precinct No" value={voter.precinctNo} onValueChange={handleValueChange("precinctNo")} />
-        <SecondaryInput label="Occupation" value={voter.occupation} onValueChange={handleValueChange("occupation")} />
-        <SecondaryInput label="TIN" value={voter.tin} onValueChange={handleValueChange("tin")} />
+        <SecondaryInput
+          isRequired
+          label="Precinct No"
+          value={voter.precinctNo}
+          onValueChange={handleValueChange("precinctNo")}
+          {...error?.["precinctNo"]}
+        />
+        <SecondaryInput
+          label="Occupation"
+          value={voter.occupation}
+          onValueChange={handleValueChange("occupation")}
+          {...error?.["occupation"]}
+        />
+        <SecondaryInput label="TIN" value={voter.tin} onValueChange={handleValueChange("tin")} {...error?.["tin"]} />
         <RadioSelect
           items={enumToKeyLabel(Genders)}
           label="Gender"
           value={voter.gender}
           onValueChange={handleValueChange("gender")}
+          {...error?.["gender"]}
         />
         <SecondaryDateInput
           label="Date of Birth"
-          value={
-            voter.birthDate
-              ? new CalendarDate(
-                  voter.birthDate.getFullYear(),
-                  voter.birthDate.getMonth() + 1,
-                  voter.birthDate.getDate(),
-                )
-              : new CalendarDate(2000, 1, 1)
-          }
+          value={toCalendar(voter.birthDate)}
           onChange={(val) => handleValueChange("birthDate")(val.toDate(getLocalTimeZone()))}
+          {...error?.["birthDate"]}
         />
 
         <div className="grid grid-cols-3 gap-4 mt-5">
@@ -212,18 +268,21 @@ export default function VoterDetailPage() {
             placeholder="Enter Barangay"
             value={voter.placeOfBirth?.barangay}
             onValueChange={handleValueChange("placeOfBirth.barangay")}
+            {...error?.["placeOfBirth.barangay"]}
           />
           <SecondaryInput
             label=" "
             placeholder="Enter City"
             value={voter.placeOfBirth?.city}
             onValueChange={handleValueChange("placeOfBirth.city")}
+            {...error?.["placeOfBirth.city"]}
           />
           <SecondaryInput
             label=" "
             placeholder="Enter Province"
             value={voter.placeOfBirth?.province}
             onValueChange={handleValueChange("placeOfBirth.province")}
+            {...error?.["placeOfBirth.province"]}
           />
         </div>
 
@@ -233,12 +292,14 @@ export default function VoterDetailPage() {
           label="Civil Status"
           value={voter.civilStatus}
           onValueChange={handleValueChange("civilStatus")}
+          {...error?.["civilStatus"]}
         />
 
         <SecondaryInput
           label="Citizenship"
           value={voter.citizenship}
           onValueChange={handleValueChange("citizenship")}
+          {...error?.["citizenship"]}
         />
 
         <Checkbox
@@ -260,14 +321,15 @@ export default function VoterDetailPage() {
 
       <div className="flex flex-col gap-5 bg-blue-400/5 px-5 py-5">
         <span className="mt-5 text-gray-500 text-xl">Family Number</span>
-        <div className="flex flex-col gap-5">
-          {voter.family.map((member, index) => {
+        <div className="flex flex-col gap-5 items-baseline">
+          {voter.family?.map((member, index) => {
             return (
               <div key={index} className="grid grid-cols-2 gap-4">
                 <SecondaryInput
                   label="Name"
                   value={member.name}
                   onValueChange={handleValueChange(`family.${index}.name`)}
+                  {...error?.[`family.${index}.name`]}
                 />
                 <Selection
                   classNames={{
@@ -277,8 +339,9 @@ export default function VoterDetailPage() {
                   items={enumToKeyLabel(FamilyRelations)}
                   label="Relation"
                   placeholder="Relation"
-                  selectedKeys={member.relation}
-                  onSelectionChange={handleValueChange(`family.${index}.relation`)}
+                  selectedKeys={[member.relation]}
+                  onValueChange={handleValueChange(`family.${index}.relation`)}
+                  {...error?.[`family.${index}.relation`]}
                 />
               </div>
             );

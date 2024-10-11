@@ -14,10 +14,11 @@ export default function NewUserModal({ disclosure, onNew }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(UserRoles.Surveyor);
+  const [error, setError] = useState<Record<string, any>>({});
 
   const handleOk = () => {
     if (onNew) {
-      onNew({ name, email, password, role });
+      onNew({ name, email, password, role }).then(setError);
     }
   };
 
@@ -28,13 +29,26 @@ export default function NewUserModal({ disclosure, onNew }: any) {
           <>
             <ModalHeader className="flex flex-col gap-1 text-2xl">Add User</ModalHeader>
             <ModalBody>
-              <PrimaryInput label="Name" placeholder="Input Name" value={name} onValueChange={setName} />
-              <PrimaryInput label="Email" placeholder="Input Email" value={email} onValueChange={setEmail} />
+              <PrimaryInput
+                label="Name"
+                placeholder="Input Name"
+                value={name}
+                onValueChange={setName}
+                {...error?.["name"]}
+              />
+              <PrimaryInput
+                label="Email"
+                placeholder="Input Email"
+                value={email}
+                onValueChange={setEmail}
+                {...error?.["email"]}
+              />
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"
                 value={password}
                 onValueChange={setPassword}
+                {...error?.["password"]}
               />
               <Selection
                 items={enumToKeyLabel(UserRoles)}
@@ -42,6 +56,7 @@ export default function NewUserModal({ disclosure, onNew }: any) {
                 placeholder="Select Role"
                 selectedKeys={[role]}
                 onValueChange={setRole}
+                {...error?.["name"]}
               />
             </ModalBody>
             <ModalFooter className="flex flex-row justify-evenly">

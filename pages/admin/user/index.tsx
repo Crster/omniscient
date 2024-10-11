@@ -94,6 +94,19 @@ export default function UserPage() {
       rows.append({ ...user, userId: result.data });
     } else {
       toast.error(result.error as string);
+
+      if (result.data?.errorCode === "ValidationError") {
+        const errRet = new Map<string, any>();
+
+        for (const errField of result.data?.reason) {
+          errRet.set(errField.path.join("."), {
+            isInvalid: true,
+            errorMessage: errField.message,
+          });
+        }
+
+        return Object.fromEntries(errRet);
+      }
     }
   };
 
@@ -107,6 +120,19 @@ export default function UserPage() {
       rows.update(userId, updatedUser);
     } else {
       toast.error(result.error as string);
+
+      if (result.data?.errorCode === "ValidationError") {
+        const errRet = new Map<string, any>();
+
+        for (const errField of result.data?.reason) {
+          errRet.set(errField.path.join("."), {
+            isInvalid: true,
+            errorMessage: errField.message,
+          });
+        }
+
+        return Object.fromEntries(errRet);
+      }
     }
   };
 

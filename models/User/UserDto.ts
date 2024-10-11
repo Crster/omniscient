@@ -27,7 +27,8 @@ export const UserFilterDto = z
     name: z.string().optional(),
     role: z.nativeEnum(UserRoles).optional(),
   })
-  .merge(filterDto);
+  .merge(filterDto)
+  .optional();
 
 export const NewUserDto = z
   .object({

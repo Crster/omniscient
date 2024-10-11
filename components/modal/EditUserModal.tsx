@@ -14,6 +14,7 @@ export default function EditUserModal({ user, disclosure, onSave }: any) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(UserRoles.Surveyor);
+  const [error, setError] = useState<Record<string, any>>({});
 
   useEffect(() => {
     if (user) {
@@ -24,7 +25,7 @@ export default function EditUserModal({ user, disclosure, onSave }: any) {
 
   const handleOk = () => {
     if (onSave) {
-      onSave({ ...user, name, role, password: password ? password : undefined });
+      onSave({ ...user, name, role, password: password ? password : undefined }).then(setError);
     }
   };
 
@@ -35,13 +36,20 @@ export default function EditUserModal({ user, disclosure, onSave }: any) {
           <>
             <ModalHeader className="flex flex-col gap-1 text-2xl">Edit {user.role}</ModalHeader>
             <ModalBody>
-              <PrimaryInput label="Name" placeholder="Input Name" value={name} onValueChange={setName} />
+              <PrimaryInput
+                label="Name"
+                placeholder="Input Name"
+                value={name}
+                onValueChange={setName}
+                {...error?.["name"]}
+              />
               <PrimaryInput defaultValue={user.email} isReadOnly={true} label="Email" placeholder="Input Email" />
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"
                 value={password}
                 onValueChange={setPassword}
+                {...error?.["password"]}
               />
               <Selection
                 items={enumToKeyLabel(UserRoles)}
@@ -49,6 +57,7 @@ export default function EditUserModal({ user, disclosure, onSave }: any) {
                 placeholder="Select Role"
                 selectedKeys={[role]}
                 onValueChange={setRole}
+                {...error?.["role"]}
               />
             </ModalBody>
             <ModalFooter className="flex flex-row justify-evenly">

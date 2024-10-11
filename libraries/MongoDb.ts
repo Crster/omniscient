@@ -19,17 +19,19 @@ export const filterDto = z.object({
   limit: z.number().optional(),
 });
 
-export function processFilterDto<Schema>(cursor: FindCursor<WithId<Schema>>, filter: z.infer<typeof filterDto>) {
-  if (filter.sort) {
-    cursor.sort(filter.sort.field, filter.sort.order);
-  }
+export function processFilterDto<Schema>(cursor: FindCursor<WithId<Schema>>, filter?: z.infer<typeof filterDto>) {
+  if (filter) {
+    if (filter?.sort) {
+      cursor.sort(filter.sort.field, filter.sort.order);
+    }
 
-  if (filter.skip) {
-    cursor.skip(filter.skip);
-  }
+    if (filter?.skip) {
+      cursor.skip(filter.skip);
+    }
 
-  if (filter.limit) {
-    cursor.limit(filter.limit);
+    if (filter?.limit) {
+      cursor.limit(filter.limit);
+    }
   }
 
   return cursor.toArray();
@@ -47,6 +49,7 @@ export const newValueDto = z.object({
 });
 
 export const updatedValueDto = z.object({
+  createdOn: z.date().optional(),
   modifiedOn: z
     .date()
     .optional()
