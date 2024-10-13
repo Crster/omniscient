@@ -13,6 +13,7 @@ import {
 } from "./UserDto";
 
 import MongoDb, { processFilterDto } from "@/libraries/MongoDb";
+import { removeEmptyString } from "@/libraries/Generator";
 
 export default class UserService {
   private readonly userCollection = MongoDb.db().collection<UserSchema>("users");
@@ -22,7 +23,7 @@ export default class UserService {
   }
 
   async getByEmail(email: string, password: string) {
-    const loginDto = LoginDto.parse({ email, password });
+    const loginDto = LoginDto.parse(removeEmptyString({ email, password }));
 
     return await this.userCollection.findOne(loginDto);
   }
@@ -59,7 +60,7 @@ export default class UserService {
   }
 
   async create(data: NewUser) {
-    const newUser = NewUserDto.parse(data);
+    const newUser = NewUserDto.parse(removeEmptyString(data));
 
     const user: UserSchema = {
       name: newUser.name,
@@ -74,7 +75,7 @@ export default class UserService {
   }
 
   async update(userId: string, data: ModifiedUser) {
-    const modifiedUser = ModifiedUserDto.parse(data);
+    const modifiedUser = ModifiedUserDto.parse(removeEmptyString(data));
 
     const result = await this.userCollection.updateOne(
       { _id: ObjectId.createFromHexString(userId) },

@@ -12,6 +12,7 @@ import {
 } from "./VoterDto";
 
 import MongoDb, { processFilterDto } from "@/libraries/MongoDb";
+import { removeEmptyString } from "@/libraries/Generator";
 
 export default class VoterService {
   public readonly voterCollection = MongoDb.db().collection<VoterSchema>("voters");
@@ -60,7 +61,7 @@ export default class VoterService {
   }
 
   async create(data: NewVoter) {
-    const newVoter = NewVoterDto.parse(data);
+    const newVoter = NewVoterDto.parse(removeEmptyString(data));
 
     const voter: VoterSchema = {
       name: newVoter.name,
@@ -87,7 +88,7 @@ export default class VoterService {
   }
 
   async update(data: ModifiedVoter) {
-    const modifiedVoter = ModifiedVoterDto.parse(data);
+    const modifiedVoter = ModifiedVoterDto.parse(removeEmptyString(data));
 
     const voter: VoterSchema = {
       name: modifiedVoter.name,

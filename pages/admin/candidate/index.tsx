@@ -1,10 +1,14 @@
 import _ from "lodash";
 import { useAsyncList } from "@react-stately/data";
+import { MdOutlineAdd } from "react-icons/md";
+import { useRouter } from "next/router";
 
 import { PrimaryButton } from "@/components/theme/Button";
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 
 export default function CandidatePage() {
+  const router = useRouter();
+
   const columns: Array<DataTableColumn<any>> = [
     {
       key: "rank",
@@ -46,10 +50,24 @@ export default function CandidatePage() {
     },
   });
 
+  const handleNew = () => {
+    router.push("/admin/candidate/new-candidate");
+  };
+
   return (
     <>
       <div className="grid grid-cols-2">
         <h2 className="text-4xl text-blue-500 font-medium">Candidates</h2>
+
+        <div className="flex flex-row gap-1 justify-self-end">
+          <PrimaryButton
+            className="px-2 py-2"
+            startContent={<MdOutlineAdd className="inline text-2xl align-top" />}
+            onPress={handleNew}
+          >
+            Add Candidate
+          </PrimaryButton>
+        </div>
       </div>
 
       <div className="rounded bg-blue-50 px-5 py-8">

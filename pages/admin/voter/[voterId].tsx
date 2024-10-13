@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 
 import { SecondaryDateInput, SecondaryInput } from "@/components/theme/Input";
 import { IconButton, PrimaryButton } from "@/components/theme/Button";
-import { RadioSelect, Selection } from "@/components/theme/Selection";
+import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
 import { CivilStatus, FamilyRelations, Genders } from "@/models/Voter/VoterSchema";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
@@ -324,18 +324,14 @@ export default function VoterDetailPage() {
         <div className="flex flex-col gap-5 items-baseline">
           {voter.family?.map((member, index) => {
             return (
-              <div key={index} className="grid grid-cols-2 gap-4">
+              <div key={index} className="w-full grid grid-cols-2 gap-4">
                 <SecondaryInput
                   label="Name"
                   value={member.name}
                   onValueChange={handleValueChange(`family.${index}.name`)}
                   {...error?.[`family.${index}.name`]}
                 />
-                <Selection
-                  classNames={{
-                    label: "text-xl text-gray-500",
-                    value: "text-xl text-black",
-                  }}
+                <SecondarySelection
                   items={enumToKeyLabel(FamilyRelations)}
                   label="Relation"
                   placeholder="Relation"

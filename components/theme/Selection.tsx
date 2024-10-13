@@ -31,11 +31,28 @@ export function Selection(
   );
 }
 
+export function SecondarySelection(
+  props: Omit<SelectProps, "children"> & {
+    items: Array<KeyLabel>;
+    onValueChange?: (value: any) => void;
+  },
+) {
+  return (
+    <Selection
+      classNames={{
+        label: "text-gray-400 text-xl",
+      }}
+      variant="underlined"
+      {...props}
+    />
+  );
+}
+
 export function RadioSelect(props: RadioGroupProps & { items: Array<KeyLabel> }) {
   const { items, ...otherProps } = props;
 
   return (
-    <RadioGroup className="text-xl" classNames={{ label: "text-400" }} orientation="horizontal" {...otherProps}>
+    <RadioGroup className="text-xl" classNames={{ label: "text-gray-400" }} orientation="horizontal" {...otherProps}>
       {items.map((item) => (
         <Radio key={item.key} value={item.key}>
           {item.label}
