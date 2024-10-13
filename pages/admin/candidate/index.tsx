@@ -1,47 +1,62 @@
 import _ from "lodash";
+import { User } from "@nextui-org/user";
 import { useAsyncList } from "@react-stately/data";
 import { MdOutlineAdd } from "react-icons/md";
 import { useRouter } from "next/router";
 
 import { PrimaryButton } from "@/components/theme/Button";
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
+import { CandidateDto } from "@/models/Candidate/CandidateDto";
+import useApiRequest from "@/components/hook/useApiRequest";
 
 export default function CandidatePage() {
   const router = useRouter();
+  const api = useApiRequest();
 
-  const columns: Array<DataTableColumn<any>> = [
+  const columns: Array<DataTableColumn<CandidateDto>> = [
     {
       key: "rank",
       label: "Rank",
-      allowsSorting: true,
-      className: "font-medium",
-      template: (value) => {
-        return <span>No. {value}</span>;
-      },
     },
     {
       key: "name",
       label: "Name",
       allowsSorting: true,
-      className: "font-medium",
+      template: (row) => {
+        return (
+          <User
+            avatarProps={{
+              src: row.photoUrl,
+            }}
+            description={row.party}
+            name={row.name}
+          />
+        );
+      },
     },
     {
-      key: "vote",
-      label: "Votes",
+      key: "position",
+      label: "Position",
       allowsSorting: true,
-      className: "font-medium text-white",
     },
     {
-      key: "popular",
-      label: "Popular Vote",
+      key: "voters",
+      label: "Voters",
       allowsSorting: true,
-      className: "font-medium text-white",
+    },
+    {
+      key: "popularity",
+      label: "Popularity",
+      allowsSorting: true,
     },
   ];
 
-  const rows = useAsyncList({
+  const rows = useAsyncList<CandidateDto>({
+    getKey: (item) => item.candidateId,
     load: async () => {
-      return { items: [] };
+      const result = await api("list-candidate");
+
+      return { items: result.success ? result.data : [] };
     },
     sort: ({ items, sortDescriptor }) => {
       return {
@@ -97,7 +112,7 @@ export default function CandidatePage() {
         </div>
       </div>
 
-      <DataTable columns={columns} rows={rows} title="Candidate List" />
+      <DataTable columns={columns} keyField="candidateId" rows={rows} title="Candidate List" />
     </>
   );
 }

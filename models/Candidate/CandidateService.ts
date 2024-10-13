@@ -1,9 +1,19 @@
-import { ObjectId } from "mongodb";
+import { FindCursor, ObjectId, WithId } from "mongodb";
+
+import { Genders } from "../Voter/VoterSchema";
 
 import { CandidateSchema } from "./CandidateSchema";
-import { ModifiedCandidate, ModifiedCandidateDto, NewCandidate, NewCandidateDto } from "./CandidateDto";
+import {
+  CandidateDto,
+  CandidateFilter,
+  CandidateFilterDto,
+  ModifiedCandidate,
+  ModifiedCandidateDto,
+  NewCandidate,
+  NewCandidateDto,
+} from "./CandidateDto";
 
-import MongoDb from "@/libraries/MongoDb";
+import MongoDb, { processFilterDto } from "@/libraries/MongoDb";
 import { removeEmptyString } from "@/libraries/Generator";
 
 export default class CandidateService {
@@ -11,6 +21,43 @@ export default class CandidateService {
 
   async getById(candidateId: string) {
     return await this.candidateCollection.findOne({ _id: ObjectId.createFromHexString(candidateId) });
+  }
+
+  async getList(filter: CandidateFilter) {
+    const filterDto = CandidateFilterDto.parse(filter);
+
+    let cursor: FindCursor;
+
+    if (filterDto?.name) {
+      cursor = this.candidateCollection.find({ name: { $regex: new RegExp(filterDto.name, "i") } });
+    } else if (filterDto?.party) {
+      cursor = this.candidateCollection.find({ party: { $regex: new RegExp(filterDto.party, "i") } });
+    } else if (filterDto?.position) {
+      cursor = this.candidateCollection.find({ position: { $regex: new RegExp(filterDto.position, "i") } });
+    } else {
+      cursor = this.candidateCollection.find();
+    }
+
+    return await processFilterDto<CandidateSchema>(cursor, filterDto);
+  }
+
+  toCandidateDto(candidate: WithId<CandidateSchema>): CandidateDto {
+    const gender = candidate.gender || Genders.Male;
+    const photoUrl = candidate.photoUrl || `https://ui-avatars.com/api/?format=png&name=${gender}`;
+
+    return {
+      candidateId: candidate._id.toHexString(),
+      name: candidate.name,
+      position: candidate.position,
+      party: candidate.party || "",
+      gender: gender,
+      photoUrl: photoUrl,
+      voters: 0,
+    };
+  }
+
+  toListCandidateDto(candidates: WithId<CandidateSchema>[]) {
+    return candidates.map((candidate) => this.toCandidateDto(candidate));
   }
 
   async create(data: NewCandidate) {

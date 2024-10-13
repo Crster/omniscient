@@ -4,10 +4,30 @@ import { Genders } from "../Voter/VoterSchema";
 
 import { Positions } from "./CandidateSchema";
 
-import { newValueDto, updatedValueDto } from "@/libraries/MongoDb";
+import { filterDto, newValueDto, updatedValueDto } from "@/libraries/MongoDb";
 
+export type CandidateFilter = z.infer<typeof CandidateFilterDto>;
 export type NewCandidate = z.infer<typeof NewCandidateDto>;
 export type ModifiedCandidate = z.infer<typeof ModifiedCandidateDto>;
+
+export interface CandidateDto {
+  candidateId: string;
+  name: string;
+  position: Positions;
+  party: string;
+  gender: Genders;
+  photoUrl: string;
+  voters: number;
+}
+
+export const CandidateFilterDto = z
+  .object({
+    name: z.string().optional(),
+    position: z.nativeEnum(Positions).optional(),
+    party: z.string().optional(),
+  })
+  .merge(filterDto)
+  .optional();
 
 export const NewCandidateDto = z
   .object({
