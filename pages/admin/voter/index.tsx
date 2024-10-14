@@ -1,22 +1,21 @@
-import { MdOutlineAdd } from "react-icons/md";
+import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { useAsyncList } from "@react-stately/data";
 import _ from "lodash";
-import { useState } from "react";
 
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 import { PrimaryButton } from "@/components/theme/Button";
-import { VoterDto } from "@/models/Voter/VoterDto";
+import { VoterListDto } from "@/models/Voter/VoterDto";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { Selection } from "@/components/theme/Selection";
-import { KeyLabel } from "@/libraries/EnumUtil";
+import { enumToKeyLabel } from "@/libraries/EnumUtil";
+import { Positions } from "@/models/Candidate/CandidateSchema";
 
 export default function VoterPage() {
   const router = useRouter();
   const api = useApiRequest();
-  const [candidates, setCandidates] = useState<Array<KeyLabel>>([]);
 
-  const columns: Array<DataTableColumn<VoterDto>> = [
+  const columns: Array<DataTableColumn<VoterListDto>> = [
     {
       key: "precinctNo",
       label: "Precinct No.",
@@ -43,9 +42,6 @@ export default function VoterPage() {
       label: "Candidate",
       allowsSorting: true,
       className: "text-blue-500",
-      template: () => {
-        return <Selection items={candidates} />;
-      },
     },
     {
       key: "status",
@@ -62,9 +58,30 @@ export default function VoterPage() {
       label: "Validator",
       allowsSorting: true,
     },
+    {
+      key: "action",
+      label: "",
+      template: (item) => {
+        return (
+          <div className="flex flex-row gap-1 justify-end">
+            <button
+              onClick={() => {
+                router.push(`/admin/voter/${item.voterId}`);
+              }}
+            >
+              <MdOutlineEdit className="text-2xl text-blue-500" />
+            </button>
+
+            <button onClick={() => {}}>
+              <MdOutlineDelete className="text-2xl text-gray-500" />
+            </button>
+          </div>
+        );
+      },
+    },
   ];
 
-  const rows = useAsyncList<VoterDto>({
+  const rows = useAsyncList<VoterListDto>({
     getKey: (item) => item.voterId,
     load: async () => {
       const result = await api("list-voter");
@@ -88,6 +105,7 @@ export default function VoterPage() {
         <h2 className="text-4xl text-blue-500 font-medium">Voter List</h2>
 
         <div className="flex flex-row gap-1 justify-self-end">
+          <Selection className="px-2 w-60" items={enumToKeyLabel(Positions)} />
           <PrimaryButton
             className="px-2 py-2 w-32"
             startContent={<MdOutlineAdd className="inline text-2xl align-top" />}

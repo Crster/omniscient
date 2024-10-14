@@ -6,9 +6,10 @@ import {
   ModifiedVoterDto,
   NewVoter,
   NewVoterDto,
-  VoterDto,
+  VoterListDto,
   VoterFilter,
   VoterFilterDto,
+  VoterDto,
 } from "./VoterDto";
 
 import MongoDb, { processFilterDto } from "@/libraries/MongoDb";
@@ -46,18 +47,36 @@ export default class VoterService {
     return await processFilterDto<VoterSchema>(cursor, filterDto);
   }
 
-  toVoterDto(voter: WithId<VoterSchema>): VoterDto {
+  toVoterDto(voter: WithId<VoterSchema> | null): VoterDto | undefined {
+    if (!voter) return;
+
     return {
+      voterId: voter._id.toHexString(),
+      name: voter.name,
+      address: voter.address,
+      mobileNo: voter.mobileNo,
+      email: voter.email,
+      precinctNo: voter.precinctNo,
+      gender: voter.gender,
+      birthDate: voter.birthDate,
+      placeOfBirth: voter.placeOfBirth,
+      civilStatus: voter.civilStatus,
+      citizenship: voter.citizenship,
+      occupation: voter.occupation,
+      tin: voter.tin,
+      socialGroup: voter.socialGroup,
+      family: voter.family,
+    };
+  }
+
+  toListVoterDto(voters: WithId<VoterSchema>[]): Array<VoterListDto> {
+    return voters.map((voter) => ({
       voterId: voter._id.toHexString(),
       name: `${voter.name.lastName}, ${voter.name.firstName}`,
       purok: voter.address.purok,
       barangay: voter.address.barangay,
       precinctNo: voter.precinctNo,
-    };
-  }
-
-  toListVoterDto(voters: WithId<VoterSchema>[]) {
-    return voters.map((voter) => this.toVoterDto(voter));
+    }));
   }
 
   async create(data: NewVoter) {

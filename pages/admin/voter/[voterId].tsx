@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "@nextui-org/checkbox";
 import { getLocalTimeZone } from "@internationalized/date";
 import { MdOutlineAdd, MdOutlineSave } from "react-icons/md";
@@ -16,8 +16,9 @@ import useApiRequest from "@/components/hook/useApiRequest";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { ApiResponse } from "@/libraries/ApiHandler";
 import { toCalendar } from "@/libraries/Generator";
+import { VoterDto } from "@/models/Voter/VoterDto";
 
-const defaultState = {
+const defaultState: VoterDto = {
   voterId: "",
   name: {
     firstName: "",
@@ -48,7 +49,7 @@ const defaultState = {
   occupation: "",
   tin: "",
   socialGroup: new Set<string>([]),
-  family: [] as Array<{ name: string; relation: FamilyRelations }>,
+  family: [],
 };
 
 export default function VoterDetailPage() {
@@ -56,6 +57,18 @@ export default function VoterDetailPage() {
   const api = useApiRequest();
   const [voter, setVoter] = useState(defaultState);
   const [error, setError] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    if (router.query.voterId) {
+      api<VoterDto>("get-voter", router.query.voterId).then((result) => {
+        if (result.success && result.data) {
+          setVoter(result.data);
+        } else {
+          toast.error(result.error as string);
+        }
+      });
+    }
+  }, [router.query.voterId]);
 
   const handleValueChange = (property: string) => {
     return (value: any) => {
@@ -106,7 +119,7 @@ export default function VoterDetailPage() {
 
       toast.success("Successfully save voter " + voter.name.lastName);
       setVoter({ ...voter, voterId });
-      router.replace(`/${voterId}`);
+      router.replace(`/admin/voter/${voterId}`);
     } else if (response.error) {
       toast.error(response.error);
 
@@ -134,7 +147,7 @@ export default function VoterDetailPage() {
       </div>
 
       <div className="grid grid-cols-2">
-        <h2 className="text-3xl text-blue-500">{voter.voterId || router.query.voterId}</h2>
+        <h2 className="text-3xl text-blue-500">{voter.voterId}</h2>
         <PrimaryButton
           className="px-2 py-2 w-32 place-self-end"
           startContent={<MdOutlineSave className="inline text-2xl align-top" />}

@@ -10,6 +10,40 @@ export type ModifiedVoter = z.infer<typeof ModifiedVoterDto>;
 
 export interface VoterDto {
   voterId: string;
+  name: {
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+  };
+  address: {
+    houseNo?: string;
+    street?: string;
+    purok: string;
+    barangay: string;
+    city: string;
+    province: string;
+    zipcode?: string;
+  };
+  mobileNo?: string;
+  email?: string;
+  precinctNo: string;
+  gender: Genders;
+  birthDate?: Date;
+  placeOfBirth?: {
+    barangay: string;
+    city: string;
+    province: string;
+  };
+  civilStatus: CivilStatus;
+  citizenship: string;
+  occupation?: string;
+  tin?: string;
+  socialGroup: Set<string>;
+  family?: Array<{ name: string; relation: FamilyRelations }>;
+}
+
+export interface VoterListDto {
+  voterId: string;
   name: string;
   purok: string;
   barangay: string;

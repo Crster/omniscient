@@ -62,7 +62,7 @@ export default function VoterDetailPage() {
 
       toast.success("Successfully save candidate " + candidate.name);
       setCandidate({ ...candidate, candidateId });
-      router.replace(`/${candidateId}`);
+      router.replace(`/admin/candidate/${candidateId}`);
     } else if (response.error) {
       toast.error(response.error);
 
