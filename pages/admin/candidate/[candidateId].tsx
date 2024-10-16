@@ -8,22 +8,22 @@ import { useRouter } from "next/router";
 
 import { SecondaryInput } from "@/components/theme/Input";
 import { PrimaryButton } from "@/components/theme/Button";
-import { Genders } from "@/models/Voter/VoterSchema";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { ApiResponse } from "@/libraries/ApiHandler";
-import { Positions } from "@/models/Candidate/CandidateSchema";
 import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
+import { Position } from "@/models/Position";
+import { Gender } from "@/models/Gender";
+import { Candidate } from "@/models/Candidate";
 
-const defaultState = {
-  candidateId: "",
+const defaultState: Candidate = {
   name: "",
   address: "",
-  position: Positions.Other,
+  position: Position.Other,
   party: "",
   coalition: "",
   alias: "",
-  gender: Genders.Male,
+  gender: Gender.Male,
   photoUrl: "",
   email: "",
   mobileNo: "",
@@ -48,20 +48,18 @@ export default function VoterDetailPage() {
   };
 
   const handleSave = async () => {
-    const { candidateId, ...candidateData } = candidate;
     let response: ApiResponse;
 
-    if (candidateId) {
-      response = await api("edit-candidate", candidateId, candidateData);
+    if (router.query.candidateId === "new-candidate") {
+      response = await api("add-candidate", candidate);
     } else {
-      response = await api("add-candidate", candidateData);
+      response = await api("edit-candidate", router.query.candidateId, candidate);
     }
 
     if (response.success) {
       const candidateId = response.data as string;
 
       toast.success("Successfully save candidate " + candidate.name);
-      setCandidate({ ...candidate, candidateId });
       router.replace(`/admin/candidate/${candidateId}`);
     } else if (response.error) {
       toast.error(response.error);
@@ -90,7 +88,7 @@ export default function VoterDetailPage() {
       </div>
 
       <div className="grid grid-cols-2">
-        <h2 className="text-3xl text-blue-500">{candidate.candidateId || router.query.candidateId}</h2>
+        <h2 className="text-3xl text-blue-500">{router.query.candidateId}</h2>
         <PrimaryButton
           className="px-2 py-2 w-32 place-self-end"
           startContent={<MdOutlineSave className="inline text-2xl align-top" />}
@@ -126,7 +124,7 @@ export default function VoterDetailPage() {
 
         <SecondarySelection
           isRequired
-          items={enumToKeyLabel(Positions)}
+          items={enumToKeyLabel(Position)}
           label="Position"
           selectedKeys={[candidate.position]}
           onValueChange={handleValueChange("position")}
@@ -148,7 +146,7 @@ export default function VoterDetailPage() {
         />
 
         <RadioSelect
-          items={enumToKeyLabel(Genders)}
+          items={enumToKeyLabel(Gender)}
           label="Gender"
           value={candidate.gender}
           onValueChange={handleValueChange("gender")}

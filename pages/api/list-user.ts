@@ -1,10 +1,8 @@
-import UserService from "@/models/User/UserService";
 import { apiHandler } from "@/libraries/ApiHandler";
+import { UserList } from "@/models/UserList";
 
-export default apiHandler(async (req) => {
-  const userService = new UserService();
+export default apiHandler(async () => {
+  const users = await UserList.generate();
 
-  const users = await userService.getList(req.value);
-
-  return userService.toListUserDto(users);
+  return users;
 });

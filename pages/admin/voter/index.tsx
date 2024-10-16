@@ -5,17 +5,17 @@ import _ from "lodash";
 
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 import { PrimaryButton } from "@/components/theme/Button";
-import { VoterListDto } from "@/models/Voter/VoterDto";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { Positions } from "@/models/Candidate/CandidateSchema";
+import { VoterList } from "@/models/VoterList";
+import { Position } from "@/models/Position";
 
 export default function VoterPage() {
   const router = useRouter();
   const api = useApiRequest();
 
-  const columns: Array<DataTableColumn<VoterListDto>> = [
+  const columns: Array<DataTableColumn<VoterList>> = [
     {
       key: "precinctNo",
       label: "Precinct No.",
@@ -81,7 +81,7 @@ export default function VoterPage() {
     },
   ];
 
-  const rows = useAsyncList<VoterListDto>({
+  const rows = useAsyncList<VoterList>({
     getKey: (item) => item.voterId,
     load: async () => {
       const result = await api("list-voter");
@@ -105,7 +105,7 @@ export default function VoterPage() {
         <h2 className="text-4xl text-blue-500 font-medium">Voter List</h2>
 
         <div className="flex flex-row gap-1 justify-self-end">
-          <Selection className="px-2 w-60" items={enumToKeyLabel(Positions)} />
+          <Selection className="px-2 w-60" items={enumToKeyLabel(Position)} />
           <PrimaryButton
             className="px-2 py-2 w-32"
             startContent={<MdOutlineAdd className="inline text-2xl align-top" />}

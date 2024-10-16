@@ -12,7 +12,7 @@ import { AsyncListData } from "@react-stately/data";
 import React from "react";
 
 export interface DataTableColumn<TModel> {
-  key: string;
+  key: (string & keyof TModel) | "action";
   label: string;
   allowsSorting?: boolean;
   className?: string;

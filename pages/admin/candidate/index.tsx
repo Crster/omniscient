@@ -6,14 +6,14 @@ import { useRouter } from "next/router";
 
 import { PrimaryButton } from "@/components/theme/Button";
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
-import { CandidateDto } from "@/models/Candidate/CandidateDto";
 import useApiRequest from "@/components/hook/useApiRequest";
+import { CandidateList } from "@/models/CandidateList";
 
 export default function CandidatePage() {
   const router = useRouter();
   const api = useApiRequest();
 
-  const columns: Array<DataTableColumn<CandidateDto>> = [
+  const columns: Array<DataTableColumn<CandidateList>> = [
     {
       key: "rank",
       label: "Rank",
@@ -51,7 +51,7 @@ export default function CandidatePage() {
     },
   ];
 
-  const rows = useAsyncList<CandidateDto>({
+  const rows = useAsyncList<CandidateList>({
     getKey: (item) => item.candidateId,
     load: async () => {
       const result = await api("list-candidate");

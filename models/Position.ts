@@ -1,6 +1,4 @@
-import { Genders } from "../Voter/VoterSchema";
-
-export enum Positions {
+export enum Position {
   President = "PRESIDENT",
   VicePresident = "VICE PRESIDENT",
   Senator = "SENATOR",
@@ -16,17 +14,4 @@ export enum Positions {
   BarangayKagawad = "BARANGAY KAGAWAD",
   SangguniangKabataan = "SANGGUNIANG KABATAAN",
   Other = "OTHER",
-}
-
-export interface CandidateSchema {
-  name: string;
-  address: string;
-  position: Positions;
-  party?: string;
-  coalition?: string;
-  alias?: string;
-  gender?: Genders;
-  photoUrl?: string;
-  email?: string;
-  mobileNo?: string;
 }

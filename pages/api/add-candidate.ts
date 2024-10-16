@@ -1,11 +1,9 @@
 import { apiHandler } from "@/libraries/ApiHandler";
 import { NotCreatedError } from "@/libraries/Error";
-import CandidateService from "@/models/Candidate/CandidateService";
+import { Candidate } from "@/models/Candidate";
 
 export default apiHandler(async (req) => {
-  const candidateService = new CandidateService();
-
-  const candidateId = await candidateService.create(req.value);
+  const candidateId = await Candidate.save(req.value);
 
   if (!candidateId) throw new NotCreatedError("Candidate is not created", { candidateId });
 

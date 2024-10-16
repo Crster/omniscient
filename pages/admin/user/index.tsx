@@ -10,8 +10,9 @@ import { PrimaryButton } from "@/components/theme/Button";
 import NewUserModal from "@/components/modal/NewUserModal";
 import EditUserModal from "@/components/modal/EditUserModal";
 import RemoveUserModal from "@/components/modal/RemoveUserModal";
-import { UserDto } from "@/models/User/UserDto";
 import useApiRequest from "@/components/hook/useApiRequest";
+import { UserList } from "@/models/UserList";
+import { User } from "@/models/User";
 
 export default function UserPage() {
   const newUserModal = useDisclosure();
@@ -19,10 +20,10 @@ export default function UserPage() {
   const removeUserModal = useDisclosure();
   const api = useApiRequest();
 
-  const [userToEdit, setUserToEdit] = useState<UserDto>();
-  const [userToRemove, setUserToRemove] = useState<UserDto>();
+  const [userToEdit, setUserToEdit] = useState<UserList>();
+  const [userToRemove, setUserToRemove] = useState<UserList>();
 
-  const columns: Array<DataTableColumn<UserDto>> = [
+  const columns: Array<DataTableColumn<UserList>> = [
     {
       key: "userId",
       label: "UserId",
@@ -72,10 +73,10 @@ export default function UserPage() {
     },
   ];
 
-  const rows = useAsyncList<UserDto>({
+  const rows = useAsyncList<UserList>({
     getKey: (item) => item.userId,
     load: async () => {
-      const result = await api("list-user");
+      const result = await api<UserList[]>("list-user");
 
       return { items: result.success ? result.data : [] };
     },
@@ -86,12 +87,12 @@ export default function UserPage() {
     },
   });
 
-  const handleNewUser = async (user: UserDto) => {
+  const handleNewUser = async (user: User) => {
     const result = await api("add-user", user);
 
     if (result.success) {
       newUserModal.onClose();
-      rows.append({ ...user, userId: result.data });
+      rows.append({ userId: result.data, ...user });
     } else {
       toast.error(result.error as string);
 
@@ -110,14 +111,12 @@ export default function UserPage() {
     }
   };
 
-  const handleSaveUser = async (updatedUser: UserDto) => {
-    const { userId, ...update } = updatedUser;
-
-    const result = await api("edit-user", userId, update);
+  const handleSaveUser = async (userId: string, user: User) => {
+    const result = await api("edit-user", userId, user);
 
     if (result.success) {
       editUserModal.onClose();
-      rows.update(userId, updatedUser);
+      rows.update(userId, { userId, ...user });
     } else {
       toast.error(result.error as string);
 
@@ -136,7 +135,7 @@ export default function UserPage() {
     }
   };
 
-  const handleRemoveUser = async (user: UserDto) => {
+  const handleRemoveUser = async (user: UserList) => {
     const result = await api("remove-user", user.userId);
 
     if (result.success) {

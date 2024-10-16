@@ -11,33 +11,35 @@ import { useRouter } from "next/router";
 import { SecondaryDateInput, SecondaryInput } from "@/components/theme/Input";
 import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
-import { CivilStatus, FamilyRelations, Genders } from "@/models/Voter/VoterSchema";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { ApiResponse } from "@/libraries/ApiHandler";
 import { toCalendar } from "@/libraries/Generator";
-import { VoterDto } from "@/models/Voter/VoterDto";
+import { Voter } from "@/models/Voter";
+import { Gender } from "@/models/Gender";
+import { CivilStatus } from "@/models/CivilStatus";
+import { FamilyRelation } from "@/models/FamilyRelation";
 
-const defaultState: VoterDto = {
-  voterId: "",
+const defaultState: Voter = {
   name: {
     firstName: "",
     middleName: "",
     lastName: "",
   },
   address: {
-    houseNo: "",
-    street: "",
-    purok: "",
     barangay: "",
     city: "",
     province: "",
-    zipcode: "",
+    purok: "",
+    country: "",
+    houseNo: "",
+    street: "",
+    zipCode: "",
   },
   mobileNo: "",
   email: "",
   precinctNo: "",
-  gender: Genders.Male,
+  gender: Gender.Male,
   birthDate: new Date(2000, 0, 1),
   placeOfBirth: {
     barangay: "",
@@ -48,7 +50,7 @@ const defaultState: VoterDto = {
   citizenship: "filipino",
   occupation: "",
   tin: "",
-  socialGroup: new Set<string>([]),
+  socialGroup: [],
   family: [],
 };
 
@@ -60,7 +62,7 @@ export default function VoterDetailPage() {
 
   useEffect(() => {
     if (router.query.voterId) {
-      api<VoterDto>("get-voter", router.query.voterId).then((result) => {
+      api<Voter>("get-voter", router.query.voterId).then((result) => {
         if (result.success && result.data) {
           setVoter(result.data);
         } else {
@@ -87,9 +89,9 @@ export default function VoterDetailPage() {
       const tmpData: typeof defaultState = { ...voter };
 
       if (value) {
-        tmpData.socialGroup.add(property);
+        tmpData.socialGroup = [...(tmpData.socialGroup ?? []), value];
       } else {
-        tmpData.socialGroup.delete(property);
+        tmpData.socialGroup = tmpData.socialGroup?.filter((e) => e !== property);
       }
 
       setVoter(tmpData);
@@ -99,26 +101,24 @@ export default function VoterDetailPage() {
   const handleAddFamily = () => {
     const tmpData: typeof defaultState = { ...voter };
 
-    tmpData.family?.push({ name: "", relation: FamilyRelations.Parent });
+    tmpData.family?.push({ name: "", relation: FamilyRelation.Parent });
 
     setVoter(tmpData);
   };
 
   const handleSave = async () => {
-    const { voterId, ...voterData } = voter;
     let response: ApiResponse;
 
-    if (voterId) {
-      response = await api("edit-voter", voterId, voterData);
+    if (router.query.voterId === "new-voter") {
+      response = await api("add-voter", voter);
     } else {
-      response = await api("add-voter", voterData);
+      response = await api("edit-voter", router.query.voterId, voter);
     }
 
     if (response.success) {
       const voterId = response.data as string;
 
       toast.success("Successfully save voter " + voter.name.lastName);
-      setVoter({ ...voter, voterId });
       router.replace(`/admin/voter/${voterId}`);
     } else if (response.error) {
       toast.error(response.error);
@@ -147,7 +147,7 @@ export default function VoterDetailPage() {
       </div>
 
       <div className="grid grid-cols-2">
-        <h2 className="text-3xl text-blue-500">{voter.voterId}</h2>
+        <h2 className="text-3xl text-blue-500">{router.query.voterId}</h2>
         <PrimaryButton
           className="px-2 py-2 w-32 place-self-end"
           startContent={<MdOutlineSave className="inline text-2xl align-top" />}
@@ -223,9 +223,9 @@ export default function VoterDetailPage() {
         />
         <SecondaryInput
           label="Zip Code"
-          value={voter.address.zipcode}
-          onValueChange={handleValueChange("address.zipcode")}
-          {...error?.["address.zipcode"]}
+          value={voter.address.zipCode}
+          onValueChange={handleValueChange("address.zipCode")}
+          {...error?.["address.zipCode"]}
         />
       </div>
 
@@ -262,7 +262,7 @@ export default function VoterDetailPage() {
         />
         <SecondaryInput label="TIN" value={voter.tin} onValueChange={handleValueChange("tin")} {...error?.["tin"]} />
         <RadioSelect
-          items={enumToKeyLabel(Genders)}
+          items={enumToKeyLabel(Gender)}
           label="Gender"
           value={voter.gender}
           onValueChange={handleValueChange("gender")}
@@ -316,18 +316,18 @@ export default function VoterDetailPage() {
         />
 
         <Checkbox
-          isSelected={voter.socialGroup.has("illiterate")}
+          isSelected={voter.socialGroup?.includes("illiterate")}
           onValueChange={handleSocialGroupChange("illiterate")}
         >
           Illiterate
         </Checkbox>
         <Checkbox
-          isSelected={voter.socialGroup.has("indigenous")}
+          isSelected={voter.socialGroup?.includes("indigenous")}
           onValueChange={handleSocialGroupChange("indigenous")}
         >
           Indigenous People
         </Checkbox>
-        <Checkbox isSelected={voter.socialGroup.has("pwd")} onValueChange={handleSocialGroupChange("pwd")}>
+        <Checkbox isSelected={voter.socialGroup?.includes("pwd")} onValueChange={handleSocialGroupChange("pwd")}>
           Person with Disability
         </Checkbox>
       </div>
@@ -345,7 +345,7 @@ export default function VoterDetailPage() {
                   {...error?.[`family.${index}.name`]}
                 />
                 <SecondarySelection
-                  items={enumToKeyLabel(FamilyRelations)}
+                  items={enumToKeyLabel(FamilyRelation)}
                   label="Relation"
                   placeholder="Relation"
                   selectedKeys={[member.relation]}

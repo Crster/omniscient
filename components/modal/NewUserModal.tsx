@@ -6,14 +6,14 @@ import { PrimaryInput } from "@/components/theme/Input";
 import PasswordInput from "@/components/theme/PasswordInput";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { UserRoles } from "@/models/User/UserSchema";
+import UserRole from "@/models/UserRole";
 
 export default function NewUserModal({ disclosure, onNew }: any) {
   const { isOpen, onOpenChange } = disclosure;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(UserRoles.Surveyor);
+  const [role, setRole] = useState(UserRole.Surveyor);
   const [error, setError] = useState<Record<string, any>>({});
 
   const handleOk = () => {
@@ -51,7 +51,7 @@ export default function NewUserModal({ disclosure, onNew }: any) {
                 {...error?.["password"]}
               />
               <Selection
-                items={enumToKeyLabel(UserRoles)}
+                items={enumToKeyLabel(UserRole)}
                 label="User Role"
                 placeholder="Select Role"
                 selectedKeys={[role]}

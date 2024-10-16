@@ -1,10 +1,8 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import CandidateService from "@/models/Candidate/CandidateService";
+import { CandidateList } from "@/models/CandidateList";
 
-export default apiHandler(async (req) => {
-  const candidateService = new CandidateService();
+export default apiHandler(async () => {
+  const candidates = await CandidateList.generate();
 
-  const candidates = await candidateService.getList(req.value);
-
-  return candidateService.toListCandidateDto(candidates);
+  return candidates;
 });

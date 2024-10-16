@@ -2,9 +2,9 @@ import * as XSON from "enhancejson";
 
 export interface ApiResponse<DataType = any> {
   success: boolean;
-  data?: DataType;
-  error?: string;
-  redirect?: string;
+  data: DataType;
+  error: string;
+  redirect: string;
 }
 
 export default function useApiRequest() {

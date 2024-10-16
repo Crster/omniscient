@@ -1,10 +1,8 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import VoterService from "@/models/Voter/VoterService";
+import { VoterList } from "@/models/VoterList";
 
-export default apiHandler(async (req) => {
-  const voterService = new VoterService();
+export default apiHandler(async () => {
+  const voters = await VoterList.generate();
 
-  const voters = await voterService.getList(req.value);
-
-  return voterService.toListVoterDto(voters);
+  return voters;
 });
