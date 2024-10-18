@@ -9,6 +9,8 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
 
   if (req.nextUrl.pathname.startsWith("/admin")) {
     if (!session.user) return NextResponse.redirect(new URL("/login", req.url));
+  } else if (req.nextUrl.pathname === "/") {
+    if (!session.user) return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next();

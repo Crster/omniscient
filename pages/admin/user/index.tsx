@@ -7,9 +7,9 @@ import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 import { PrimaryButton } from "@/components/theme/Button";
-import NewUserModal from "@/components/modal/NewUserModal";
-import EditUserModal from "@/components/modal/EditUserModal";
-import RemoveUserModal from "@/components/modal/RemoveUserModal";
+import NewUserModal from "@/modals/NewUserModal";
+import EditUserModal from "@/modals/EditUserModal";
+import RemoveUserModal from "@/modals/RemoveUserModal";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { UserList } from "@/models/UserList";
 import { User } from "@/models/User";
@@ -20,8 +20,8 @@ export default function UserPage() {
   const removeUserModal = useDisclosure();
   const api = useApiRequest();
 
-  const [userToEdit, setUserToEdit] = useState<UserList>();
-  const [userToRemove, setUserToRemove] = useState<UserList>();
+  const [userToEdit, setUserToEdit] = useState<string>();
+  const [userToRemove, setUserToRemove] = useState<string>();
 
   const columns: Array<DataTableColumn<UserList>> = [
     {
@@ -52,7 +52,7 @@ export default function UserPage() {
           <div className="flex flex-row gap-1 justify-end">
             <button
               onClick={() => {
-                setUserToEdit(item);
+                setUserToEdit(item.userId);
                 editUserModal.onOpen();
               }}
             >
@@ -61,7 +61,7 @@ export default function UserPage() {
 
             <button
               onClick={() => {
-                setUserToRemove(item);
+                setUserToRemove(item.userId);
                 removeUserModal.onOpen();
               }}
             >
@@ -111,12 +111,14 @@ export default function UserPage() {
     }
   };
 
-  const handleSaveUser = async (userId: string, user: User) => {
-    const result = await api("edit-user", userId, user);
+  const handleSaveUser = async (user: User) => {
+    if (!userToEdit) return;
+
+    const result = await api("edit-user", userToEdit, user);
 
     if (result.success) {
       editUserModal.onClose();
-      rows.update(userId, { userId, ...user });
+      rows.update(userToEdit, { userId: userToEdit, ...user });
     } else {
       toast.error(result.error as string);
 
@@ -149,7 +151,7 @@ export default function UserPage() {
   return (
     <>
       <NewUserModal disclosure={newUserModal} onNew={handleNewUser} />
-      <EditUserModal disclosure={editUserModal} user={userToEdit} onSave={handleSaveUser} />
+      <EditUserModal disclosure={editUserModal} userId={userToEdit as string} onSave={handleSaveUser} />
       <RemoveUserModal disclosure={removeUserModal} user={userToRemove} onRemove={handleRemoveUser} />
 
       <div className="grid grid-cols-2">

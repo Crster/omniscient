@@ -1,4 +1,4 @@
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
 import { useEffect, useState } from "react";
 
 import { PrimaryButton, SecondaryButton } from "@/components/theme/Button";
@@ -7,25 +7,44 @@ import PasswordInput from "@/components/theme/PasswordInput";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { UserRole } from "@/models/UserRole";
+import { User } from "@/models/User";
+import useApiRequest from "@/components/hook/useApiRequest";
 
-export default function EditUserModal({ user, disclosure, onSave }: any) {
-  const { isOpen, onOpenChange } = disclosure;
+const defaultValue: User = {
+  name: "",
+  email: "",
+  password: "",
+  role: UserRole.Surveyor,
+};
 
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState(UserRole.Surveyor);
+export default function EditUserModal(props: {
+  userId: string;
+  disclosure: ReturnType<typeof useDisclosure>;
+  onSave: (user: User) => Promise<any>;
+}) {
+  const { isOpen, onOpenChange } = props.disclosure;
+
+  const api = useApiRequest();
+  const [user, setUser] = useState<User>(defaultValue);
   const [error, setError] = useState<Record<string, any>>({});
 
   useEffect(() => {
-    if (user) {
-      setName(user.name);
-      setRole(user.role);
+    if (props.userId) {
+      api("get-user", props.userId).then((response) => {
+        if (response.success) setUser(response.data);
+      });
     }
-  }, [user]);
+  }, [props.userId]);
+
+  const handleValueChange = (property: string) => {
+    return (value: any) => {
+      setUser({ ...user, [property]: value });
+    };
+  };
 
   const handleOk = () => {
-    if (onSave) {
-      onSave({ ...user, name, role, password: password ? password : undefined }).then(setError);
+    if (props.onSave) {
+      props.onSave(user).then(setError);
     }
   };
 
@@ -39,24 +58,24 @@ export default function EditUserModal({ user, disclosure, onSave }: any) {
               <PrimaryInput
                 label="Name"
                 placeholder="Input Name"
-                value={name}
-                onValueChange={setName}
+                value={user.name}
+                onValueChange={handleValueChange("name")}
                 {...error?.["name"]}
               />
               <PrimaryInput defaultValue={user.email} isReadOnly={true} label="Email" placeholder="Input Email" />
               <PasswordInput
                 label="New Password"
                 placeholder="Input Password"
-                value={password}
-                onValueChange={setPassword}
+                value={user.password}
+                onValueChange={handleValueChange("password")}
                 {...error?.["password"]}
               />
               <Selection
                 items={enumToKeyLabel(UserRole)}
                 label="User Role"
                 placeholder="Select Role"
-                selectedKeys={[role]}
-                onValueChange={setRole}
+                selectedKeys={[user.role]}
+                onValueChange={handleValueChange("role")}
                 {...error?.["role"]}
               />
             </ModalBody>

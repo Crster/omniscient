@@ -49,7 +49,9 @@ export default class DataManager<Schema extends z.ZodTypeAny> {
       const result = await this._collection.findOne({ _id: dataId });
 
       if (result) {
-        return this.validate(result);
+        const schemaWithId = this._schema.and(z.object({ _id: z.instanceof(ObjectId) }));
+
+        return schemaWithId.parse(result);
       }
     }
   }
