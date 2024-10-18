@@ -5,9 +5,9 @@ import { Gender } from "./Gender";
 import { CivilStatus } from "./CivilStatus";
 import { FamilyRelation } from "./FamilyRelation";
 
-import Model from "@/libraries/Model";
+import DataManager from "@/libraries/DataManager";
 
-const voterModel = new Model(
+const voterManager = new DataManager(
   "voters",
   z.object({
     name: z.object({
@@ -53,17 +53,27 @@ const voterModel = new Model(
   }),
 );
 
-export type Voter = ReturnType<typeof voterModel.create>;
+export type Voter = ReturnType<typeof voterManager.validate>;
 
 export const Voter = {
-  collection: voterModel.collection,
+  collection: voterManager.collection,
   async getById(voterId: string) {
-    return await voterModel.get(voterId);
+    return await voterManager.get(voterId);
   },
   async save(voter: OptionalId<Voter>) {
-    return await voterModel.save(voter);
+    const voterId = voterManager.validateId(voter);
+
+    if (voterId) {
+      return await voterManager.update(voterId, voter);
+    } else {
+      return await voterManager.insert(voter);
+    }
   },
   async remove(voter: WithId<Voter>) {
-    return await voterModel.remove(voter);
+    const voterId = voterManager.validateId(voter);
+
+    if (voterId) {
+      return await voterManager.remove(voterId);
+    }
   },
 };

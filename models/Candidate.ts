@@ -4,9 +4,9 @@ import { OptionalId, WithId } from "mongodb";
 import { Gender } from "./Gender";
 import { Position } from "./Position";
 
-import Model from "@/libraries/Model";
+import DataManager from "@/libraries/DataManager";
 
-const candidateModel = new Model(
+const candidateManager = new DataManager(
   "candidates",
   z.object({
     name: z.string(),
@@ -22,14 +22,24 @@ const candidateModel = new Model(
   }),
 );
 
-export type Candidate = ReturnType<typeof candidateModel.create>;
+export type Candidate = ReturnType<typeof candidateManager.validate>;
 
 export const Candidate = {
-  collection: candidateModel.collection,
+  collection: candidateManager.collection,
   async save(candidate: OptionalId<Candidate>) {
-    return await candidateModel.save(candidate);
+    const candidateId = candidateManager.validateId(candidate);
+
+    if (candidateId) {
+      return await candidateManager.update(candidateId, candidate);
+    } else {
+      return await candidateManager.insert(candidate);
+    }
   },
   async remove(candidate: WithId<Candidate>) {
-    return await candidateModel.remove(candidate);
+    const candidateId = candidateManager.validateId(candidate);
+
+    if (candidateId) {
+      return await candidateManager.remove(candidateId);
+    }
   },
 };

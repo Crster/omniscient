@@ -7,7 +7,7 @@ export default apiHandler(async (props) => {
 
   if (!user) throw new InvalidRequestError("Invalid login credentials", { user });
 
-  props.session.user = user._id.toString();
+  props.session.user = user._id.toHexString();
   await props.session?.save();
 
   throw new Redirect("/", "Login success");

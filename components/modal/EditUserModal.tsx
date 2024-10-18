@@ -6,7 +6,7 @@ import { PrimaryInput } from "@/components/theme/Input";
 import PasswordInput from "@/components/theme/PasswordInput";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import UserRole from "@/models/UserRole";
+import { UserRole } from "@/models/UserRole";
 
 export default function EditUserModal({ user, disclosure, onSave }: any) {
   const { isOpen, onOpenChange } = disclosure;

@@ -22,8 +22,8 @@ export const CandidateList = {
         rank: 0,
         name: item.name,
         position: item.position,
-        photoUrl: item.photoUrl,
-        party: item.party,
+        photoUrl: item.photoUrl ?? "",
+        party: item.party ?? "",
         voters: 0,
         popularity: 0,
       };

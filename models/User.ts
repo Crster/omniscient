@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { OptionalId, WithId } from "mongodb";
+import { OptionalId } from "mongodb";
 
 import { UserRole } from "./UserRole";
 
-import Model from "@/libraries/Model";
+import DataManager from "@/libraries/DataManager";
 
-const userModel = new Model(
+const userManager = new DataManager(
   "users",
   z.object({
     name: z.string(),
@@ -15,17 +15,19 @@ const userModel = new Model(
   }),
 );
 
-export type User = ReturnType<typeof userModel.create>;
+export type User = ReturnType<typeof userManager.validate>;
 
 export const User = {
-  collection: userModel.collection,
+  collection: userManager.collection,
   async getByCredential(email: string, password: string) {
-    return await userModel.find({ email, password });
+    const users = await userManager.find({ email, password });
+
+    return users?.at(0);
   },
   async save(user: OptionalId<User>) {
-    return await userModel.save(user);
+    return await userManager.save(user);
   },
-  async remove(user: WithId<User>) {
-    return await userModel.remove(user);
+  async remove(userId: string) {
+    return await userManager.remove(userId);
   },
 };
