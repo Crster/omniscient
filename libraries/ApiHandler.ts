@@ -1,30 +1,28 @@
-import * as XSON from "enhancejson";
 import { IronSession } from "iron-session";
 import { NextApiRequest, NextApiResponse } from "next";
-import { ZodError } from "zod";
-import { fromError } from "zod-validation-error";
 import { MongoServerError } from "mongodb";
+import { ZodError } from "zod";
 
 import getSession, { SessionData } from "./IronSession";
 import { AppError, Redirect } from "./Error";
 import MongoDb from "./MongoDb";
 
-export interface ApiHandlerProps {
+export interface ApiHandlerProps<ValueType> {
   session: IronSession<SessionData>;
   key?: string;
-  value?: any;
+  value?: ValueType;
 }
 
-export interface ApiResponse<DataType = any> {
+export interface ApiResponse<DataType> {
   success: boolean;
-  data?: DataType;
+  data?: DataType | { errorCode: string; reason: unknown };
   error?: string;
   redirect?: string;
 }
 
-export type ApiHandler = (props: ApiHandlerProps) => any;
+export type ApiHandler<ValueType, DataType> = (props: ApiHandlerProps<ValueType>) => DataType;
 
-export function apiHandler(handler: ApiHandler) {
+export function apiHandler<ValueType, DataType>(handler: ApiHandler<ValueType, DataType>) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method !== "POST") {
       res.status(405).json({ error: "Only POST request is allowed" });
@@ -32,30 +30,16 @@ export function apiHandler(handler: ApiHandler) {
       return;
     }
 
-    const response: ApiResponse = { success: false };
+    const response: ApiResponse<DataType> = { success: false };
 
     try {
       await MongoDb.connect();
       const session = await getSession(req, res);
 
-      let body;
-
-      try {
-        if (req.body) {
-          if (req.headers["content-type"] === "text/xson") {
-            body = XSON.parse(req.body);
-          } else if (req.headers["content-type"] === "text/json") {
-            body = JSON.parse(req.body);
-          } else {
-            body = req.body;
-          }
-        }
-      } catch {}
-
       const data = await handler({
         session,
         key: req.query.id as string,
-        value: body,
+        value: req.body,
       });
 
       response.data = data;
@@ -66,16 +50,14 @@ export function apiHandler(handler: ApiHandler) {
         response.data = { errorCode: "Redirect", reason: err.cause ?? err.name };
         response.redirect = err.message;
       } else if (err instanceof ZodError) {
-        const zodError = fromError(err);
-
         const errorFields: Array<string> = [];
 
-        for (const issue of zodError.details) {
+        for (const issue of err.issues) {
           errorFields.push(issue.path.join("."));
         }
 
         response.error = `Invalid input value in [${errorFields.join(", ")}]`;
-        response.data = { errorCode: "ValidationError", reason: zodError.details };
+        response.data = { errorCode: "ValidationError", reason: err.issues };
       } else if (err instanceof MongoServerError) {
         if (err.code === 11000) {
           response.error = "Duplicate entry";
@@ -98,6 +80,6 @@ export function apiHandler(handler: ApiHandler) {
       await MongoDb.close();
     }
 
-    res.setHeader("content-type", "text/xson").status(200).send(XSON.stringify(response));
+    res.status(200).json(response);
   };
 }

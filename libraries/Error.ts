@@ -7,45 +7,45 @@ export class Redirect extends Error {
 }
 
 export class AppError extends Error {
-  constructor(type: string, message: string, reason?: Record<string, any>) {
+  constructor(type: string, message: string, reason?: unknown) {
     super(message);
     this.name = type ?? "AppError";
     this.cause = reason;
   }
 }
 
-export class InvalidRequestError extends AppError {
+export class InternalServerError extends AppError {
   constructor(message: string, reason?: Record<string, any>) {
-    super("InvalidRequestError", message, reason);
+    super("InternalServerError", message, reason);
   }
 }
 
-export class InvalidConfigurationError extends AppError {
+export class BadRequestError extends AppError {
   constructor(message: string, reason?: Record<string, any>) {
-    super("InvalidConfigurationError", message, reason);
+    super("BadRequestError", message, reason);
   }
 }
 
-export class UnauthorizedError extends AppError {
+export class AuthorizationError extends AppError {
   constructor(message: string, reason?: Record<string, any>) {
-    super("UnauthorizedError", message, reason);
+    super("AuthorizationError", message, reason);
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message: string, reason?: Record<string, any>) {
+  constructor(message: string, reason?: unknown) {
     super("NotFoundError", message, reason);
   }
 }
 
 export class NotCreatedError extends AppError {
-  constructor(message: string, reason?: Record<string, any>) {
+  constructor(message: string, reason?: unknown) {
     super("NotCreatedError", message, reason);
   }
 }
 
 export class NotModifiedError extends AppError {
-  constructor(message: string, reason?: Record<string, any>) {
+  constructor(message: string, reason?: unknown) {
     super("NotModifiedError", message, reason);
   }
 }

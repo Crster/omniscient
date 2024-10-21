@@ -16,9 +16,9 @@ import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { ApiResponse } from "@/libraries/ApiHandler";
 import { toCalendar } from "@/libraries/Generator";
 import { Voter } from "@/models/Voter";
-import { Gender } from "@/models/Gender";
-import { CivilStatus } from "@/models/CivilStatus";
-import { FamilyRelation } from "@/models/FamilyRelation";
+import { Gender } from "@/services/Data/Gender";
+import { CivilStatus } from "@/services/Data/CivilStatus";
+import { FamilyRelation } from "@/services/Data/FamilyRelation";
 
 const defaultState: Voter = {
   name: {

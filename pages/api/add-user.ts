@@ -1,11 +1,14 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { NotCreatedError } from "@/libraries/Error";
-import { User } from "@/models/User";
+import { BadRequestError, NotCreatedError } from "@/libraries/Error";
+import { User } from "@/services/User/User";
+import { UserRepository } from "@/services/User/UserRepository";
 
-export default apiHandler(async (req) => {
-  const userId = await User.save(req.value);
+export default apiHandler<User, void>(async (req) => {
+  if (!req.value?.password) throw new BadRequestError("Password is required");
+  const user = new User(req.value);
 
-  if (!userId) throw new NotCreatedError("User is not created", { userId });
+  const userRepo = new UserRepository();
+  const userId = await userRepo.create(user);
 
-  return userId;
+  if (!userId) throw new NotCreatedError(`User ${user.name} not created`, { userId });
 });

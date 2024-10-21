@@ -6,8 +6,8 @@ import { PrimaryInput } from "@/components/theme/Input";
 import PasswordInput from "@/components/theme/PasswordInput";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { UserRole } from "@/models/UserRole";
-import { User } from "@/models/User";
+import { UserRole } from "@/services/Data/UserRole";
+import { User } from "@/services/User/User";
 import useApiRequest from "@/components/hook/useApiRequest";
 
 const defaultValue: User = {

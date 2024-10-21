@@ -1,13 +1,19 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { InvalidRequestError, NotModifiedError } from "@/libraries/Error";
-import { User } from "@/models/User";
+import { BadRequestError } from "@/libraries/Error";
+import { User } from "@/services/User/User";
+import { UserRepository } from "@/services/User/UserRepository";
 
-export default apiHandler(async (req) => {
-  if (!req.key) {
-    throw new InvalidRequestError("key is required", { key: "missing" });
-  }
+export default apiHandler<User, void>(async (req) => {
+  if (!req.key) throw new BadRequestError("Key is required", { key: "required" });
+  if (!req.value) throw new BadRequestError("Value is required", { value: "required" });
 
-  const success = await User.save({ _id: req.key, ...req.value });
+  const userRepo = new UserRepository();
+  const user = await userRepo.getById(req.key);
 
-  if (!success) throw new NotModifiedError("User not modified", { success });
+  if (req.value?.name) user.name = req.value.name;
+  if (req.value?.email) user.email = req.value.email;
+  if (req.value?.password) user.password = req.value.password;
+  if (req.value?.role) user.role = req.value.role;
+
+  await userRepo.update(user);
 });

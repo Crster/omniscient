@@ -1,10 +1,11 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { User } from "@/models/User";
+import { BadRequestError } from "@/libraries/Error";
+import { UserRepository } from "@/services/User/UserRepository";
 
 export default apiHandler(async (req) => {
-  const ret = await User.getById(req.key as string);
+  if (!req.key) throw new BadRequestError("Key is required", { key: "required" });
 
-  if (ret) {
-    return User.removePassword(ret);
-  }
+  const userRepo = new UserRepository();
+
+  return await userRepo.getById(req.key);
 });

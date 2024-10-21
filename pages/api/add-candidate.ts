@@ -1,11 +1,13 @@
 import { apiHandler } from "@/libraries/ApiHandler";
 import { NotCreatedError } from "@/libraries/Error";
-import { Candidate } from "@/models/Candidate";
+import { Candidate } from "@/services/Candidate/Candidate";
+import { CandidateRepository } from "@/services/Candidate/CandidateRepository";
 
-export default apiHandler(async (req) => {
-  const candidateId = await Candidate.save(req.value);
+export default apiHandler<Candidate, void>(async (req) => {
+  const candidate = new Candidate(req.value);
 
-  if (!candidateId) throw new NotCreatedError("Candidate is not created", { candidateId });
+  const candidateRepo = new CandidateRepository();
+  const candidateId = await candidateRepo.create(candidate);
 
-  return candidateId;
+  if (!candidateId) throw new NotCreatedError(`Candidate ${candidate.name} not created`, { candidateId });
 });

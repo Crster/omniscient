@@ -1,5 +1,3 @@
-import * as XSON from "enhancejson";
-
 export interface ApiResponse<DataType = any> {
   success: boolean;
   data: DataType;
@@ -23,11 +21,11 @@ export default function useApiRequest() {
 
     if (key && value) {
       url.searchParams.append("id", key);
-      request.body = XSON.stringify(value);
+      request.body = JSON.stringify(value);
     } else if (key && typeof key === "string") {
       url.searchParams.append("id", key);
     } else if (key && typeof key === "object") {
-      request.body = XSON.stringify(key);
+      request.body = JSON.stringify(key);
     }
 
     const response = await fetch(url, request);
@@ -35,7 +33,7 @@ export default function useApiRequest() {
     if (!response.ok) throw new Error(`${response.status}: Invalid server response`);
 
     const responseBody = await response.text();
-    const data: ApiResponse<DataType> = XSON.parse(responseBody);
+    const data: ApiResponse<DataType> = JSON.parse(responseBody);
 
     if (data.success && data.redirect) {
       window.location.href = new URL(data.redirect, window.location.origin).href;

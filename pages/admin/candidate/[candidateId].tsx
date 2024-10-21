@@ -12,8 +12,8 @@ import useApiRequest from "@/components/hook/useApiRequest";
 import { ApiResponse } from "@/libraries/ApiHandler";
 import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { Position } from "@/models/Position";
-import { Gender } from "@/models/Gender";
+import { Position } from "@/services/Data/Position";
+import { Gender } from "@/services/Data/Gender";
 import { Candidate } from "@/models/Candidate";
 
 const defaultState: Candidate = {

@@ -12,7 +12,7 @@ import EditUserModal from "@/modals/EditUserModal";
 import RemoveUserModal from "@/modals/RemoveUserModal";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { UserList } from "@/models/UserList";
-import { User } from "@/models/User";
+import { User } from "@/services/User/User";
 
 export default function UserPage() {
   const newUserModal = useDisclosure();

@@ -9,7 +9,7 @@ import useApiRequest from "@/components/hook/useApiRequest";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { VoterList } from "@/models/VoterList";
-import { Position } from "@/models/Position";
+import { Position } from "@/services/Data/Position";
 
 export default function VoterPage() {
   const router = useRouter();

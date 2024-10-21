@@ -1,11 +1,13 @@
 import { apiHandler } from "@/libraries/ApiHandler";
 import { NotCreatedError } from "@/libraries/Error";
-import { Voter } from "@/models/Voter";
+import { Voter } from "@/services/Voter/Voter";
+import { VoterRepository } from "@/services/Voter/VoterRepository";
 
-export default apiHandler(async (req) => {
-  const voterId = await Voter.save(req.value);
+export default apiHandler<Voter, void>(async (req) => {
+  const voter = new Voter(req.value);
 
-  if (!voterId) throw new NotCreatedError("Voter is not created", { voterId });
+  const voterRepo = new VoterRepository();
+  const voterId = await voterRepo.create(voter);
 
-  return voterId;
+  if (!voterId) throw new NotCreatedError(`Voter ${voter.name} not created`, { voterId });
 });

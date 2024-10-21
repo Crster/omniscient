@@ -1,13 +1,23 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { InvalidRequestError, NotFoundError } from "@/libraries/Error";
-import { User } from "@/models/User";
+import { BadRequestError } from "@/libraries/Error";
+import { Trash } from "@/services/Trash/Trash";
+import { TrashRepository } from "@/services/Trash/TrashRepository";
+import { UserRepository } from "@/services/User/UserRepository";
 
 export default apiHandler(async (req) => {
-  if (!req.key) {
-    throw new InvalidRequestError("key is required", { key: "missing" });
-  }
+  if (!req.key) throw new BadRequestError("key is required", { key: "missing" });
 
-  const user = await User.remove(req.key);
+  const userRepo = new UserRepository();
+  const trashRepo = new TrashRepository();
 
-  if (!user) throw new NotFoundError(`User (${req.key}) not found`, { user });
+  const user = await userRepo.remove(req.key);
+
+  const trash = new Trash({
+    entityType: "users",
+    entityId: user.userId as string,
+    entity: user,
+    deletedBy: req.session.user as string,
+  });
+
+  await trashRepo.create(trash);
 });

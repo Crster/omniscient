@@ -1,18 +1,38 @@
-import { apiHandler } from "@/libraries/ApiHandler";
-import { InvalidRequestError, Redirect } from "@/libraries/Error";
-import { User } from "@/models/User";
+import { z } from "zod";
 
-export default apiHandler(async (props) => {
-  let user = await User.getByCredential(props.value.email, props.value.password);
+import { apiHandler } from "@/libraries/ApiHandler";
+import { AuthorizationError, BadRequestError, Redirect } from "@/libraries/Error";
+import { User } from "@/services/User/User";
+import { UserRepository } from "@/services/User/UserRepository";
+import { UserRole } from "@/services/Data/UserRole";
+
+export default apiHandler(async (req) => {
+  if (!req.value) throw new BadRequestError("Value is required", { value: "required" });
+
+  const userRepo = new UserRepository();
+
+  const credential = z.object({ email: z.string().email(), password: z.string().min(8) }).parse(req.value);
+
+  let userId: string;
+  let user = await userRepo.getByCredential(credential.email, credential.password).catch();
 
   if (!user) {
-    user = await User.initAdminAccount(props.value.email, props.value.password).catch((err) => {
-      throw new InvalidRequestError("Invalid login credential", { user, error: err.message });
+    if (await userRepo.hasUser()) throw new AuthorizationError("Invalid credential", { credential });
+
+    user = new User({
+      name: "System Admin",
+      email: credential.email,
+      password: credential.password,
     });
+    user.role = UserRole.Admin;
+
+    userId = await userRepo.create(user);
+  } else {
+    userId = user.userId as string;
   }
 
-  props.session.user = user?._id.toHexString();
-  await props.session?.save();
+  req.session.user = userId;
+  await req.session?.save();
 
   throw new Redirect("/", "Login success");
 });
