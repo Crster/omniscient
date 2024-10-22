@@ -1,13 +1,11 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { NotCreatedError } from "@/libraries/Error";
-import { Candidate } from "@/services/Candidate/Candidate";
-import { CandidateRepository } from "@/services/Candidate/CandidateRepository";
+import { BadRequestError, NotCreatedError } from "@/libraries/Error";
+import { Candidate } from "@/services/Candidate";
 
 export default apiHandler<Candidate, void>(async (req) => {
-  const candidate = new Candidate(req.value);
+  if (!req.value) throw new BadRequestError("Value is required", { value: "required" });
 
-  const candidateRepo = new CandidateRepository();
-  const candidateId = await candidateRepo.create(candidate);
+  const candidateId = await Candidate.create(req.value);
 
-  if (!candidateId) throw new NotCreatedError(`Candidate ${candidate.name} not created`, { candidateId });
+  if (!candidateId) throw new NotCreatedError(`Candidate ${req.value.name} not created`, { candidateId });
 });

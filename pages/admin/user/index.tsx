@@ -1,33 +1,36 @@
-import _ from "lodash";
+import { orderBy } from "lodash";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAsyncList } from "@react-stately/data";
-import { useDisclosure } from "@nextui-org/modal";
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 import { PrimaryButton } from "@/components/theme/Button";
-import NewUserModal from "@/modals/NewUserModal";
-import EditUserModal from "@/modals/EditUserModal";
-import RemoveUserModal from "@/modals/RemoveUserModal";
 import useApiRequest from "@/components/hook/useApiRequest";
-import { UserList } from "@/models/UserList";
-import { User } from "@/services/User/User";
+import { User } from "@/services/User";
+import { UserList } from "@/services/UserList";
+import Modal from "@/components/theme/Modal";
+import { PrimaryInput } from "@/components/theme/Input";
+import { Selection } from "@/components/theme/Selection";
+import PasswordInput from "@/components/theme/PasswordInput";
+import { enumToKeyLabel } from "@/libraries/EnumUtil";
+import { UserRole } from "@/services/Data/UserRole";
 
 export default function UserPage() {
-  const newUserModal = useDisclosure();
-  const editUserModal = useDisclosure();
-  const removeUserModal = useDisclosure();
   const api = useApiRequest();
+  const [selectedUser, setSelectedUser] = useState<User>();
 
-  const [userToEdit, setUserToEdit] = useState<string>();
-  const [userToRemove, setUserToRemove] = useState<string>();
+  const loadSelectedUser = async (value: UserList) => {
+    const result = await api<User>("get-user", value.userId);
+
+    if (result.success) {
+      setSelectedUser(result.data);
+    } else {
+      toast.error(result.error as string);
+    }
+  };
 
   const columns: Array<DataTableColumn<UserList>> = [
-    {
-      key: "userId",
-      label: "UserId",
-    },
     {
       key: "name",
       label: "Name",
@@ -50,21 +53,11 @@ export default function UserPage() {
       template: (item) => {
         return (
           <div className="flex flex-row gap-1 justify-end">
-            <button
-              onClick={() => {
-                setUserToEdit(item.userId);
-                editUserModal.onOpen();
-              }}
-            >
+            <button onClick={() => loadSelectedUser(item)}>
               <MdOutlineEdit className="text-2xl text-blue-500" />
             </button>
 
-            <button
-              onClick={() => {
-                setUserToRemove(item.userId);
-                removeUserModal.onOpen();
-              }}
-            >
+            <button onClick={() => loadSelectedUser(item)}>
               <MdOutlineDelete className="text-2xl text-gray-500" />
             </button>
           </div>
@@ -82,7 +75,7 @@ export default function UserPage() {
     },
     sort: ({ items, sortDescriptor }) => {
       return {
-        items: _.orderBy(items, sortDescriptor.column, sortDescriptor.direction === "descending" ? "desc" : "asc"),
+        items: orderBy(items, sortDescriptor.column, sortDescriptor.direction === "descending" ? "desc" : "asc"),
       };
     },
   });
@@ -91,8 +84,12 @@ export default function UserPage() {
     const result = await api("add-user", user);
 
     if (result.success) {
-      newUserModal.onClose();
-      rows.append({ userId: result.data, ...user });
+      rows.append({
+        userId: user.userId as string,
+        email: user.email,
+        name: user.name,
+        role: user.role ?? UserRole.Admin,
+      });
     } else {
       toast.error(result.error as string);
 
@@ -112,13 +109,15 @@ export default function UserPage() {
   };
 
   const handleSaveUser = async (user: User) => {
-    if (!userToEdit) return;
-
-    const result = await api("edit-user", userToEdit, user);
+    const result = await api("edit-user", user.userId, user);
 
     if (result.success) {
-      editUserModal.onClose();
-      rows.update(userToEdit, { userId: userToEdit, ...user });
+      rows.update(user.userId as string, {
+        userId: user.userId as string,
+        email: user.email,
+        name: user.name,
+        role: user.role ?? UserRole.Admin,
+      });
     } else {
       toast.error(result.error as string);
 
@@ -137,29 +136,57 @@ export default function UserPage() {
     }
   };
 
-  const handleRemoveUser = async (user: UserList) => {
-    const result = await api("remove-user", user.userId);
+  const handleCancelUserModal = () => {
+    setSelectedUser(undefined);
+  };
 
-    if (result.success) {
-      removeUserModal.onClose();
-      rows.remove(user.userId);
-    } else if (result.error) {
-      toast.error(result.error);
+  const handleOkUserModal = () => {
+    if (selectedUser) {
+      if (selectedUser.userId) {
+        handleSaveUser(selectedUser);
+      } else {
+        handleNewUser(selectedUser);
+      }
     }
+
+    handleCancelUserModal();
   };
 
   return (
     <>
-      <NewUserModal disclosure={newUserModal} onNew={handleNewUser} />
-      <EditUserModal disclosure={editUserModal} userId={userToEdit as string} onSave={handleSaveUser} />
-      <RemoveUserModal disclosure={removeUserModal} user={userToRemove} onRemove={handleRemoveUser} />
+      <Modal data={selectedUser} title="New User" onCancel={handleCancelUserModal} onOk={handleOkUserModal}>
+        {(user) => (
+          <>
+            <PrimaryInput
+              label="Name"
+              placeholder="Input Name"
+              value={user.name}
+              onValueChange={(val) => setSelectedUser({ ...user, name: val })}
+            />
+            <PrimaryInput defaultValue={user.email} isReadOnly={true} label="Email" placeholder="Input Email" />
+            <PasswordInput
+              label="New Password"
+              placeholder="Input Password"
+              value={user.password}
+              onValueChange={(val) => setSelectedUser({ ...user, password: val })}
+            />
+            <Selection
+              items={enumToKeyLabel(UserRole)}
+              label="User Role"
+              placeholder="Select Role"
+              selectedKeys={[user.role ?? UserRole.Admin]}
+              onValueChange={(val) => setSelectedUser({ ...user, role: val })}
+            />
+          </>
+        )}
+      </Modal>
 
       <div className="grid grid-cols-2">
         <h2 className="text-4xl text-blue-500 font-medium">User List</h2>
         <PrimaryButton
           className="px-2 py-2 w-32 justify-self-end"
           startContent={<MdOutlineAdd className="inline text-2xl align-top" />}
-          onPress={newUserModal.onOpen}
+          onPress={() => setSelectedUser({ name: "", email: "", password: "", role: UserRole.Admin })}
         >
           Add User
         </PrimaryButton>

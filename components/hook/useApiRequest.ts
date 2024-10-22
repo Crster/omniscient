@@ -15,7 +15,7 @@ export default function useApiRequest() {
     const request: RequestInit = {
       method: "POST",
       headers: {
-        "Content-Type": "text/xson",
+        "Content-Type": "application/json",
       },
     };
 

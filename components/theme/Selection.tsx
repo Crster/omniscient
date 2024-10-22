@@ -19,6 +19,7 @@ export function Selection(
       }}
       color="primary"
       labelPlacement="outside"
+      selectionMode="single"
       onChange={(e) => (props.onValueChange ? props.onValueChange(e.target.value) : undefined)}
       {...otherProps}
     >

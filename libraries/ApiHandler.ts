@@ -50,14 +50,11 @@ export function apiHandler<ValueType, DataType>(handler: ApiHandler<ValueType, D
         response.data = { errorCode: "Redirect", reason: err.cause ?? err.name };
         response.redirect = err.message;
       } else if (err instanceof ZodError) {
-        const errorFields: Array<string> = [];
-
-        for (const issue of err.issues) {
-          errorFields.push(issue.path.join("."));
-        }
-
-        response.error = `Invalid input value in [${errorFields.join(", ")}]`;
-        response.data = { errorCode: "ValidationError", reason: err.issues };
+        response.error = "Invalid value";
+        response.data = {
+          errorCode: "ValidationError",
+          reason: err.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message })),
+        };
       } else if (err instanceof MongoServerError) {
         if (err.code === 11000) {
           response.error = "Duplicate entry";

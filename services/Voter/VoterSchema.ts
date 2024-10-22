@@ -4,9 +4,7 @@ import { Gender } from "../Data/Gender";
 import { CivilStatus } from "../Data/CivilStatus";
 import { FamilyRelation } from "../Data/FamilyRelation";
 
-export type VoterEntity = z.input<typeof VoterEntity>;
-
-export const VoterEntity = z.object({
+export const VoterSchema = z.object({
   name: z.object({
     firstName: z.string().min(1),
     middleName: z.string().min(1).optional(),
@@ -53,4 +51,8 @@ export const VoterEntity = z.object({
       }),
     )
     .optional(),
+});
+
+export const VoterEntity = VoterSchema.extend({
+  voterId: z.string().optional(),
 });

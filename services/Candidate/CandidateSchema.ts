@@ -3,9 +3,7 @@ import { z } from "zod";
 import { Position } from "../Data/Position";
 import { Gender } from "../Data/Gender";
 
-export type CandidateEntity = z.input<typeof CandidateEntity>;
-
-export const CandidateEntity = z.object({
+export const CandidateSchema = z.object({
   name: z.string().min(1),
   address: z.string().optional(),
   position: z.nativeEnum(Position),
@@ -16,4 +14,8 @@ export const CandidateEntity = z.object({
   photoUrl: z.string().url().optional(),
   email: z.string().email().optional(),
   mobileNo: z.string().min(1).optional(),
+});
+
+export const CandidateEntity = CandidateSchema.extend({
+  candidateId: z.string().optional(),
 });

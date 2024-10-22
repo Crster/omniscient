@@ -1,8 +1,8 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { UserList } from "@/models/UserList";
+import { UserList } from "@/services/UserList";
 
 export default apiHandler(async () => {
-  const users = await UserList.generate();
+  const users = await UserList.getList();
 
   return users;
 });
