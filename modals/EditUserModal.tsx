@@ -31,7 +31,7 @@ export default function EditUserModal(props: {
   useEffect(() => {
     if (props.userId) {
       api("get-user", props.userId).then((response) => {
-        if (response.success) setUser(response.data);
+        if (response.status === "success") setUser(response.data);
       });
     }
   }, [props.userId]);

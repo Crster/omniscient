@@ -13,12 +13,22 @@ export interface ApiHandlerProps<ValueType> {
   value?: ValueType;
 }
 
-export interface ApiResponse<DataType> {
-  success: boolean;
-  data?: DataType | { errorCode: string; reason: unknown };
-  error?: string;
-  redirect?: string;
+export interface ApiSuccessResponse<DataType> {
+  status: "success";
+  data?: DataType;
 }
+
+export interface ApiRedirectResponse {
+  status: "redirect";
+  data: { url: string; reason: string };
+}
+
+export interface ApiErrorResponse {
+  status: "error";
+  data: { error: string; message: string; reason: any };
+}
+
+export type ApiResponse<DataType> = ApiSuccessResponse<DataType> | ApiRedirectResponse | ApiErrorResponse;
 
 export type ApiHandler<ValueType, DataType> = (props: ApiHandlerProps<ValueType>) => DataType;
 
@@ -30,7 +40,7 @@ export function apiHandler<ValueType, DataType>(handler: ApiHandler<ValueType, D
       return;
     }
 
-    const response: ApiResponse<DataType> = { success: false };
+    let response: ApiResponse<DataType>;
 
     try {
       await MongoDb.connect();
@@ -42,36 +52,46 @@ export function apiHandler<ValueType, DataType>(handler: ApiHandler<ValueType, D
         value: req.body,
       });
 
-      response.data = data;
-      response.success = true;
+      response = { status: "success", data };
     } catch (err) {
       if (err instanceof Redirect) {
-        response.success = true;
-        response.data = { errorCode: "Redirect", reason: err.cause ?? err.name };
-        response.redirect = err.message;
+        response = { status: "redirect", data: { url: err.message, reason: err.message } };
       } else if (err instanceof ZodError) {
-        response.error = "Invalid value";
-        response.data = {
-          errorCode: "ValidationError",
-          reason: err.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message })),
+        response = {
+          status: "error",
+          data: {
+            error: "ValidationError",
+            message: "Invalid value",
+            reason: err.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message })),
+          },
         };
       } else if (err instanceof MongoServerError) {
         if (err.code === 11000) {
-          response.error = "Duplicate entry";
-          response.data = { errorCode: "DuplicateEntry", reason: err.keyValue };
+          response = {
+            status: "error",
+            data: { error: "DuplicateEntry", message: "Duplicate entry", reason: err.keyValue },
+          };
         } else {
-          response.error = "Database error";
-          response.data = { errorCode: "DatabaseError", reason: err.message };
+          response = {
+            status: "error",
+            data: { error: "DatabaseError", message: "Database error", reason: err.message },
+          };
         }
       } else if (err instanceof AppError) {
-        response.error = err.message;
-        response.data = { errorCode: err.name, reason: err.cause };
+        response = {
+          status: "error",
+          data: { error: err.name, message: err.message, reason: err.cause },
+        };
       } else if (err instanceof Error) {
-        response.error = err.message;
-        response.data = { errorCode: "Error", reason: err.cause };
+        response = {
+          status: "error",
+          data: { error: "Error", message: err.message, reason: err.cause },
+        };
       } else {
-        response.error = "Server error";
-        response.data = { errorCode: "Error", reason: err };
+        response = {
+          status: "error",
+          data: { error: "Error", message: "Server error", reason: err },
+        };
       }
     } finally {
       await MongoDb.close();

@@ -14,7 +14,7 @@ import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { Position } from "@/services/Data/Position";
 import { Gender } from "@/services/Data/Gender";
-import { Candidate } from "@/models/Candidate";
+import { Candidate } from "@/services/Candidate";
 
 const defaultState: Candidate = {
   name: "",
@@ -48,7 +48,7 @@ export default function VoterDetailPage() {
   };
 
   const handleSave = async () => {
-    let response: ApiResponse;
+    let response: ApiResponse<string>;
 
     if (router.query.candidateId === "new-candidate") {
       response = await api("add-candidate", candidate);
@@ -56,18 +56,18 @@ export default function VoterDetailPage() {
       response = await api("edit-candidate", router.query.candidateId, candidate);
     }
 
-    if (response.success) {
-      const candidateId = response.data as string;
+    if (response.status === "success") {
+      const candidateId = response.data;
 
       toast.success("Successfully save candidate " + candidate.name);
       router.replace(`/admin/candidate/${candidateId}`);
-    } else if (response.error) {
-      toast.error(response.error);
+    } else if (response.status === "error") {
+      toast.error(response.data.message);
 
-      if (response.data?.errorCode === "ValidationError") {
+      if (response.data.error === "ValidationError") {
         const errRet = new Map<string, any>();
 
-        for (const errField of response.data?.reason) {
+        for (const errField of response.data.reason) {
           errRet.set(errField.path.join("."), {
             isInvalid: true,
             errorMessage: errField.message,

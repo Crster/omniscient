@@ -1,9 +1,4 @@
-export interface ApiResponse<DataType = any> {
-  success: boolean;
-  data: DataType;
-  error: string;
-  redirect: string;
-}
+import { ApiResponse } from "@/libraries/ApiHandler";
 
 export default function useApiRequest() {
   return async function call<DataType = any>(
@@ -32,11 +27,10 @@ export default function useApiRequest() {
 
     if (!response.ok) throw new Error(`${response.status}: Invalid server response`);
 
-    const responseBody = await response.text();
-    const data: ApiResponse<DataType> = JSON.parse(responseBody);
+    const data: ApiResponse<DataType> = await response.json();
 
-    if (data.success && data.redirect) {
-      window.location.href = new URL(data.redirect, window.location.origin).href;
+    if (data.status === "redirect") {
+      window.location.href = new URL(data.data.url, window.location.origin).href;
     }
 
     return data;

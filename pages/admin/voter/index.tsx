@@ -8,8 +8,8 @@ import { PrimaryButton } from "@/components/theme/Button";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { VoterList } from "@/models/VoterList";
 import { Position } from "@/services/Data/Position";
+import { VoterList } from "@/services/VoterList";
 
 export default function VoterPage() {
   const router = useRouter();
@@ -86,7 +86,7 @@ export default function VoterPage() {
     load: async () => {
       const result = await api("list-voter");
 
-      return { items: result.success ? result.data : [] };
+      return { items: result.status === "success" ? result.data : [] };
     },
     sort: ({ items, sortDescriptor }) => {
       return {

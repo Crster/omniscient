@@ -21,8 +21,8 @@ export default function LoginPage() {
   const handleLogin = async () => {
     const result = await api("login", credential);
 
-    if (!result.success) {
-      toast.error(result.error as string);
+    if (result.status === "error") {
+      toast.error(result.data.message);
     }
   };
 

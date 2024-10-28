@@ -23,10 +23,10 @@ export default function UserPage() {
   const loadSelectedUser = async (value: UserList) => {
     const result = await api<User>("get-user", value.userId);
 
-    if (result.success) {
+    if (result.status === "success") {
       setSelectedUser(result.data);
-    } else {
-      toast.error(result.error as string);
+    } else if (result.status === "error") {
+      toast.error(result.data.message);
     }
   };
 
@@ -69,9 +69,9 @@ export default function UserPage() {
   const rows = useAsyncList<UserList>({
     getKey: (item) => item.userId,
     load: async () => {
-      const result = await api<UserList[]>("list-user");
+      const result = await api("list-user");
 
-      return { items: result.success ? result.data : [] };
+      return { items: result.status === "success" ? result.data : [] };
     },
     sort: ({ items, sortDescriptor }) => {
       return {
@@ -83,17 +83,17 @@ export default function UserPage() {
   const handleNewUser = async (user: User) => {
     const result = await api("add-user", user);
 
-    if (result.success) {
+    if (result.status === "success") {
       rows.append({
         userId: user.userId as string,
         email: user.email,
         name: user.name,
         role: user.role ?? UserRole.Admin,
       });
-    } else {
-      toast.error(result.error as string);
+    } else if (result.status === "error") {
+      toast.error(result.data.message);
 
-      if (result.data?.errorCode === "ValidationError") {
+      if (result.data.error === "ValidationError") {
         const errRet = new Map<string, any>();
 
         for (const errField of result.data?.reason) {
@@ -111,17 +111,17 @@ export default function UserPage() {
   const handleSaveUser = async (user: User) => {
     const result = await api("edit-user", user.userId, user);
 
-    if (result.success) {
+    if (result.status === "success") {
       rows.update(user.userId as string, {
         userId: user.userId as string,
         email: user.email,
         name: user.name,
         role: user.role ?? UserRole.Admin,
       });
-    } else {
-      toast.error(result.error as string);
+    } else if (result.status === "error") {
+      toast.error(result.data.message);
 
-      if (result.data?.errorCode === "ValidationError") {
+      if (result.data.error === "ValidationError") {
         const errRet = new Map<string, any>();
 
         for (const errField of result.data?.reason) {

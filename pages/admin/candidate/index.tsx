@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { PrimaryButton } from "@/components/theme/Button";
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 import useApiRequest from "@/components/hook/useApiRequest";
-import { CandidateList } from "@/models/CandidateList";
+import { CandidateList } from "@/services/CandidateList";
 
 export default function CandidatePage() {
   const router = useRouter();
@@ -56,7 +56,7 @@ export default function CandidatePage() {
     load: async () => {
       const result = await api("list-candidate");
 
-      return { items: result.success ? result.data : [] };
+      return { items: result.status === "success" ? result.data : [] };
     },
     sort: ({ items, sortDescriptor }) => {
       return {

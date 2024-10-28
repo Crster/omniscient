@@ -15,10 +15,10 @@ import useApiRequest from "@/components/hook/useApiRequest";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { ApiResponse } from "@/libraries/ApiHandler";
 import { toCalendar } from "@/libraries/Generator";
-import { Voter } from "@/models/Voter";
 import { Gender } from "@/services/Data/Gender";
 import { CivilStatus } from "@/services/Data/CivilStatus";
 import { FamilyRelation } from "@/services/Data/FamilyRelation";
+import { Voter } from "@/services/Voter/Voter";
 
 const defaultState: Voter = {
   name: {
@@ -63,10 +63,10 @@ export default function VoterDetailPage() {
   useEffect(() => {
     if (router.query.voterId) {
       api<Voter>("get-voter", router.query.voterId).then((result) => {
-        if (result.success && result.data) {
+        if (result.status === "success" && result.data) {
           setVoter(result.data);
-        } else {
-          toast.error(result.error as string);
+        } else if (result.status === "error") {
+          toast.error(result.data.message);
         }
       });
     }
@@ -107,7 +107,7 @@ export default function VoterDetailPage() {
   };
 
   const handleSave = async () => {
-    let response: ApiResponse;
+    let response: ApiResponse<string>;
 
     if (router.query.voterId === "new-voter") {
       response = await api("add-voter", voter);
@@ -115,15 +115,15 @@ export default function VoterDetailPage() {
       response = await api("edit-voter", router.query.voterId, voter);
     }
 
-    if (response.success) {
+    if (response.status === "success") {
       const voterId = response.data as string;
 
       toast.success("Successfully save voter " + voter.name.lastName);
       router.replace(`/admin/voter/${voterId}`);
-    } else if (response.error) {
-      toast.error(response.error);
+    } else if (response.status === "error") {
+      toast.error(response.data.message);
 
-      if (response.data?.errorCode === "ValidationError") {
+      if (response.data.error === "ValidationError") {
         const errRet = new Map<string, any>();
 
         for (const errField of response.data?.reason) {

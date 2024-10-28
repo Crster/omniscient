@@ -7,6 +7,7 @@ export async function getList() {
 
   return voters.map((voter) => {
     const ret: VoterList = {
+      voterId: voter.voterId as string,
       barangay: voter.address.barangay,
       candidate: "",
       name: Voter.getFullname(voter),
