@@ -20,6 +20,12 @@ export class InternalServerError extends AppError {
   }
 }
 
+export class DatabaseError extends AppError {
+  constructor(message: string, reason?: unknown) {
+    super("DatabaseError", message, reason);
+  }
+}
+
 export class BadRequestError extends AppError {
   constructor(message: string, reason?: Record<string, any>) {
     super("BadRequestError", message, reason);

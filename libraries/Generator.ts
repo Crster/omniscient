@@ -7,10 +7,6 @@ export function toPasswordHash(value: string) {
   return createHash("sha256").update(value).digest("hex");
 }
 
-export function toEmptyString() {
-  return "";
-}
-
 export function toCalendar(date?: Date) {
   if (date) {
     return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
@@ -21,4 +17,8 @@ export function toCalendar(date?: Date) {
 
 export function toObjectId(value: string) {
   return ObjectId.createFromHexString(value);
+}
+
+export function toHexString(value: ObjectId) {
+  return value.toHexString();
 }

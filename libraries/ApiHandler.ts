@@ -5,7 +5,7 @@ import { ZodError } from "zod";
 
 import getSession, { SessionData } from "./IronSession";
 import { AppError, Redirect } from "./Error";
-import MongoDb from "./MongoDb";
+import { connectToDatabase, disconnectFromDatabase } from "./Database";
 
 export interface ApiHandlerProps<ValueType> {
   session: IronSession<SessionData>;
@@ -32,7 +32,7 @@ export type ApiResponse<DataType> = ApiSuccessResponse<DataType> | ApiRedirectRe
 
 export type ApiHandler<ValueType, DataType> = (props: ApiHandlerProps<ValueType>) => DataType;
 
-export function apiHandler<ValueType, DataType>(handler: ApiHandler<ValueType, DataType>) {
+export function apiHandler<ValueType = any, DataType = any>(handler: ApiHandler<ValueType, DataType>) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method !== "POST") {
       res.status(405).json({ error: "Only POST request is allowed" });
@@ -43,7 +43,7 @@ export function apiHandler<ValueType, DataType>(handler: ApiHandler<ValueType, D
     let response: ApiResponse<DataType>;
 
     try {
-      await MongoDb.connect();
+      await connectToDatabase();
       const session = await getSession(req, res);
 
       const data = await handler({
@@ -94,7 +94,7 @@ export function apiHandler<ValueType, DataType>(handler: ApiHandler<ValueType, D
         };
       }
     } finally {
-      await MongoDb.close();
+      await disconnectFromDatabase();
     }
 
     res.status(200).json(response);

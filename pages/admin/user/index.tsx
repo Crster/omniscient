@@ -7,7 +7,7 @@ import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
 import { PrimaryButton } from "@/components/theme/Button";
 import useApiRequest from "@/components/hook/useApiRequest";
-import { User } from "@/services/User";
+import { User } from "@/services/user/model";
 import { UserList } from "@/services/UserList";
 import Modal from "@/components/theme/Modal";
 import { PrimaryInput } from "@/components/theme/Input";
