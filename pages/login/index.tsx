@@ -8,6 +8,7 @@ import { PrimaryButton } from "@/components/theme/Button";
 import { PrimaryInput } from "@/components/theme/Input";
 import PasswordInput from "@/components/theme/PasswordInput";
 import useApiRequest from "@/components/hook/useApiRequest";
+import useValidationState from "@/components/hook/useValidationState";
 
 const defaultState = {
   email: "",
@@ -17,11 +18,13 @@ const defaultState = {
 export default function LoginPage() {
   const api = useApiRequest();
   const [credential, setCredential] = useState(defaultState);
+  const [inputState, setInputState] = useValidationState();
 
   const handleLogin = async () => {
     const result = await api("login", credential);
 
     if (result.status === "error") {
+      setInputState(result.data.reason);
       toast.error(result.data.message);
     }
   };
@@ -38,6 +41,7 @@ export default function LoginPage() {
           startContent={<MdOutlineMail className="text-lg w-8 text-black" />}
           value={credential.email}
           onValueChange={(e) => setCredential({ ...credential, email: e })}
+          {...inputState["email"]}
         />
         <PasswordInput
           label="Password"
@@ -45,6 +49,7 @@ export default function LoginPage() {
           startContent={<MdLockOutline className="text-lg w-8 text-black" />}
           value={credential.password}
           onValueChange={(e) => setCredential({ ...credential, password: e })}
+          {...inputState["password"]}
         />
 
         <Link className="text-sm w-fit self-end" href="/forgot-password">

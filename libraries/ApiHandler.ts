@@ -1,10 +1,8 @@
 import { IronSession } from "iron-session";
 import { NextApiRequest, NextApiResponse } from "next";
-import { MongoServerError } from "mongodb";
-import { ZodError } from "zod";
 
 import getSession, { SessionData } from "./IronSession";
-import { AppError, Redirect } from "./Error";
+import { Redirect, AppError } from "./Error";
 import { connectToDatabase, disconnectFromDatabase } from "./Database";
 
 export interface ApiHandlerProps<ValueType> {
@@ -56,27 +54,6 @@ export function apiHandler<ValueType = any, DataType = any>(handler: ApiHandler<
     } catch (err) {
       if (err instanceof Redirect) {
         response = { status: "redirect", data: { url: err.message, reason: err.message } };
-      } else if (err instanceof ZodError) {
-        response = {
-          status: "error",
-          data: {
-            error: "ValidationError",
-            message: "Invalid value",
-            reason: err.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message })),
-          },
-        };
-      } else if (err instanceof MongoServerError) {
-        if (err.code === 11000) {
-          response = {
-            status: "error",
-            data: { error: "DuplicateEntry", message: "Duplicate entry", reason: err.keyValue },
-          };
-        } else {
-          response = {
-            status: "error",
-            data: { error: "DatabaseError", message: "Database error", reason: err.message },
-          };
-        }
       } else if (err instanceof AppError) {
         response = {
           status: "error",

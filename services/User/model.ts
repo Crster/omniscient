@@ -8,5 +8,7 @@ export interface IUser {
 }
 
 export interface User extends IUser {
-  userId?: string;
+  userId: string;
 }
+
+export type UserDto = Omit<User, "password">;

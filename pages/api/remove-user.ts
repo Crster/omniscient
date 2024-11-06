@@ -1,13 +1,9 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { BadRequestError } from "@/libraries/Error";
-import { UserRepo } from "@/models/User/UserRepository";
+import { removeUserAction } from "@/services/user/actions/removeUserAction";
+import { createRemoveUserRequest } from "@/services/user/requests/removeUserRequest";
 
 export default apiHandler(async (req) => {
-  if (!req.key) throw new BadRequestError("key is required", { key: "missing" });
+  const request = createRemoveUserRequest({ userId: req.key as string });
 
-  const user = await UserRepo.getById(req.key);
-
-  await UserRepo.remove(user);
-
-  return user;
+  await removeUserAction(request);
 });

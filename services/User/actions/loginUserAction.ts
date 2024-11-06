@@ -23,7 +23,7 @@ export async function loginUserAction(request: loginUserRequest) {
     user = await getUserAction({ userId });
   }
 
-  if (user.password !== request.password) throw new AuthorizationError("User not found", { request });
+  if (user.password !== request.password) throw new AuthorizationError("User not found", user);
 
   return user;
 }

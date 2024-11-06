@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { BadRequestError } from "@/libraries/Error";
+import { ValidationError } from "@/libraries/Error";
 import { UserRole } from "@/services/user-role/model";
 
 const schema = z.object({
@@ -15,7 +15,7 @@ export type AddUserRequest = z.infer<typeof schema>;
 export function createAddUserRequest(input: z.input<typeof schema>) {
   const { success, error, data } = schema.safeParse(input);
 
-  if (!success) throw new BadRequestError("Invalid request input", error);
+  if (!success) throw new ValidationError("Invalid request input", error);
 
   return data;
 }
