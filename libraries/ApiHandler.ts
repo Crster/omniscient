@@ -62,12 +62,12 @@ export function apiHandler<ValueType = any, DataType = any>(handler: ApiHandler<
       } else if (err instanceof Error) {
         response = {
           status: "error",
-          data: { error: "Error", message: err.message, reason: err.cause },
+          data: { error: "GenericError", message: err.message, reason: err.cause },
         };
       } else {
         response = {
           status: "error",
-          data: { error: "Error", message: "Server error", reason: err },
+          data: { error: "UnknownError", message: "Unknown error", reason: err },
         };
       }
     } finally {

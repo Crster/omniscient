@@ -6,7 +6,7 @@ import { useState } from "react";
 import UserModal from "./_components/user-modal";
 
 import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
-import { PrimaryButton } from "@/components/theme/Button";
+import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { IUser, UserDto } from "@/services/user/model";
 
@@ -35,16 +35,21 @@ export default function UserPage() {
     {
       key: "action",
       label: "",
-      template: () => {
+      template: (user: UserDto) => {
         return (
           <div className="flex flex-row gap-1 justify-end">
-            <button>
-              <MdOutlineEdit className="text-2xl text-blue-500" />
-            </button>
-
-            <button>
-              <MdOutlineDelete className="text-2xl text-gray-500" />
-            </button>
+            <IconButton
+              icon={<MdOutlineEdit className="text-2xl text-blue-500" />}
+              label="Edit"
+              variant="light"
+              onPress={setUserOperation("edit", user)}
+            />
+            <IconButton
+              icon={<MdOutlineDelete className="text-2xl text-gray-500" />}
+              label="Delete"
+              variant="light"
+              onPress={setUserOperation("delete", user)}
+            />
           </div>
         );
       },
@@ -68,7 +73,7 @@ export default function UserPage() {
   const handleModalOk = async (user: IUser) => {
     switch (modalMode) {
       case "new": {
-        const result = await api("add-user", null, user);
+        const result = await api("add-user", user);
 
         if (result.status === "error") return result.data.reason;
 
@@ -101,6 +106,13 @@ export default function UserPage() {
     setSelectedUser(undefined);
   };
 
+  const setUserOperation = (mode: string, user?: UserDto) => {
+    return () => {
+      setModalMode(mode);
+      setSelectedUser(user);
+    };
+  };
+
   const userToDto = (user?: UserDto): IUser | undefined => {
     if (user) {
       return {
@@ -119,7 +131,7 @@ export default function UserPage() {
         <PrimaryButton
           className="px-2 py-2 w-32 justify-self-end"
           startContent={<MdOutlineAdd className="inline text-2xl align-top" />}
-          onPress={() => setModalMode("new")}
+          onPress={setUserOperation("new")}
         >
           Add User
         </PrimaryButton>
@@ -129,7 +141,7 @@ export default function UserPage() {
       <UserModal
         open={!!modalMode}
         user={userToDto(selectedUser)}
-        onClose={() => setModalMode("")}
+        onClose={setUserOperation("")}
         onOk={handleModalOk}
       />
     </>

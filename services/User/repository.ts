@@ -34,7 +34,9 @@ export class UserRepository {
   async getList(filter?: string) {
     const result: Array<User> = [];
 
-    const cursor = this._userCollection.find({ email: { $regex: filter } });
+    const cursor = filter
+      ? this._userCollection.find({ email: { $regex: filter } })
+      : this._userCollection.find({}, { limit: 1000 });
 
     for await (const item of cursor) {
       result.push(this.toUser(item) as User);
@@ -58,7 +60,10 @@ export class UserRepository {
   }
 
   async update(userId: string, update: Partial<IUser>) {
-    const result = await this._userCollection.updateOne({ _id: ObjectId.createFromHexString(userId) }, update);
+    const result = await this._userCollection.updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { $set: update },
+    );
 
     return result.acknowledged;
   }

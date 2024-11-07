@@ -1,5 +1,5 @@
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PrimaryButton, SecondaryButton } from "@/components/theme/Button";
 import { PrimaryInput } from "@/components/theme/Input";
@@ -25,8 +25,12 @@ const defaultUser: IUser = {
 };
 
 export default function UserModal(props: UserModalProps) {
-  const [user, setUser] = useState(props.user ?? defaultUser);
+  const [user, setUser] = useState(defaultUser);
   const [inputState, setInputState] = useValidationState();
+
+  useEffect(() => {
+    setUser(props.user ?? defaultUser);
+  }, [props.user]);
 
   const handleChange = (name: keyof IUser) => {
     return (value: any) => {
@@ -35,7 +39,15 @@ export default function UserModal(props: UserModalProps) {
   };
 
   const handleOk = async () => {
-    setInputState(await props.onOk(user));
+    const defaultValue = props.user ?? defaultUser;
+    const updateValue = new Map<string, any>();
+
+    if (defaultValue.email !== user.email) updateValue.set("email", user.email);
+    if (defaultValue.name !== user.name) updateValue.set("name", user.name);
+    if (defaultValue.password !== user.password) updateValue.set("password", user.password);
+    if (defaultValue.role !== user.role) updateValue.set("role", user.role);
+
+    setInputState(await props.onOk(Object.fromEntries(updateValue) as IUser));
   };
 
   return (
