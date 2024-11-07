@@ -8,8 +8,11 @@ import {
   TableProps,
   TableRow,
 } from "@nextui-org/table";
-import { AsyncListData } from "@react-stately/data";
+import { AsyncListData, useAsyncList } from "@react-stately/data";
+import { orderBy } from "lodash";
 import React from "react";
+
+import { ApiResponse } from "@/libraries/ApiHandler";
 
 export interface DataTableColumn<TModel> {
   key: (string & keyof TModel) | "action";
@@ -24,6 +27,34 @@ export interface DataTableProps<TModel> extends TableProps {
   keyField?: string;
   columns: Array<DataTableColumn<TModel>>;
   rows: AsyncListData<TModel>;
+}
+
+export function useDataTable<Dto extends Record<string, any>>(props: {
+  keyField: string;
+  title: string;
+  columns: Array<DataTableColumn<Dto>>;
+  data: () => Promise<ApiResponse<any>>;
+}) {
+  const title = props.title;
+  const keyField = props.keyField;
+
+  const columns = props.columns;
+
+  const rows = useAsyncList<Dto>({
+    getKey: (item: any) => item[props.keyField],
+    load: async () => {
+      const result = await props.data();
+
+      return { items: result.status === "success" ? result.data : [] };
+    },
+    sort: ({ items, sortDescriptor }) => {
+      return {
+        items: orderBy(items, sortDescriptor.column, sortDescriptor.direction === "descending" ? "desc" : "asc"),
+      };
+    },
+  });
+
+  return { columns, rows, keyField, title };
 }
 
 export function DataTable<TModel extends Record<string, any>>(props: DataTableProps<TModel>) {

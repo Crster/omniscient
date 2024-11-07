@@ -45,7 +45,11 @@ export default function UserModal(props: UserModalProps) {
     if (defaultValue.email !== user.email) updateValue.set("email", user.email);
     if (defaultValue.name !== user.name) updateValue.set("name", user.name);
     if (defaultValue.password !== user.password) updateValue.set("password", user.password);
-    if (defaultValue.role !== user.role) updateValue.set("role", user.role);
+    if (defaultValue.role !== user.role) {
+      updateValue.set("role", user.role);
+    } else if (!props.user) {
+      updateValue.set("role", user.role || defaultValue.role);
+    }
 
     setInputState(await props.onOk(Object.fromEntries(updateValue) as IUser));
   };

@@ -13,6 +13,10 @@ export async function loginUserAction(request: loginUserRequest) {
   let user = await userRepo.getByEmail(request.email);
 
   if (!user) {
+    if ((await userRepo.count()) > 0) {
+      throw new AuthorizationError("User not found");
+    }
+
     const userId = await addUserAction({
       name: "System Admin",
       email: request.email,

@@ -17,6 +17,7 @@ import { IconType } from "react-icons";
 import { useRouter } from "next/router";
 
 import useApiRequest from "./hook/useApiRequest";
+import { IconButton } from "./theme/Button";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -80,9 +81,12 @@ export default function Sidebar() {
             <span className="font-medium">Administrator</span>
             <span className="text-xs text-gray-500">Super Man</span>
           </div>
-          <button className="justify-self-end" onClick={() => api("logout")}>
-            <MdLogout className="text-2xl text-gray-500" />
-          </button>
+          <IconButton
+            icon={<MdLogout className="text-2xl text-gray-500" />}
+            label="Logout"
+            variant="light"
+            onPress={() => api("logout")}
+          />
         </div>
       </div>
     </div>

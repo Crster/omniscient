@@ -2,12 +2,13 @@ import { z } from "zod";
 
 import { ValidationError } from "@/libraries/Error";
 import { UserRole } from "@/services/user-role/model";
+import { toPasswordHash } from "@/libraries/Generator";
 
 const schema = z.object({
   name: z.string(),
   email: z.string().email(),
-  password: z.string(),
-  role: z.nativeEnum(UserRole),
+  password: z.string().min(8).transform(toPasswordHash),
+  role: z.nativeEnum(UserRole).default(UserRole.Admin),
 });
 
 export type AddUserRequest = z.infer<typeof schema>;

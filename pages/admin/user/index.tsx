@@ -1,105 +1,99 @@
-import { orderBy } from "lodash";
-import { useAsyncList } from "@react-stately/data";
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 import UserModal from "./_components/user-modal";
 
-import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
+import { DataTable, useDataTable } from "@/components/theme/DataTable";
 import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { IUser, UserDto } from "@/services/user/model";
+import { AskModal } from "@/components/theme/AskModal";
 
 export default function UserPage() {
   const api = useApiRequest();
   const [modalMode, setModalMode] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserDto | undefined>();
 
-  const columns: Array<DataTableColumn<UserDto>> = [
-    {
-      key: "name",
-      label: "Name",
-      allowsSorting: true,
-    },
-    {
-      key: "email",
-      label: "Email",
-      allowsSorting: true,
-      className: "text-blue-500",
-    },
-    {
-      key: "role",
-      label: "Role",
-      allowsSorting: true,
-    },
-    {
-      key: "action",
-      label: "",
-      template: (user: UserDto) => {
-        return (
-          <div className="flex flex-row gap-1 justify-end">
-            <IconButton
-              icon={<MdOutlineEdit className="text-2xl text-blue-500" />}
-              label="Edit"
-              variant="light"
-              onPress={setUserOperation("edit", user)}
-            />
-            <IconButton
-              icon={<MdOutlineDelete className="text-2xl text-gray-500" />}
-              label="Delete"
-              variant="light"
-              onPress={setUserOperation("delete", user)}
-            />
-          </div>
-        );
+  const userTable = useDataTable<UserDto>({
+    keyField: "userId",
+    title: "User List",
+    data: async () => await api("list-user"),
+    columns: [
+      {
+        key: "name",
+        label: "Name",
+        allowsSorting: true,
       },
-    },
-  ];
-
-  const rows = useAsyncList<UserDto>({
-    getKey: (item) => item.userId,
-    load: async () => {
-      const result = await api("list-user");
-
-      return { items: result.status === "success" ? result.data : [] };
-    },
-    sort: ({ items, sortDescriptor }) => {
-      return {
-        items: orderBy(items, sortDescriptor.column, sortDescriptor.direction === "descending" ? "desc" : "asc"),
-      };
-    },
+      {
+        key: "email",
+        label: "Email",
+        allowsSorting: true,
+        className: "text-blue-500",
+      },
+      {
+        key: "role",
+        label: "Role",
+        allowsSorting: true,
+      },
+      {
+        key: "action",
+        label: "",
+        template: (user: UserDto) => {
+          return (
+            <div className="flex flex-row gap-1 justify-end">
+              <IconButton
+                icon={<MdOutlineEdit className="text-2xl text-blue-500" />}
+                label="Edit"
+                variant="light"
+                onPress={setUserOperation("edit", user)}
+              />
+              <IconButton
+                icon={<MdOutlineDelete className="text-2xl text-gray-500" />}
+                label="Delete"
+                variant="light"
+                onPress={setUserOperation("delete", user)}
+              />
+            </div>
+          );
+        },
+      },
+    ],
   });
 
-  const handleModalOk = async (user: IUser) => {
-    switch (modalMode) {
-      case "new": {
-        const result = await api("add-user", user);
+  const handleModalOk = async (user?: IUser) => {
+    if (user && modalMode === "new") {
+      const result = await api("add-user", user);
 
-        if (result.status === "error") return result.data.reason;
+      if (result.status === "error") return result.data.reason;
 
-        rows.append({
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          userId: result.data,
-        });
-        break;
+      userTable.rows.append({
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        userId: result.data,
+      });
+    } else if (user && selectedUser && modalMode === "edit") {
+      const result = await api("edit-user", selectedUser.userId, user);
+
+      if (result.status === "error") return result.data.reason;
+
+      userTable.rows.update(selectedUser.userId, {
+        email: user.email ?? selectedUser.email,
+        name: user.name ?? selectedUser.name,
+        role: user.role ?? selectedUser.role,
+        userId: result.data ?? selectedUser.userId,
+      });
+    } else if (selectedUser && modalMode === "delete") {
+      const result = await api("remove-user", selectedUser.userId);
+
+      if (result.status === "error") {
+        toast.error(result.data.error);
+
+        return true;
       }
-      case "edit": {
-        if (selectedUser) {
-          const result = await api("edit-user", selectedUser.userId, user);
 
-          if (result.status === "error") return result.data.reason;
-
-          rows.update(selectedUser.userId, {
-            email: user.email ?? selectedUser.email,
-            name: user.name ?? selectedUser.name,
-            role: user.role ?? selectedUser.role,
-            userId: result.data ?? selectedUser.userId,
-          });
-        }
-        break;
-      }
+      userTable.rows.remove(selectedUser.userId);
     }
 
     setModalMode("");
@@ -137,13 +131,29 @@ export default function UserPage() {
         </PrimaryButton>
       </div>
 
-      <DataTable columns={columns} keyField="userId" rows={rows} title="User List" />
+      <DataTable {...userTable} />
       <UserModal
-        open={!!modalMode}
+        open={["new", "edit"].includes(modalMode)}
         user={userToDto(selectedUser)}
         onClose={setUserOperation("")}
         onOk={handleModalOk}
       />
+      <AskModal
+        danger
+        okText="Remove"
+        open={modalMode === "delete"}
+        title="Remove"
+        onClose={setUserOperation("")}
+        onOk={handleModalOk}
+      >
+        <p>
+          Are you sure that you want to remove{" "}
+          <span className="font-medium">
+            {selectedUser?.role} - {selectedUser?.name}
+          </span>
+          ?
+        </p>
+      </AskModal>
     </>
   );
 }
