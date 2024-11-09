@@ -11,16 +11,16 @@ import { useRouter } from "next/router";
 import { SecondaryDateInput, SecondaryInput } from "@/components/theme/Input";
 import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
-import useApiRequest from "@/components/hook/useApiRequest";
+import useApiRequest, { ApiResponse } from "@/components/hook/useApiRequest";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { ApiResponse } from "@/libraries/ApiHandler";
-import { toCalendar } from "@/libraries/Generator";
-import { Gender } from "@/services/Data/Gender";
-import { CivilStatus } from "@/services/Data/CivilStatus";
-import { FamilyRelation } from "@/services/Data/FamilyRelation";
-import { Voter } from "@/services/Voter/Voter";
+import { toCalendar } from "@/libraries/Transformer";
+import { IVoter, Voter } from "@/services/voter/model";
+import { Gender } from "@/services/gender/model";
+import { CivilStatus } from "@/services/civil-status/model";
+import { FamilyRelation } from "@/services/family-relation/model";
+import useValidationState from "@/components/hook/useValidationState";
 
-const defaultState: Voter = {
+const defaultState: IVoter = {
   name: {
     firstName: "",
     middleName: "",
@@ -58,7 +58,7 @@ export default function VoterDetailPage() {
   const router = useRouter();
   const api = useApiRequest();
   const [voter, setVoter] = useState(defaultState);
-  const [error, setError] = useState<Record<string, any>>({});
+  const [error, setError] = useValidationState();
 
   useEffect(() => {
     if (router.query.voterId) {
@@ -116,25 +116,13 @@ export default function VoterDetailPage() {
     }
 
     if (response.status === "success") {
-      const voterId = response.data as string;
+      const voterId = response.data;
 
       toast.success("Successfully save voter " + voter.name.lastName);
       router.replace(`/admin/voter/${voterId}`);
     } else if (response.status === "error") {
       toast.error(response.data.message);
-
-      if (response.data.error === "ValidationError") {
-        const errRet = new Map<string, any>();
-
-        for (const errField of response.data?.reason) {
-          errRet.set(errField.path.join("."), {
-            isInvalid: true,
-            errorMessage: errField.message,
-          });
-        }
-
-        setError(Object.fromEntries(errRet));
-      }
+      setError(response.data.reason);
     }
   };
 

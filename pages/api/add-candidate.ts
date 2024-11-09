@@ -1,11 +1,10 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { BadRequestError, NotCreatedError } from "@/libraries/Error";
-import { Candidate } from "@/services/Candidate";
+import { addCandidateAction } from "@/services/candidate/actions/addCandidateAction";
+import { createAddCandidateRequest } from "@/services/candidate/requests/addCandidateRequest";
 
-export default apiHandler<Candidate, void>(async (req) => {
-  if (!req.value) throw new BadRequestError("Value is required", { value: "required" });
+export default apiHandler(async (req) => {
+  const request = createAddCandidateRequest(req.value as any);
+  const candidateId = await addCandidateAction(request);
 
-  const candidateId = await Candidate.create(req.value);
-
-  if (!candidateId) throw new NotCreatedError(`Candidate ${req.value.name} not created`, { candidateId });
+  return candidateId;
 });

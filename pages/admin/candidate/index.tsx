@@ -1,68 +1,56 @@
-import _ from "lodash";
 import { User } from "@nextui-org/user";
-import { useAsyncList } from "@react-stately/data";
 import { MdOutlineAdd } from "react-icons/md";
 import { useRouter } from "next/router";
 
 import { PrimaryButton } from "@/components/theme/Button";
-import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
+import { DataTable, useDataTable } from "@/components/theme/DataTable";
 import useApiRequest from "@/components/hook/useApiRequest";
-import { CandidateList } from "@/services/CandidateList";
+import { CandidateDto } from "@/services/candidate/model";
 
 export default function CandidatePage() {
   const router = useRouter();
   const api = useApiRequest();
-
-  const columns: Array<DataTableColumn<CandidateList>> = [
-    {
-      key: "rank",
-      label: "Rank",
-    },
-    {
-      key: "name",
-      label: "Name",
-      allowsSorting: true,
-      template: (row) => {
-        return (
-          <User
-            avatarProps={{
-              src: row.photoUrl,
-            }}
-            description={row.party}
-            name={row.name}
-          />
-        );
+  const candidateTable = useDataTable<CandidateDto>({
+    keyField: "candidateId",
+    title: "Candidate List",
+    data: async () => await api("list-candidate"),
+    columns: [
+      {
+        key: "rank",
+        label: "Rank",
       },
-    },
-    {
-      key: "position",
-      label: "Position",
-      allowsSorting: true,
-    },
-    {
-      key: "voters",
-      label: "Voters",
-      allowsSorting: true,
-    },
-    {
-      key: "popularity",
-      label: "Popularity",
-      allowsSorting: true,
-    },
-  ];
-
-  const rows = useAsyncList<CandidateList>({
-    getKey: (item) => item.candidateId,
-    load: async () => {
-      const result = await api("list-candidate");
-
-      return { items: result.status === "success" ? result.data : [] };
-    },
-    sort: ({ items, sortDescriptor }) => {
-      return {
-        items: _.orderBy(items, sortDescriptor.column, sortDescriptor.direction === "descending" ? "desc" : "asc"),
-      };
-    },
+      {
+        key: "name",
+        label: "Name",
+        allowsSorting: true,
+        template: (row) => {
+          return (
+            <User
+              avatarProps={{
+                src: row.photoUrl,
+              }}
+              description={row.party}
+              name={row.name}
+            />
+          );
+        },
+      },
+      {
+        key: "position",
+        label: "Position",
+        allowsSorting: true,
+      },
+      {
+        key: "voters",
+        label: "Voters",
+        allowsSorting: true,
+      },
+      {
+        key: "popularity",
+        label: "Popularity",
+        allowsSorting: true,
+      },
+    ],
   });
 
   const handleNew = () => {
@@ -112,7 +100,7 @@ export default function CandidatePage() {
         </div>
       </div>
 
-      <DataTable columns={columns} keyField="candidateId" rows={rows} title="Candidate List" />
+      <DataTable {...candidateTable} />
     </>
   );
 }

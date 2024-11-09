@@ -8,15 +8,15 @@ import { useRouter } from "next/router";
 
 import { SecondaryInput } from "@/components/theme/Input";
 import { PrimaryButton } from "@/components/theme/Button";
-import useApiRequest from "@/components/hook/useApiRequest";
-import { ApiResponse } from "@/libraries/ApiHandler";
+import useApiRequest, { ApiResponse } from "@/components/hook/useApiRequest";
 import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { Position } from "@/services/Data/Position";
-import { Gender } from "@/services/Data/Gender";
-import { Candidate } from "@/services/Candidate";
+import { ICandidate } from "@/services/candidate/model";
+import { Position } from "@/services/position/model";
+import { Gender } from "@/services/gender/model";
+import useValidationState from "@/components/hook/useValidationState";
 
-const defaultState: Candidate = {
+const defaultState: ICandidate = {
   name: "",
   address: "",
   position: Position.Other,
@@ -33,7 +33,7 @@ export default function VoterDetailPage() {
   const router = useRouter();
   const api = useApiRequest();
   const [candidate, setCandidate] = useState(defaultState);
-  const [error, setError] = useState<Record<string, any>>({});
+  const [error, setError] = useValidationState();
 
   const handleValueChange = (property: string) => {
     return (value: any) => {
@@ -62,20 +62,7 @@ export default function VoterDetailPage() {
       toast.success("Successfully save candidate " + candidate.name);
       router.replace(`/admin/candidate/${candidateId}`);
     } else if (response.status === "error") {
-      toast.error(response.data.message);
-
-      if (response.data.error === "ValidationError") {
-        const errRet = new Map<string, any>();
-
-        for (const errField of response.data.reason) {
-          errRet.set(errField.path.join("."), {
-            isInvalid: true,
-            errorMessage: errField.message,
-          });
-        }
-
-        setError(Object.fromEntries(errRet));
-      }
+      setError(response.data.reason);
     }
   };
 

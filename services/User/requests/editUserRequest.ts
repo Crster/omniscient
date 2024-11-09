@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { ValidationError } from "@/libraries/Error";
 import { UserRole } from "@/services/user-role/model";
-import { toPasswordHash } from "@/libraries/Generator";
+import { toPasswordHash } from "@/libraries/TransformerX";
 
 const schema = z.object({
   userId: z.string(),

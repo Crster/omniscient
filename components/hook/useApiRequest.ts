@@ -1,4 +1,19 @@
-import { ApiResponse } from "@/libraries/ApiHandler";
+export interface ApiSuccessResponse<DataType> {
+  status: "success";
+  data?: DataType;
+}
+
+export interface ApiRedirectResponse {
+  status: "redirect";
+  data: { url: string; reason: string };
+}
+
+export interface ApiErrorResponse {
+  status: "error";
+  data: { error: string; message: string; reason: any };
+}
+
+export type ApiResponse<DataType> = ApiSuccessResponse<DataType> | ApiRedirectResponse | ApiErrorResponse;
 
 export default function useApiRequest() {
   return async function call<DataType = any>(

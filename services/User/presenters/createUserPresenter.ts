@@ -1,6 +1,6 @@
 import { User, UserDto } from "../model";
 
-export function createUserPrenter(user: User): UserDto {
+export function createUserPresenter(user: User): UserDto {
   return {
     userId: user.userId,
     name: user.name,

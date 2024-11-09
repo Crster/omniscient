@@ -1,16 +1,14 @@
 import { z } from "zod";
 
 import { ValidationError } from "@/libraries/Error";
-import { toPasswordHash } from "@/libraries/TransformerX";
 
 const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8).transform(toPasswordHash),
+  candidateId: z.string(),
 });
 
-export type loginUserRequest = z.infer<typeof schema>;
+export type getCandidateRequest = z.infer<typeof schema>;
 
-export function createLoginUserRequest(input: loginUserRequest) {
+export function createGetCandidateRequest(input: getCandidateRequest) {
   const { success, error, data } = schema.safeParse(input);
 
   if (!success) throw new ValidationError("Invalid request input", error);

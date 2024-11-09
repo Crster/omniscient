@@ -1,11 +1,10 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { BadRequestError, NotCreatedError } from "@/libraries/Error";
-import { Voter } from "@/services/Voter/Voter";
+import { addVoterAction } from "@/services/voter/actions/addVoterAction";
+import { createAddVoterRequest } from "@/services/voter/requests/addVoterRequest";
 
-export default apiHandler<Voter, void>(async (req) => {
-  if (!req.value) throw new BadRequestError("Value is required", { value: "required" });
+export default apiHandler(async (req) => {
+  const request = createAddVoterRequest(req.value as any);
+  const voterId = await addVoterAction(request);
 
-  const voterId = await Voter.create(req.value);
-
-  if (!voterId) throw new NotCreatedError(`Voter ${req.value.name} not created`, { voterId });
+  return voterId;
 });

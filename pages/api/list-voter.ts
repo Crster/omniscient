@@ -1,8 +1,11 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { VoterList } from "@/services/VoterList";
+import { listVoterAction } from "@/services/voter/actions/listVoterAction";
+import { createVoterListPresenter } from "@/services/voter/presenters/createVoterListPresenter";
+import { createListVoterRequest } from "@/services/voter/requests/listVoterRequest";
 
-export default apiHandler(async () => {
-  const voters = await VoterList.getList();
+export default apiHandler(async (req) => {
+  const request = createListVoterRequest(req.value);
+  const voters = await listVoterAction(request);
 
-  return voters;
+  return createVoterListPresenter(voters);
 });

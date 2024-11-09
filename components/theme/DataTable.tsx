@@ -12,7 +12,7 @@ import { AsyncListData, useAsyncList } from "@react-stately/data";
 import { orderBy } from "lodash";
 import React from "react";
 
-import { ApiResponse } from "@/libraries/ApiHandler";
+import { ApiResponse } from "../hook/useApiRequest";
 
 export interface DataTableColumn<TModel> {
   key: (string & keyof TModel) | "action";

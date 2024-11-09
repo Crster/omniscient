@@ -1,8 +1,11 @@
 import { apiHandler } from "@/libraries/ApiHandler";
-import { CandidateList } from "@/services/CandidateList";
+import { listCandidateAction } from "@/services/candidate/actions/listCandidateAction";
+import { createCandidateListPresenter } from "@/services/candidate/presenters/createCandidateListPresenter";
+import { createListCandidateRequest } from "@/services/candidate/requests/listCandidateRequest";
 
-export default apiHandler(async () => {
-  const candidates = await CandidateList.getList();
+export default apiHandler(async (req) => {
+  const request = createListCandidateRequest(req.value);
+  const candidates = await listCandidateAction(request);
 
-  return candidates;
+  return createCandidateListPresenter(candidates);
 });

@@ -5,28 +5,13 @@ import getSession, { SessionData } from "./IronSession";
 import { Redirect, AppError } from "./Error";
 import { connectToDatabase, disconnectFromDatabase } from "./Database";
 
+import { ApiResponse } from "@/components/hook/useApiRequest";
+
 export interface ApiHandlerProps<ValueType> {
   session: IronSession<SessionData>;
   key?: string;
   value?: ValueType;
 }
-
-export interface ApiSuccessResponse<DataType> {
-  status: "success";
-  data?: DataType;
-}
-
-export interface ApiRedirectResponse {
-  status: "redirect";
-  data: { url: string; reason: string };
-}
-
-export interface ApiErrorResponse {
-  status: "error";
-  data: { error: string; message: string; reason: any };
-}
-
-export type ApiResponse<DataType> = ApiSuccessResponse<DataType> | ApiRedirectResponse | ApiErrorResponse;
 
 export type ApiHandler<ValueType, DataType> = (props: ApiHandlerProps<ValueType>) => DataType;
 

@@ -1,98 +1,91 @@
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { useAsyncList } from "@react-stately/data";
-import _ from "lodash";
 
-import { DataTable, DataTableColumn } from "@/components/theme/DataTable";
-import { PrimaryButton } from "@/components/theme/Button";
+import { DataTable, useDataTable } from "@/components/theme/DataTable";
+import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { Selection } from "@/components/theme/Selection";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { Position } from "@/services/Data/Position";
-import { VoterList } from "@/services/VoterList";
+import { VoterDto } from "@/services/voter/model";
+import { Position } from "@/services/position/model";
 
 export default function VoterPage() {
   const router = useRouter();
   const api = useApiRequest();
 
-  const columns: Array<DataTableColumn<VoterList>> = [
-    {
-      key: "precinctNo",
-      label: "Precinct No.",
-      allowsSorting: true,
-      className: "text-blue-500",
-    },
-    {
-      key: "name",
-      label: "Name",
-      allowsSorting: true,
-    },
-    {
-      key: "purok",
-      label: "Purok",
-      allowsSorting: true,
-    },
-    {
-      key: "barangay",
-      label: "Brgy",
-      allowsSorting: true,
-    },
-    {
-      key: "candidate",
-      label: "Candidate",
-      allowsSorting: true,
-      className: "text-blue-500",
-    },
-    {
-      key: "status",
-      label: "Status",
-      allowsSorting: true,
-    },
-    {
-      key: "surveyor",
-      label: "Surveyor",
-      allowsSorting: true,
-    },
-    {
-      key: "validator",
-      label: "Validator",
-      allowsSorting: true,
-    },
-    {
-      key: "action",
-      label: "",
-      template: (item) => {
-        return (
-          <div className="flex flex-row gap-1 justify-end">
-            <button
-              onClick={() => {
-                router.push(`/admin/voter/${item.voterId}`);
-              }}
-            >
-              <MdOutlineEdit className="text-2xl text-blue-500" />
-            </button>
-
-            <button onClick={() => {}}>
-              <MdOutlineDelete className="text-2xl text-gray-500" />
-            </button>
-          </div>
-        );
+  const voterTable = useDataTable<VoterDto>({
+    keyField: "voterId",
+    title: "Voter List",
+    data: async () => await api("list-voter"),
+    columns: [
+      {
+        key: "precinctNo",
+        label: "Precinct No.",
+        allowsSorting: true,
+        className: "text-blue-500",
       },
-    },
-  ];
+      {
+        key: "name",
+        label: "Name",
+        allowsSorting: true,
+      },
+      {
+        key: "purok",
+        label: "Purok",
+        allowsSorting: true,
+      },
+      {
+        key: "barangay",
+        label: "Brgy",
+        allowsSorting: true,
+      },
+      {
+        key: "candidate",
+        label: "Candidate",
+        allowsSorting: true,
+        className: "text-blue-500",
+      },
+      {
+        key: "status",
+        label: "Status",
+        allowsSorting: true,
+      },
+      {
+        key: "surveyor",
+        label: "Surveyor",
+        allowsSorting: true,
+      },
+      {
+        key: "validator",
+        label: "Validator",
+        allowsSorting: true,
+      },
+      {
+        key: "action",
+        label: "",
+        template: (item) => {
+          return (
+            <div className="flex flex-row gap-1 justify-end">
+              <IconButton
+                icon={<MdOutlineEdit className="text-2xl text-blue-500" />}
+                label="Edit"
+                variant="light"
+                onPress={() => {
+                  router.push(`/admin/voter/${item.voterId}`);
+                }}
+              />
 
-  const rows = useAsyncList<VoterList>({
-    getKey: (item) => item.voterId,
-    load: async () => {
-      const result = await api("list-voter");
-
-      return { items: result.status === "success" ? result.data : [] };
-    },
-    sort: ({ items, sortDescriptor }) => {
-      return {
-        items: _.orderBy(items, sortDescriptor.column, sortDescriptor.direction === "descending" ? "desc" : "asc"),
-      };
-    },
+              <IconButton
+                icon={<MdOutlineDelete className="text-2xl text-gray-500" />}
+                label="Delete"
+                variant="light"
+                onPress={() => {}}
+              />
+            </div>
+          );
+        },
+      },
+    ],
   });
 
   const handleNew = () => {
@@ -116,7 +109,7 @@ export default function VoterPage() {
         </div>
       </div>
 
-      <DataTable columns={columns} keyField="voterId" rows={rows} title="Voter List" />
+      <DataTable {...voterTable} />
     </>
   );
 }
