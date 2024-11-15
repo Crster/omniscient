@@ -13,7 +13,7 @@ import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import { RadioSelect, SecondarySelection } from "@/components/theme/Selection";
 import useApiRequest, { ApiResponse } from "@/components/hook/useApiRequest";
 import { enumToKeyLabel } from "@/libraries/EnumUtil";
-import { toCalendar } from "@/libraries/Transformer";
+import { toCalendar, extractModified, fillDefault } from "@/libraries/Transformer";
 import { IVoter, Voter } from "@/services/voter/model";
 import { Gender } from "@/services/gender/model";
 import { CivilStatus } from "@/services/civil-status/model";
@@ -57,20 +57,36 @@ const defaultState: IVoter = {
 export default function VoterDetailPage() {
   const router = useRouter();
   const api = useApiRequest();
+  const [currentVoter, setCurrentVoter] = useState(defaultState);
   const [voter, setVoter] = useState(defaultState);
   const [error, setError] = useValidationState();
 
   useEffect(() => {
-    if (router.query.voterId) {
-      api<Voter>("get-voter", router.query.voterId).then((result) => {
-        if (result.status === "success" && result.data) {
-          setVoter(result.data);
-        } else if (result.status === "error") {
-          toast.error(result.data.message);
-        }
-      });
+    const { voterId } = router.query;
+
+    if (voterId && voterId !== "new-voter") {
+      getVoter(voterId as string);
     }
   }, [router.query.voterId]);
+
+  const getVoter = async (voterId: string) => {
+    const result = await api<Voter>("get-voter", voterId);
+
+    if (result.status === "success" && result.data) {
+      const transformedData: Record<string, any> = {};
+
+      if (result.data.birthDate) {
+        transformedData["birthDate"] = new Date(result.data.birthDate);
+      }
+
+      const newVoter = fillDefault<IVoter>(defaultState, { ...result.data, ...transformedData });
+
+      setCurrentVoter(newVoter);
+      setVoter(newVoter);
+    } else if (result.status === "error") {
+      toast.error(result.data.message);
+    }
+  };
 
   const handleValueChange = (property: string) => {
     return (value: any) => {
@@ -89,7 +105,7 @@ export default function VoterDetailPage() {
       const tmpData: typeof defaultState = { ...voter };
 
       if (value) {
-        tmpData.socialGroup = [...(tmpData.socialGroup ?? []), value];
+        tmpData.socialGroup = [...(tmpData.socialGroup ?? []), property];
       } else {
         tmpData.socialGroup = tmpData.socialGroup?.filter((e) => e !== property);
       }
@@ -110,9 +126,16 @@ export default function VoterDetailPage() {
     let response: ApiResponse<string>;
 
     if (router.query.voterId === "new-voter") {
-      response = await api("add-voter", voter);
+      response = await api(
+        "add-voter",
+        extractModified<IVoter>(currentVoter, voter, ["gender", "birthDate", "civilStatus", "citizenship"]),
+      );
     } else {
-      response = await api("edit-voter", router.query.voterId, voter);
+      response = await api(
+        "edit-voter",
+        router.query.voterId,
+        extractModified<IVoter>(currentVoter, voter, ["gender", "birthDate", "civilStatus", "citizenship"]),
+      );
     }
 
     if (response.status === "success") {
@@ -152,6 +175,7 @@ export default function VoterDetailPage() {
           value={voter.name.firstName}
           onValueChange={handleValueChange("name.firstName")}
           {...error?.["name.firstName"]}
+          {...error?.["name"]}
         />
         <SecondaryInput
           label="Middle Name"
@@ -165,6 +189,7 @@ export default function VoterDetailPage() {
           value={voter.name.lastName}
           onValueChange={handleValueChange("name.lastName")}
           {...error?.["name.lastName"]}
+          {...error?.["name"]}
         />
       </div>
 
@@ -187,6 +212,7 @@ export default function VoterDetailPage() {
           value={voter.address.purok}
           onValueChange={handleValueChange("address.purok")}
           {...error?.["address.purok"]}
+          {...error?.["address"]}
         />
         <SecondaryInput
           isRequired
@@ -194,6 +220,7 @@ export default function VoterDetailPage() {
           value={voter.address.barangay}
           onValueChange={handleValueChange("address.barangay")}
           {...error?.["address.barangay"]}
+          {...error?.["address"]}
         />
         <SecondaryInput
           isRequired
@@ -201,6 +228,7 @@ export default function VoterDetailPage() {
           value={voter.address.city}
           onValueChange={handleValueChange("address.city")}
           {...error?.["address.city"]}
+          {...error?.["address"]}
         />
         <SecondaryInput
           isRequired
@@ -208,6 +236,7 @@ export default function VoterDetailPage() {
           value={voter.address.province}
           onValueChange={handleValueChange("address.province")}
           {...error?.["address.province"]}
+          {...error?.["address"]}
         />
         <SecondaryInput
           label="Zip Code"

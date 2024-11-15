@@ -23,6 +23,12 @@ export function apiHandler<ValueType = any, DataType = any>(handler: ApiHandler<
       return;
     }
 
+    if (req.body && req.headers["content-type"]?.includes("application/json") === false) {
+      res.status(415).json({ error: "Only EnhanceJson content is allowed" });
+
+      return;
+    }
+
     let response: ApiResponse<DataType>;
 
     try {

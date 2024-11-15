@@ -9,6 +9,7 @@ import { enumToKeyLabel } from "@/libraries/EnumUtil";
 import { UserRole } from "@/services/user-role/model";
 import { IUser } from "@/services/user/model";
 import useValidationState from "@/components/hook/useValidationState";
+import { extractModified } from "@/libraries/Transformer";
 
 interface UserModalProps {
   user?: IUser;
@@ -39,19 +40,9 @@ export default function UserModal(props: UserModalProps) {
   };
 
   const handleOk = async () => {
-    const defaultValue = props.user ?? defaultUser;
-    const updateValue = new Map<string, any>();
+    const modifiedData = extractModified<IUser>(defaultUser, user, ["role"]);
 
-    if (defaultValue.email !== user.email) updateValue.set("email", user.email);
-    if (defaultValue.name !== user.name) updateValue.set("name", user.name);
-    if (defaultValue.password !== user.password) updateValue.set("password", user.password);
-    if (defaultValue.role !== user.role) {
-      updateValue.set("role", user.role);
-    } else if (!props.user) {
-      updateValue.set("role", user.role || defaultValue.role);
-    }
-
-    setInputState(await props.onOk(Object.fromEntries(updateValue) as IUser));
+    setInputState(await props.onOk(modifiedData));
   };
 
   return (

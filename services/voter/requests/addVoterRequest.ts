@@ -3,6 +3,8 @@ import { z } from "zod";
 import { ValidationError } from "@/libraries/Error";
 import { FamilyRelation } from "@/services/family-relation/model";
 import { CivilStatus } from "@/services/civil-status/model";
+import { Gender } from "@/services/gender/model";
+import { toDate } from "@/libraries/Transformer";
 
 const schema = z.object({
   name: z.object({
@@ -15,32 +17,36 @@ const schema = z.object({
     city: z.string(),
     province: z.string(),
     purok: z.string(),
-    country: z.string(),
-    houseNo: z.string(),
-    street: z.string(),
-    zipCode: z.string(),
+    country: z.string().optional(),
+    houseNo: z.string().optional(),
+    street: z.string().optional(),
+    zipCode: z.string().optional(),
   }),
-  mobileNo: z.string(),
-  email: z.string().email(),
+  mobileNo: z.string().optional(),
+  email: z.string().email().optional(),
   precinctNo: z.string(),
-  gender: z.string(),
-  birthDate: z.date(),
-  placeOfBirth: z.object({
-    barangay: z.string(),
-    city: z.string(),
-    province: z.string(),
-  }),
-  family: z.array(
-    z.object({
-      name: z.string(),
-      relation: z.nativeEnum(FamilyRelation),
-    }),
-  ),
-  civilStatus: z.nativeEnum(CivilStatus),
-  tin: z.string(),
-  socialGroup: z.array(z.string()),
-  citizenship: z.string(),
-  occupation: z.string(),
+  gender: z.nativeEnum(Gender).default(Gender.Male),
+  birthDate: z.string().datetime().optional().transform(toDate),
+  placeOfBirth: z
+    .object({
+      barangay: z.string().optional(),
+      city: z.string(),
+      province: z.string().optional(),
+    })
+    .optional(),
+  family: z
+    .array(
+      z.object({
+        name: z.string(),
+        relation: z.nativeEnum(FamilyRelation).default(FamilyRelation.Parent),
+      }),
+    )
+    .optional(),
+  civilStatus: z.nativeEnum(CivilStatus).default(CivilStatus.Single),
+  tin: z.string().optional(),
+  socialGroup: z.array(z.string()).optional(),
+  citizenship: z.string().default("filipino"),
+  occupation: z.string().optional(),
 });
 
 export type addVoterRequest = z.infer<typeof schema>;

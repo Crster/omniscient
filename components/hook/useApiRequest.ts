@@ -22,23 +22,22 @@ export default function useApiRequest() {
     value?: any,
   ): Promise<ApiResponse<DataType>> {
     const url = new URL(`/api/${api}`, window.location.origin);
-    const request: RequestInit = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+    let body: string = "";
 
     if (key && value) {
       url.searchParams.append("id", key);
-      request.body = JSON.stringify(value);
+      body = JSON.stringify(value);
     } else if (key && typeof key === "string") {
       url.searchParams.append("id", key);
     } else if (key && typeof key === "object") {
-      request.body = JSON.stringify(key);
+      body = JSON.stringify(key);
     }
 
-    const response = await fetch(url, request);
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    });
 
     if (!response.ok) throw new Error(`${response.status}: Invalid server response`);
 
