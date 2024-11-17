@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import getSession, { SessionData } from "./IronSession";
 import { Redirect, AppError } from "./Error";
-import { connectToDatabase, disconnectFromDatabase } from "./Database";
 
 import { ApiResponse } from "@/components/hook/useApiRequest";
 
@@ -32,7 +31,6 @@ export function apiHandler<ValueType = any, DataType = any>(handler: ApiHandler<
     let response: ApiResponse<DataType>;
 
     try {
-      await connectToDatabase();
       const session = await getSession(req, res);
 
       const data = await handler({
@@ -61,8 +59,6 @@ export function apiHandler<ValueType = any, DataType = any>(handler: ApiHandler<
           data: { error: "UnknownError", message: "Unknown error", reason: err },
         };
       }
-    } finally {
-      await disconnectFromDatabase();
     }
 
     res.status(200).json(response);

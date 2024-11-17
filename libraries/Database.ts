@@ -1,20 +1,15 @@
-import { Document, MongoClient } from "mongodb";
+import { MongoClient } from "mongodb";
 
 import { InternalServerError } from "./Error";
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL as string;
 
-if (!DATABASE_URL) throw new InternalServerError("DATABASE_URL is not defined", { DATABASE_URL });
-const mongoClient = new MongoClient(DATABASE_URL);
+if (!DATABASE_URL) throw new InternalServerError("DATABASE_URL is not defined");
 
-export function connectToDatabase() {
-  return mongoClient.connect();
-}
+export async function getDbClient() {
+  if (!global.dbClient) {
+    global.dbClient = await MongoClient.connect(DATABASE_URL);
+  }
 
-export function disconnectFromDatabase() {
-  return mongoClient.close();
-}
-
-export function openCollection<TSchema extends Document = Document>(collectionName: string) {
-  return mongoClient.db().collection<TSchema>(collectionName);
+  return global.dbClient;
 }

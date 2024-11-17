@@ -7,13 +7,12 @@ import { getUserAction } from "./getUserAction";
 import { AuthorizationError } from "@/libraries/Error";
 import { UserRole } from "@/services/user-role/model";
 
-const userRepo = new UserRepository();
-
 export async function loginUserAction(request: loginUserRequest) {
+  const userRepo = new UserRepository();
   let user = await userRepo.getByEmail(request.email);
 
   if (!user) {
-    if ((await userRepo.count()) > 0) {
+    if (await userRepo.hasItem()) {
       throw new AuthorizationError("User not found");
     }
 

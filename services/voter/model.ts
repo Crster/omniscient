@@ -12,30 +12,30 @@ export interface IVoter {
     city: string;
     province: string;
     purok: string;
-    country: string;
-    houseNo: string;
-    street: string;
-    zipCode: string;
+    country?: string;
+    houseNo?: string;
+    street?: string;
+    zipCode?: string;
   };
-  mobileNo: string;
-  email: string;
+  mobileNo?: string;
+  email?: string;
   precinctNo: string;
   gender: string;
   birthDate: Date;
-  placeOfBirth: {
-    barangay: string;
+  placeOfBirth?: {
+    barangay?: string;
     city: string;
-    province: string;
+    province?: string;
   };
-  family: Array<{
+  family?: Array<{
     name: string;
     relation: FamilyRelation;
   }>;
   civilStatus: CivilStatus;
-  tin: string;
-  citizenship: string;
-  socialGroup: Array<string>;
-  occupation: string;
+  tin?: string;
+  citizenship?: string;
+  socialGroup?: Array<string>;
+  occupation?: string;
 }
 
 export interface Voter extends IVoter {

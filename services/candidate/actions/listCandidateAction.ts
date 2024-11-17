@@ -1,10 +1,9 @@
 import { CandidateRepository } from "../repository";
 import { listCandidateRequest } from "../requests/listCandidateRequest";
 
-const candidateRepo = new CandidateRepository();
-
 export async function listCandidateAction(request: listCandidateRequest) {
-  const candidates = await candidateRepo.getList(request.filter);
+  const candidateRepo = new CandidateRepository();
+  const candidates = await candidateRepo.getListByName(request.filter);
 
   return candidates;
 }
