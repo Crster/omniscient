@@ -1,16 +1,16 @@
-import { Document, Filter, ObjectId, WithId } from "mongodb";
+import { Document, Filter, ObjectId, OptionalUnlessRequiredId, WithId } from "mongodb";
 
 import { getDbClient } from "./Database";
 
-export type ModelTransformer<ModelId extends string = "_id", Model extends Document = Document> = (
-  model: WithId<Document> | null,
-) => (Model & { [K in ModelId]: string }) | undefined;
+export type TransformCallback<Model, IModel extends Document = Document> = (
+  model: WithId<IModel> | null,
+) => Model | undefined;
 
-export abstract class BaseRepository<ModelId extends string = "_id", Model extends Document = Document> {
+export abstract class BaseRepository<Model, IModel extends Document = Document> {
   private readonly collectionName: string;
-  protected readonly transform: ModelTransformer<ModelId, Model>;
+  protected readonly transform: TransformCallback<Model, IModel>;
 
-  constructor(collectionName: string, formatter: ModelTransformer<ModelId, Model>) {
+  constructor(collectionName: string, formatter: TransformCallback<Model, IModel>) {
     this.collectionName = collectionName;
     this.transform = formatter;
   }
@@ -18,7 +18,7 @@ export abstract class BaseRepository<ModelId extends string = "_id", Model exten
   protected async getCollection() {
     const client = await getDbClient();
 
-    return client.db().collection(this.collectionName);
+    return client.db().collection<IModel>(this.collectionName);
   }
 
   async hasItem() {
@@ -30,13 +30,13 @@ export abstract class BaseRepository<ModelId extends string = "_id", Model exten
 
   async getById(id: string) {
     const collection = await this.getCollection();
-    const result = await collection.findOne({ _id: ObjectId.createFromHexString(id) });
+    const result = await collection.findOne({ _id: ObjectId.createFromHexString(id) } as any);
 
     return this.transform(result);
   }
 
   async getList(filter?: Filter<Document>) {
-    const result: Array<Model & { [K in ModelId]: string }> = [];
+    const result: Array<Model> = [];
     const collection = await this.getCollection();
 
     const cursor = filter ? collection.find(filter, { limit: 1000 }) : collection.find({}, { limit: 1000 });
@@ -51,7 +51,7 @@ export abstract class BaseRepository<ModelId extends string = "_id", Model exten
     return result;
   }
 
-  async create(model: Model) {
+  async create(model: OptionalUnlessRequiredId<IModel>) {
     const collection = await this.getCollection();
     const result = await collection.insertOne(model);
 
@@ -60,9 +60,9 @@ export abstract class BaseRepository<ModelId extends string = "_id", Model exten
     }
   }
 
-  async update(id: string, model: Partial<Model>) {
+  async update(id: string, model: Partial<IModel>) {
     const collection = await this.getCollection();
-    const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: model });
+    const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) } as any, { $set: model });
 
     if (result.acknowledged) {
       return result.modifiedCount > 0;
@@ -71,7 +71,7 @@ export abstract class BaseRepository<ModelId extends string = "_id", Model exten
 
   async remove(id: string) {
     const collection = await this.getCollection();
-    const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(id) });
+    const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(id) } as any);
 
     if (result.acknowledged) {
       return result.deletedCount > 0;

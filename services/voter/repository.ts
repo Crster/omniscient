@@ -1,8 +1,8 @@
-import { IVoter } from "./model";
+import { IVoter, Voter } from "./model";
 
 import { BaseRepository } from "@/libraries/BaseRepository";
 
-export class VoterRepository extends BaseRepository<"voterId", IVoter> {
+export class VoterRepository extends BaseRepository<Voter, IVoter> {
   constructor() {
     super("voters", (voter) => {
       if (voter) {

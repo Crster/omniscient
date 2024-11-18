@@ -1,8 +1,8 @@
-import { IUser } from "./model";
+import { IUser, User } from "./model";
 
 import { BaseRepository } from "@/libraries/BaseRepository";
 
-export class UserRepository extends BaseRepository<"userId", IUser> {
+export class UserRepository extends BaseRepository<User, IUser> {
   constructor() {
     super("users", (user) => {
       if (user) {
