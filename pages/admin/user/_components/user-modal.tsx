@@ -61,6 +61,7 @@ export default function UserModal(props: UserModalProps) {
                 {...inputState["name"]}
               />
               <PrimaryInput
+                isReadOnly={!!props.user}
                 isRequired={!props.user}
                 label="Email"
                 placeholder="Input Email"

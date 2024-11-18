@@ -59,7 +59,7 @@ export default function VoterDetailPage() {
   const api = useApiRequest();
   const [currentVoter, setCurrentVoter] = useState(defaultState);
   const [voter, setVoter] = useState(defaultState);
-  const [error, setError] = useValidationState();
+  const [error, setError] = useValidationState("voter");
 
   useEffect(() => {
     const { voterId } = router.query;
@@ -125,6 +125,11 @@ export default function VoterDetailPage() {
   const handleSave = async () => {
     let response: ApiResponse<string>;
 
+    // Remove empty family member
+    if (voter.family && Array.isArray(voter.family) && voter.family.length > 0) {
+      voter.family = voter.family.filter((ii) => ii.name && ii.name.length > 0);
+    }
+
     if (router.query.voterId === "new-voter") {
       response = await api(
         "add-voter",
@@ -139,7 +144,7 @@ export default function VoterDetailPage() {
     }
 
     if (response.status === "success") {
-      const voterId = response.data;
+      const voterId = response.data ?? (router.query.voterId as string);
 
       toast.success("Successfully save voter " + voter.name.lastName);
       router.replace(`/admin/voter/${voterId}`);
@@ -288,7 +293,7 @@ export default function VoterDetailPage() {
         <SecondaryDateInput
           label="Date of Birth"
           value={toCalendar(voter.birthDate)}
-          onChange={(val) => handleValueChange("birthDate")(val.toDate(getLocalTimeZone()))}
+          onChange={(val) => (val ? handleValueChange("birthDate")(val.toDate(getLocalTimeZone())) : val)}
           {...error?.["birthDate"]}
         />
 

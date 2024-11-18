@@ -14,8 +14,8 @@ export function toDate(dateStr?: string) {
 }
 
 export function extractModified<T extends Record<string, any>>(oldValue: T, newValue: T, defaults?: Array<keyof T>) {
-  const oldFlat = flatten<T, Record<string, any>>(oldValue);
-  const newFlat = flatten<T, Record<string, any>>(newValue);
+  const oldFlat = flatten<T, Record<string, any>>(oldValue, { maxDepth: 1 });
+  const newFlat = flatten<T, Record<string, any>>(newValue, { maxDepth: 1 });
 
   const diff: Record<string, any> = {};
   const keys = Array.from(new Set([...Object.keys(oldFlat), ...Object.keys(newFlat)]));
@@ -35,8 +35,8 @@ export function extractModified<T extends Record<string, any>>(oldValue: T, newV
 }
 
 export function fillDefault<T>(defaultValue: T, newValue: T) {
-  const defaultFlat = flatten<T, Record<string, any>>(defaultValue);
-  const newFlat = flatten<T, Record<string, any>>(newValue);
+  const defaultFlat = flatten<T, Record<string, any>>(defaultValue, { maxDepth: 1 });
+  const newFlat = flatten<T, Record<string, any>>(newValue, { maxDepth: 1 });
 
   const merge: Record<string, any> = {};
   const keys = Array.from(new Set([...Object.keys(defaultFlat), ...Object.keys(newFlat)]));
