@@ -25,4 +25,20 @@ export class SurveyRepository extends BaseRepository<Survey, ISurvey & { created
 
     return survey;
   }
+
+  async getListByCandidateAndVoters(candidateId: string, voterIds: Array<string>) {
+    const result: Array<Survey> = [];
+
+    const collection = await this.getCollection();
+    const cursor = collection.find({ "candidate.candidateId": candidateId, "$voter.voterId": { $in: voterIds } });
+
+    while (await cursor.hasNext()) {
+      const document = await cursor.next();
+      const model = this.transform(document);
+
+      if (model) result.push(model);
+    }
+
+    return result;
+  }
 }

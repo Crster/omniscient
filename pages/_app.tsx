@@ -27,12 +27,10 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [router.pathname]);
 
   return (
-    <NextUIProvider navigate={router.push}>
-      <NextThemesProvider attribute="class" defaultTheme="light">
-        {renderComponent()}
-        <Toaster position="bottom-center" />
-      </NextThemesProvider>
-    </NextUIProvider>
+    <NextThemesProvider attribute="class" defaultTheme="light">
+      <NextUIProvider navigate={router.push}>{renderComponent()}</NextUIProvider>
+      <Toaster position="bottom-center" />
+    </NextThemesProvider>
   );
 }
 
