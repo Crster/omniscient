@@ -8,12 +8,12 @@ const schema = z.object({
   name: z.string(),
   address: z.string(),
   position: z.nativeEnum(Position),
-  party: z.string(),
-  coalition: z.string(),
-  alias: z.string(),
-  gender: z.nativeEnum(Gender),
-  photoUrl: z.string().url(),
-  email: z.string().email(),
+  party: z.string().optional(),
+  coalition: z.string().optional(),
+  alias: z.string().optional(),
+  gender: z.nativeEnum(Gender).default(Gender.Male),
+  photoUrl: z.string().url().optional(),
+  email: z.string().email().optional(),
   mobileNo: z.string().optional(),
 });
 
@@ -23,6 +23,10 @@ export function createAddCandidateRequest(input: z.input<typeof schema>) {
   const { success, error, data } = schema.safeParse(input);
 
   if (!success) throw new ValidationError("Invalid request input", error);
+
+  if (!data.photoUrl) {
+    data.photoUrl = `https://ui-avatars.com/api/?format=png&name=${data.name.replace(" ", "+")}`;
+  }
 
   return data;
 }

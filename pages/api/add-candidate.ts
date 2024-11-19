@@ -3,7 +3,7 @@ import { addCandidateAction } from "@/services/candidate/actions/addCandidateAct
 import { createAddCandidateRequest } from "@/services/candidate/requests/addCandidateRequest";
 
 export default apiHandler(async (req) => {
-  const request = createAddCandidateRequest(req.value as any);
+  const request = createAddCandidateRequest(req.value);
   const candidateId = await addCandidateAction(request);
 
   return candidateId;

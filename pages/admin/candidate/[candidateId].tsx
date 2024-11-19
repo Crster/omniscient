@@ -5,6 +5,7 @@ import { MdOutlineSave } from "react-icons/md";
 import { flatten, unflatten } from "flat";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 
 import { SecondaryInput } from "@/components/theme/Input";
 import { PrimaryButton } from "@/components/theme/Button";
@@ -15,24 +16,45 @@ import { ICandidate } from "@/services/candidate/model";
 import { Position } from "@/services/position/model";
 import { Gender } from "@/services/gender/model";
 import useValidationState from "@/components/hook/useValidationState";
+import { extractModified, fillDefault } from "@/libraries/Transformer";
+import { getCandidateAction } from "@/services/candidate/actions/getCandidateAction";
+import { createGetCandidateRequest } from "@/services/candidate/requests/getCandidateRequest";
 
-const defaultState: ICandidate = {
-  name: "",
-  address: "",
-  position: Position.Other,
-  party: "",
-  coalition: "",
-  alias: "",
-  gender: Gender.Male,
-  photoUrl: "",
-  email: "",
-  mobileNo: "",
-};
+export async function getServerSideProps(context: GetServerSidePropsContext<{ candidateId: string }>) {
+  const candidateId = context.params?.candidateId || "new-candidate";
 
-export default function VoterDetailPage() {
+  let currentCandidate: ICandidate = {
+    name: "",
+    address: "",
+    position: Position.Other,
+    party: "",
+    coalition: "",
+    alias: "",
+    gender: Gender.Male,
+    photoUrl: "",
+    email: "",
+    mobileNo: "",
+  };
+
+  if (candidateId !== "new-candidate") {
+    const request = createGetCandidateRequest({ candidateId });
+    const candidate = await getCandidateAction(request);
+
+    currentCandidate = fillDefault(currentCandidate, candidate);
+  }
+
+  return {
+    props: {
+      candidateId,
+      currentCandidate,
+    },
+  };
+}
+
+export default function VoterDetailPage({ currentCandidate }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const api = useApiRequest();
-  const [candidate, setCandidate] = useState(defaultState);
+  const [candidate, setCandidate] = useState(currentCandidate);
   const [error, setError] = useValidationState();
 
   const handleValueChange = (property: string) => {
@@ -41,7 +63,7 @@ export default function VoterDetailPage() {
 
       tmpData[property] = value;
 
-      const newData: typeof defaultState = unflatten(tmpData);
+      const newData: typeof currentCandidate = unflatten(tmpData);
 
       setCandidate(newData);
     };
@@ -51,9 +73,16 @@ export default function VoterDetailPage() {
     let response: ApiResponse<string>;
 
     if (router.query.candidateId === "new-candidate") {
-      response = await api("add-candidate", candidate);
+      response = await api(
+        "add-candidate",
+        extractModified<ICandidate>(currentCandidate, candidate, ["gender", "position"]),
+      );
     } else {
-      response = await api("edit-candidate", router.query.candidateId, candidate);
+      response = await api(
+        "edit-candidate",
+        router.query.candidateId,
+        extractModified<ICandidate>(currentCandidate, candidate, ["gender", "position"]),
+      );
     }
 
     if (response.status === "success") {

@@ -1,22 +1,29 @@
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { InferGetStaticPropsType } from "next";
 
 import { DataTable, useDataTable } from "@/components/theme/DataTable";
 import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { Selection } from "@/components/theme/Selection";
-import { KeyLabel } from "@/libraries/EnumUtil";
 import { VoterDto } from "@/services/voter/model";
+import { listCandidateAction } from "@/services/candidate/actions/listCandidateAction";
+import { KeyLabel } from "@/libraries/EnumUtil";
 
-export default function VoterPage() {
-  const [candidates, setCandidates] = useState<Array<KeyLabel>>([]);
+export async function getStaticProps() {
+  const ret: Array<KeyLabel> = [];
+  const candidates = await listCandidateAction({ filter: undefined });
+
+  for (const candidate of candidates) {
+    ret.push({ key: candidate.candidateId, label: candidate.name });
+  }
+
+  return { props: { candidates: ret } };
+}
+
+export default function VoterPage({ candidates }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter();
   const api = useApiRequest();
-
-  useEffect(() => {
-    loadCandidates();
-  }, []);
 
   const voterTable = useDataTable<VoterDto>({
     keyField: "voterId",
@@ -92,14 +99,6 @@ export default function VoterPage() {
       },
     ],
   });
-
-  const loadCandidates = async () => {
-    const result = await api("list-candidate");
-
-    if (result.status === "success") {
-      setCandidates(result.data);
-    }
-  };
 
   const handleNew = () => {
     router.push("/admin/voter/new-voter");

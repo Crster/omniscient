@@ -5,11 +5,11 @@ export interface ICandidate {
   name: string;
   address: string;
   position: Position;
-  party: string;
-  coalition: string;
-  photoUrl: string;
-  email: string;
-  alias: string;
+  party?: string;
+  coalition?: string;
+  photoUrl?: string;
+  email?: string;
+  alias?: string;
   mobileNo?: string;
   gender: Gender;
 }
