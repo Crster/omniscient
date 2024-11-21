@@ -23,3 +23,11 @@ export type CandidateDto = Pick<Candidate, "candidateId" | "name" | "position" |
   voters: number;
   popularity: number;
 };
+
+export type CandidateSimpleDto = {
+  candidateId: string;
+  name: string;
+  position: Position;
+  photoUrl: string;
+  party: string;
+};

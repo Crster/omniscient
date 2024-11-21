@@ -26,4 +26,8 @@ export class CandidateRepository extends BaseRepository<Candidate, ICandidate> {
   async getListByName(filter?: string) {
     return filter ? await super.getList({ name: { $regex: filter, $options: "i" } }) : await super.getList();
   }
+
+  async getListByPosition(position: string) {
+    return await super.getList({ position });
+  }
 }

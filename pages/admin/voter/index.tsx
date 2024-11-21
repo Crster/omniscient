@@ -1,29 +1,25 @@
-import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
+import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit, MdOutlineHelp } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { InferGetStaticPropsType } from "next";
+import { useState } from "react";
+
+import SurveyModal from "./_components/voter-survey";
 
 import { DataTable, useDataTable } from "@/components/theme/DataTable";
 import { IconButton, PrimaryButton } from "@/components/theme/Button";
 import useApiRequest from "@/components/hook/useApiRequest";
 import { Selection } from "@/components/theme/Selection";
 import { VoterDto } from "@/services/voter/model";
-import { listCandidateAction } from "@/services/candidate/actions/listCandidateAction";
-import { KeyLabel } from "@/libraries/EnumUtil";
+import { enumToKeyLabel } from "@/libraries/EnumUtil";
+import { Position } from "@/services/position/model";
+import { ISurvey } from "@/services/survey/model";
 
-export async function getStaticProps() {
-  const ret: Array<KeyLabel> = [];
-  const candidates = await listCandidateAction({ filter: undefined });
+const positionList = enumToKeyLabel(Position);
 
-  for (const candidate of candidates) {
-    ret.push({ key: candidate.candidateId, label: candidate.name });
-  }
-
-  return { props: { candidates: ret } };
-}
-
-export default function VoterPage({ candidates }: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function VoterPage() {
   const router = useRouter();
   const api = useApiRequest();
+  const [selectedVoter, setSelectedVoter] = useState<VoterDto>();
+  const [position, setPosition] = useState(Position.President);
 
   const voterTable = useDataTable<VoterDto>({
     keyField: "voterId",
@@ -78,6 +74,17 @@ export default function VoterPage({ candidates }: InferGetStaticPropsType<typeof
         template: (item) => {
           return (
             <div className="flex flex-row gap-1 justify-end">
+              {!item.surveyor && (
+                <IconButton
+                  icon={<MdOutlineHelp className="text-2xl text-green-500" />}
+                  label="Survey"
+                  variant="light"
+                  onPress={() => {
+                    setSelectedVoter(item);
+                  }}
+                />
+              )}
+
               <IconButton
                 icon={<MdOutlineEdit className="text-2xl text-blue-500" />}
                 label="Edit"
@@ -104,6 +111,13 @@ export default function VoterPage({ candidates }: InferGetStaticPropsType<typeof
     router.push("/admin/voter/new-voter");
   };
 
+  const handleSurvey = async (survies: Array<ISurvey>) => {
+    // const result = await api("add-survey", survies);
+    // if (result.status === "error") {
+    //   return result.data.reason;
+    // }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2">
@@ -121,9 +135,22 @@ export default function VoterPage({ candidates }: InferGetStaticPropsType<typeof
       </div>
 
       <div className="flex flex-row gap-1">
-        <Selection className="px-2 w-60" items={candidates} label="Candidates" />
+        <Selection
+          className="px-2 w-60"
+          items={positionList}
+          label="Position"
+          selectedKeys={[position]}
+          onValueChange={setPosition}
+        />
       </div>
       <DataTable {...voterTable} />
+      <SurveyModal
+        open={!!selectedVoter}
+        position={positionList}
+        voter={selectedVoter}
+        onClose={() => setSelectedVoter(undefined)}
+        onOk={handleSurvey}
+      />
     </>
   );
 }

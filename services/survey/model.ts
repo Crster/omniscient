@@ -1,3 +1,4 @@
+import { Position } from "../position/model";
 import { SurveyStatus } from "../survey-status/model";
 
 export interface ISurvey {
@@ -5,6 +6,7 @@ export interface ISurvey {
   surveyor: { userId: string; name: string };
   validator: { userId: string; name: string };
   candidate: { candidateId: string; name: string };
+  position: Position;
   status: SurveyStatus;
 }
 
