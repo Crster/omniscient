@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableProps,
   TableRow,
-} from "@nextui-org/table";
+} from "@heroui/table";
 import { AsyncListData, useAsyncList } from "@react-stately/data";
 import { orderBy } from "lodash";
 import React from "react";

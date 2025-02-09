@@ -13,6 +13,7 @@ export class SurveyRepository extends BaseRepository<Survey, ISurvey & { created
           surveyor: survey.surveyor,
           validator: survey.validator,
           voter: survey.voter,
+          position: survey.position,
           createdOn: survey.createdOn,
           updatedOn: survey.updatedOn,
         };

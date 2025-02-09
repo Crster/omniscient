@@ -112,10 +112,11 @@ export default function VoterPage() {
   };
 
   const handleSurvey = async (survies: Array<ISurvey>) => {
-    // const result = await api("add-survey", survies);
-    // if (result.status === "error") {
-    //   return result.data.reason;
-    // }
+    const result = await api("add-survey", survies);
+
+    if (result.status === "error") {
+      return result.data.reason;
+    }
   };
 
   return (

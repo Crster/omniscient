@@ -1,6 +1,6 @@
-import { Button, ButtonProps } from "@nextui-org/button";
-import { Tooltip } from "@nextui-org/tooltip";
-import { Link } from "@nextui-org/link";
+import { Button, ButtonProps } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
+import { Link } from "@heroui/link";
 
 export function PrimaryButton(props: ButtonProps) {
   return <Button color="primary" radius="sm" {...props} />;

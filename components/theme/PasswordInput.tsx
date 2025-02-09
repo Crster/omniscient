@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
-import { InputProps } from "@nextui-org/input";
+import { InputProps } from "@heroui/input";
 
 import { PrimaryInput } from "./Input";
 

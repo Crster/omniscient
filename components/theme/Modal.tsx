@@ -1,4 +1,4 @@
-import * as NextUI from "@nextui-org/modal";
+import * as NextUI from "@heroui/modal";
 import { ReactElement } from "react";
 
 import { PrimaryButton, SecondaryButton } from "./Button";

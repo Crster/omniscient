@@ -1,5 +1,5 @@
-import { DatePicker, DatePickerProps } from "@nextui-org/date-picker";
-import { Input, InputProps } from "@nextui-org/input";
+import { DatePicker, DatePickerProps } from "@heroui/date-picker";
+import { Input, InputProps } from "@heroui/input";
 
 export function PrimaryInput(props: InputProps) {
   return (

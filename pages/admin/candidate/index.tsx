@@ -1,4 +1,4 @@
-import { User } from "@nextui-org/user";
+import { User } from "@heroui/user";
 import { MdOutlineAdd } from "react-icons/md";
 import { useRouter } from "next/router";
 

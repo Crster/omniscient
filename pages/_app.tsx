@@ -2,9 +2,9 @@ import type { AppProps } from "next/app";
 
 import { useCallback } from "react";
 import { Toaster } from "react-hot-toast";
-import { NextUIProvider } from "@nextui-org/system";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/router";
+import { HeroUIProvider } from "@heroui/react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 import "@/styles/globals.css";
 
@@ -28,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <NextThemesProvider attribute="class" defaultTheme="light">
-      <NextUIProvider navigate={router.push}>{renderComponent()}</NextUIProvider>
+      <HeroUIProvider navigate={router.push}>{renderComponent()}</HeroUIProvider>
       <Toaster position="bottom-center" />
     </NextThemesProvider>
   );

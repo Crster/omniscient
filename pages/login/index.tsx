@@ -1,6 +1,6 @@
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 import { MdLockOutline, MdOutlineMail } from "react-icons/md";
 import { useState } from "react";
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Checkbox } from "@nextui-org/checkbox";
+import { Checkbox } from "@heroui/checkbox";
 import { getLocalTimeZone } from "@internationalized/date";
 import { MdOutlineAdd, MdOutlineSave } from "react-icons/md";
 import { flatten, unflatten } from "flat";

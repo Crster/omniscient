@@ -1,4 +1,4 @@
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { MdOutlineQuestionMark, MdOutlineWarning } from "react-icons/md";
 import { ReactNode } from "react";
 

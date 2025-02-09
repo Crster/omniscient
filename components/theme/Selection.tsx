@@ -1,5 +1,5 @@
-import { Radio, RadioGroup, RadioGroupProps } from "@nextui-org/radio";
-import { Select, SelectItem, SelectProps } from "@nextui-org/select";
+import { Radio, RadioGroup, RadioGroupProps } from "@heroui/radio";
+import { Select, SelectItem, SelectProps } from "@heroui/select";
 
 import { KeyLabel } from "@/libraries/EnumUtil";
 

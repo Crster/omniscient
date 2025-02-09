@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { ValidationError } from "@/libraries/Error";
 import { SurveyStatus } from "@/services/survey-status/model";
+import { Position } from "@/services/position/model";
 
 const schema = z.object({
   voter: z.object({
@@ -21,6 +22,7 @@ const schema = z.object({
     userId: z.string(),
     name: z.string(),
   }),
+  position: z.nativeEnum(Position).default(Position.Other),
 });
 
 export type addSurveyRequest = z.infer<typeof schema>;
