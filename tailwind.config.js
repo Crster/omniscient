@@ -2,6 +2,8 @@ const { heroui } = require("@heroui/react");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
+  plugins: [heroui()],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,11 +12,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)"],
-        mono: ["var(--font-mono)"],
+        sans: ["var(--font-poppins)", "sans-serif"],
+        mono: ["var(--font-roboto-mono)", "monospace"],
       },
     },
   },
-  darkMode: "class",
-  plugins: [heroui()],
 };

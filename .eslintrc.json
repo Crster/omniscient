@@ -73,7 +73,7 @@
             "position": "after"
           }
         ],
-        "newlines-between": "always"
+        "newlines-between": "never"
       }
     ],
     "react/self-closing-comp": "warn",
@@ -82,7 +82,7 @@
       {
         "callbacksLast": true,
         "shorthandFirst": true,
-        "noSortAlphabetically": false,
+        "noSortAlphabetically": true,
         "reservedFirst": true
       }
     ],
