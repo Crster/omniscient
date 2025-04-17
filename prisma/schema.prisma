@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type VotersAddress {
+  barangay String
+  city     String
+  houseNo  String
+  province String
+  purok    String
+  street   String
+  zipCode  String
+}
+
+type VotersFamily {
+  name     String
+  relation String
+}
+
+type VotersName {
+  firstName  String
+  lastName   String
+  middleName String
+}
+
+type VotersPlaceOfBirth {
+  barangay String
+  city     String
+  province String
+}
+
+model Candidate {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  address  String
+  alias    String
+  gender   String
+  name     String
+  photoUrl String
+  position String
+
+  @@map("candidates")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String
+  name     String
+  password String
+  role     String
+
+  @@map("users")
+}
+
+model Voter {
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  address      VotersAddress
+  birthDate    DateTime           @db.Date
+  citizenship  String
+  civilStatus  String
+  email        String
+  family       VotersFamily[]
+  gender       String
+  mobileNo     String
+  name         VotersName
+  occupation   String
+  placeOfBirth VotersPlaceOfBirth
+  precinctNo   String
+  socialGroup  String[]
+  tin          String
+
+  @@map("voters")
+}

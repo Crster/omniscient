@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Button, Listbox, ListboxItem } from "@heroui/react";
 import { twMerge } from "tailwind-merge";
-import { MaterialIcon } from "./material-icon";
+import { MaterialIcon } from "./MaterialIcon";
 import { ReactComponent } from "@/types/ReactComponent";
 import { mainMenu } from "@/configs/main-menu";
 

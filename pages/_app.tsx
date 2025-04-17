@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { AppProps } from "next/app";
 import { twJoin } from "tailwind-merge";
 import { materialSymbolsOutlined, poppins, robotoMono } from "@/configs/font";
-import { Provider } from "@/components/provider";
+import { Provider } from "@/components/Provider";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
