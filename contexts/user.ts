@@ -1,19 +1,23 @@
+import { useAsyncList } from "react-stately";
+import { useDisclosure } from "@heroui/react";
 import { reqwes } from "@/configs/reqwes";
 import { User } from "@/services/user/user.model";
-import { create } from "zustand";
+import { createPageContext } from "@/utils/page-context";
 
-interface UserPageState {
-  users: User[];
-}
+export const userPageContext = createPageContext(() => {
+  const addUserModal = useDisclosure();
 
-interface UserPageAction {
-  init: () => Promise<void>;
-}
+  const userList = useAsyncList<User>({
+    getKey: (item) => item.id,
+    async load({ signal }) {
+      const users = await reqwes.get<User[]>("/api/user", signal);
 
-export const useUserPageContext = create<UserPageAction & UserPageState>((set) => ({
-  init: async () => {
-    const users = await reqwes.get<User[]>("/api/user");
-    set({ users });
-  },
-  users: [],
-}));
+      return { items: users };
+    },
+  });
+
+  return {
+    userList,
+    addUserModal,
+  };
+});

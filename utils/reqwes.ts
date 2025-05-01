@@ -1,30 +1,7 @@
+import { BadRequestError, CriticalError, NotFoundError, UnauthorizedError } from "./reqres-error";
+
 export interface ReqwesOption {
   baseUrl?: string;
-}
-
-export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "NotFoundError";
-  }
-}
-export class UnauthorizedError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "UnauthorizedError";
-  }
-}
-export class BadRequestError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "BadRequestError";
-  }
-}
-export class CriticalError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "CriticalError";
-  }
 }
 
 export class Reqwes {
@@ -34,8 +11,8 @@ export class Reqwes {
     this.baseUrl = options?.baseUrl || "";
   }
 
-  async get<T>(url: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${url}`);
+  async get<T>(url: string, signal?: AbortSignal): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${url}`, { signal });
 
     if (!response.ok) {
       if (response.status === 404) {
