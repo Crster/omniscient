@@ -60,7 +60,8 @@ export class Respawn {
           res.status(400).json({ error: error.message });
         } else if (error instanceof CriticalError) {
           res.status(500).json({ error: error.message });
-        } else {
+        } else if (error instanceof Error) {
+          console.error("Unexpected error:", error.message);
           res.status(500).json({ error: "Internal Server Error" });
         }
       }
