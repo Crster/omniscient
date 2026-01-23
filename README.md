@@ -1,33 +1,75 @@
-# Omniscient
+# Nuxt Minimal Starter
 
-Omniscient is a powerful NodeJS-based platform designed to empower political campaigns and organizations with deep insights into their electorate.  It combines robust voter profiling capabilities with dynamic survey tools, enabling you to understand voter demographics, preferences, and opinions, leading to more targeted and effective campaign strategies.
+Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-## Technologies Used
+## Setup
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI](https://nextui.org)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
-- [next-themes](https://github.com/pacocoursey/next-themes)
-
-## How to Use
-
-### Install dependencies
-
-Install nodejs 18 in your system then pull this project. Use npm to install needed dependencies
+Make sure to install dependencies:
 
 ```bash
+# npm
 npm install
+
+# pnpm
+pnpm install
+
+# yarn
+yarn install
+
+# bun
+bun install
 ```
 
-### Run the development server
+## Development Server
+
+Start the development server on `http://localhost:3000`:
 
 ```bash
+# npm
 npm run dev
+
+# pnpm
+pnpm dev
+
+# yarn
+yarn dev
+
+# bun
+bun run dev
 ```
 
-## License
+## Production
 
-Licensed under the [MIT license](https://github.com/nextui-org/next-pages-template/blob/main/LICENSE).
+Build the application for production:
+
+```bash
+# npm
+npm run build
+
+# pnpm
+pnpm build
+
+# yarn
+yarn build
+
+# bun
+bun run build
+```
+
+Locally preview production build:
+
+```bash
+# npm
+npm run preview
+
+# pnpm
+pnpm preview
+
+# yarn
+yarn preview
+
+# bun
+bun run preview
+```
+
+Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
