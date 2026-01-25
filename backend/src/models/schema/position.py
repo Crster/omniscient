@@ -1,4 +1,4 @@
-from src.models.base import Base, Field, FieldDefinition, FieldLinkDefinition
+from src.models.base import Base, Field, FieldDefinition
 
 
 class Position(Base):
@@ -14,6 +14,3 @@ class Position(Base):
 
     # Status Field
     is_active: Field[bool] = FieldDefinition(default=True)
-    
-    # Reference Field
-    candidates = FieldLinkDefinition("Candidate", back_populates="position")

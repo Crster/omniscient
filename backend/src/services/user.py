@@ -18,7 +18,8 @@ class UserService:
         self.session.add(user)
 
     def list_all(self):
-        return self.session.execute(select(User)).all()
+        results = self.session.execute(select(User)).all()
+        return [result._asdict() for result in results]
 
 
 UserServiceDep = Annotated[UserService, Depends(UserService)]
