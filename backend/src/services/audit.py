@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from sqlmodel import SQLModel
 from datetime import datetime
 from uuid import uuid4
 
@@ -14,14 +14,16 @@ class AuditService:
         self.user = None
         self.session = session
 
-    def __add_audit(
-        self, type: str, action: AuditAction, payload: BaseModel | None, log: str | None
+    def add(
+        self, type: str, action: AuditAction, payload: SQLModel | None, log: str | None
     ):
+        payload_map = payload.model_dump() if payload is not None else None
+        
         audit = Audit(
             id=str(uuid4()),
             type=type,
             action=action,
-            payload=payload,
+            payload=payload_map,
             log=log,
             created_by_id=self.user.id if self.user is not None else None,
             created_at=datetime.utcnow(),
@@ -31,14 +33,14 @@ class AuditService:
 
         return audit.id
 
-    def create(self, type: str, log: str | None = None, payload: BaseModel | None = None):
-        return self.__add_audit(type, AuditAction.CREATE, payload, log)
+    def addCreateAction(self, type: str, log: str | None = None, payload: SQLModel | None = None):
+        return self.add(type, AuditAction.CREATE, payload, log)
 
-    def update(self, type: str, log: str | None = None, payload: BaseModel | None = None):
-        return self.__add_audit(type, AuditAction.UPDATE, payload, log)
+    def addUpdateAction(self, type: str, log: str | None = None, payload: SQLModel | None = None):
+        return self.add(type, AuditAction.UPDATE, payload, log)
 
-    def delete(self, type: str, log: str | None = None, payload: BaseModel | None = None):
-        return self.__add_audit(type, AuditAction.DELETE, payload, log)
+    def addDeleteAction(self, type: str, log: str | None = None, payload: SQLModel | None = None):
+        return self.add(type, AuditAction.DELETE, payload, log)
 
 
 AuditServiceDep = Annotated[AuditService, Depends(AuditService)]

@@ -9,7 +9,7 @@ class UserService:
     def __init__(self, session: DatabaseSessionDep):
         self.session = session
 
-    def create(self, name: str, email: str, password: str):
+    def add(self, name: str, email: str, password: str):
         user = User(
             name=name,
             email=email,
@@ -17,6 +17,7 @@ class UserService:
         )
 
         self.session.add(user)
+        return user
 
     def list_all(self):
         return self.session.exec(select(User)).all()

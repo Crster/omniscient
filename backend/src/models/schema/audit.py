@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Index, Column, JSON
-from pydantic import BaseModel
+from typing import Any
 from datetime import datetime
 from enum import Enum
 
@@ -16,7 +16,7 @@ class Audit(SQLModel, table=True):
 
     # Payload Fields
     type: str
-    payload: BaseModel | None = Field(sa_column=Column(JSON))
+    payload: dict[str, Any] | None = Field(sa_column=Column(JSON))
     action: AuditAction
     log: str | None
 
