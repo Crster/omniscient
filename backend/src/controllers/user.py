@@ -1,10 +1,13 @@
 from fastapi import APIRouter, status
+from typing import Sequence
 
 from src.helpers.database import DatabaseSessionDep
 from src.services.audit import AuditServiceDep
 from src.services.user import UserServiceDep
 
 from src.dto.user import CreateUserDto
+from src.models.schema.user import User
+
 
 router = APIRouter(
     prefix="/user",
@@ -29,5 +32,5 @@ async def create_user(
 
 
 @router.get("/", summary="Get all users")
-async def list_users(user_service: UserServiceDep):
+async def list_users(user_service: UserServiceDep) -> Sequence[User]:
     return user_service.list_all()

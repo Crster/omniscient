@@ -1,20 +1,15 @@
-from sqlalchemy import ForeignKey
+from sqlmodel import SQLModel, Field
 from datetime import datetime
 
-from src.models.base import Base, Field, FieldDefinition
 
-
-class Partylist(Base):
-    __tablename__ = "partylist"
-
-    id: Field[int] = FieldDefinition(primary_key=True, autoincrement=True)
+class Partylist(SQLModel, table=True):
+    id: int | None = Field(primary_key=True)
 
     # General Field
-    name: Field[str]
-    lead_id: Field[int | None] = FieldDefinition(ForeignKey("person.id"))
+    name: str
+    lead_id: int | None = Field(foreign_key="person.id")
 
-    registered_at: Field[datetime | None]
+    registered_at: datetime | None
 
     # Status Field
-    is_active: Field[bool] = FieldDefinition(default=True)
-    
+    is_active: bool | None = Field(default=True)

@@ -1,16 +1,14 @@
-from src.models.base import Base, Field, FieldDefinition
+from sqlmodel import SQLModel, Field
 
 
-class Position(Base):
-    __tablename__ = "position"
-
-    id: Field[int] = FieldDefinition(primary_key=True, autoincrement=True)
+class Position(SQLModel, table=True):
+    id: int | None = Field(primary_key=True)
 
     # Ballot Field
-    description: Field[str]
-    min_seat: Field[int]
-    max_seat: Field[int]
-    sort_index: Field[int]
+    description: str
+    min_seat: int
+    max_seat: int
+    sort_index: int
 
     # Status Field
-    is_active: Field[bool] = FieldDefinition(default=True)
+    is_active: bool | None = Field(default=True)

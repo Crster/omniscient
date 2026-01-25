@@ -1,18 +1,13 @@
-from sqlalchemy import ForeignKey
-
-from src.models.base import Base, Field, FieldDefinition
+from sqlmodel import SQLModel, Field
 
 
-class Voter(Base):
-    __tablename__ = "voter"
-
-    id: Field[int] = FieldDefinition(primary_key=True, autoincrement=True)
+class Voter(SQLModel, table=True):
+    id: int | None = Field(primary_key=True)
 
     # Election Fields
-    voter_no: Field[str | None]
-    precinct_no: Field[str | None]
-
+    voter_no: str | None
+    precinct_no: str | None
 
     # Reference Fields
-    person_id: Field[int] = FieldDefinition(ForeignKey("person.id"))
-    surveyor_id: Field[int] = FieldDefinition(ForeignKey("user.id"))
+    person_id: int = Field(foreign_key="person.id")
+    surveyor_id: int = Field(foreign_key="user.id")

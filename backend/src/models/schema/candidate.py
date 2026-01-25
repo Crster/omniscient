@@ -1,23 +1,20 @@
-from sqlalchemy import Index, ForeignKey
+from sqlalchemy import Index
+from sqlmodel import SQLModel, Field
 
-from src.models.base import Base, Field, FieldDefinition
 
-
-class Candidate(Base):
-    __tablename__ = "candidate"
-
-    id: Field[int] = FieldDefinition(primary_key=True, autoincrement=True)
+class Candidate(SQLModel, table=True):
+    id: int | None = Field(primary_key=True)
 
     # Name Fields
-    first_name: Field[str]
-    middle_name: Field[str | None]
-    last_name: Field[str]
-    alias: Field[str | None]
+    first_name: str
+    middle_name: str | None
+    last_name: str
+    alias: str | None
 
     # Ballot Fields
-    partylist_id: Field[int] = FieldDefinition(ForeignKey("partylist.id"))
-    position_id: Field[int] = FieldDefinition(ForeignKey("position.id"))
-    balot_no: Field[int]
+    partylist_id: int = Field(foreign_key="partylist.id")
+    position_id: int = Field(foreign_key="position.id")
+    balot_no: int
 
     __table_args__ = (
         Index("ix_candidate_name", "first_name", "middle_name", "last_name", "alias"),

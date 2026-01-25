@@ -1,13 +1,10 @@
-from sqlalchemy import JSON
+from sqlmodel import SQLModel, Field
+from sqlalchemy import Column, JSON
 from typing import List
 
-from src.models.base import Base, Field, FieldDefinition
-
-class Role(Base):
-    __tablename__ = "role"
-
-    id: Field[int] = FieldDefinition(primary_key=True, autoincrement=True)
+class Role(SQLModel, table=True):
+    id: int = Field(primary_key=True)
 
     # General Fields
-    description: Field[str]
-    permissions: Field[List[str]] = FieldDefinition(JSON)
+    description: str
+    permissions: List[str] = Field(sa_column=Column(JSON))

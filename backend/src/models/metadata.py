@@ -1,4 +1,5 @@
-from src.models.base import Base
+from sqlmodel import SQLModel
+
 from src.models.schema.user import User
 from src.models.schema.person import Person
 from src.models.schema.role import Role
@@ -9,4 +10,4 @@ from src.models.schema.candidate import Candidate
 from src.models.schema.voter import Voter
 from src.models.schema.voter_candidate import VoterCandidate
 
-model_metadata = Base.metadata
+model_metadata = SQLModel.metadata

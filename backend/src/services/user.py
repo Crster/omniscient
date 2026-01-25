@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlmodel import select
 
 from src.helpers.database import DatabaseSessionDep, Annotated, Depends
 from src.models.schema.user import User
@@ -18,8 +18,7 @@ class UserService:
         self.session.add(user)
 
     def list_all(self):
-        results = self.session.execute(select(User)).all()
-        return [result._asdict() for result in results]
+        return self.session.exec(select(User)).all()
 
 
 UserServiceDep = Annotated[UserService, Depends(UserService)]

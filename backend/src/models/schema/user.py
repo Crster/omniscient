@@ -1,19 +1,16 @@
-from sqlalchemy import Index, ForeignKey
+from sqlmodel import SQLModel, Field
+from sqlalchemy import Index
 
-from src.models.base import Base, Field, FieldDefinition
 
-
-class User(Base):
-    __tablename__ = "user"
-
-    id: Field[int] = FieldDefinition(primary_key=True, autoincrement=True)
+class User(SQLModel, table=True):
+    id: int | None = Field(default=None,primary_key=True)
 
     # Account Fields
-    name: Field[str]
-    email: Field[str]
-    password: Field[str]
+    name: str
+    email: str
+    password: str
 
     # Reference Fields
-    person_id: Field[int | None] = FieldDefinition(ForeignKey("person.id"))
+    person_id: int | None = Field(default=None, foreign_key="person.id")
 
     __table_args__ = (Index("ix_user_account", "name", "email"),)
