@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from controllers import user
 from os import path
-from helpers import config
+
+from src.controllers import user
+from src.helpers import config
 
 
 app = FastAPI()

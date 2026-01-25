@@ -13,3 +13,6 @@ build/
 # Environments
 .env
 .venv
+
+# Others
+*.db

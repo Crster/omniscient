@@ -18,7 +18,7 @@ def app_frontend_build() -> str:
 
 
 def db_url() -> str:
-    return os.getenv("DB_URL", "sqlite:///../omniscient.db")
+    return os.getenv("DB_URL", "sqlite:///omniscient.db")
 
 
 def db_config() -> dict:

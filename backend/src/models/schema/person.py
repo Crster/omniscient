@@ -1,7 +1,8 @@
-from models.base import Base, Field, FieldDefinition
 from sqlalchemy import Index, ForeignKey
 from datetime import datetime
 from enum import Enum
+
+from src.models.base import Base, Field, FieldDefinition, FieldLinkDefinition
 
 
 class PersonGender(str, Enum):
@@ -44,11 +45,17 @@ class Person(Base):
     father_id: Field[int | None] = FieldDefinition(ForeignKey("person.id"))
     mother_id: Field[int | None] = FieldDefinition(ForeignKey("person.id"))
     spouse_id: Field[int | None] = FieldDefinition(ForeignKey("person.id"))
+    
+    # Reference Fields
+    leads = FieldLinkDefinition("Partylist", back_populates="lead")
+    users = FieldLinkDefinition("User", back_populates="person")
+    voters = FieldLinkDefinition("Voter", back_populates="person")
+    
 
-    __table_args = (
-        Index("ix_name", "first_name", "middle_name", "last_name"),
+    __table_args__ = (
+        Index("ix_person_name", "first_name", "middle_name", "last_name"),
         Index(
-            "ix_address",
+            "ix_person_address",
             "street_1",
             "street_2",
             "house_number",

@@ -2,7 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from typing import Annotated
 from fastapi import Depends
-from helpers import config
+
+from src.helpers import config
+import src.models.metadata  # noqa: F401
 
 
 engine = create_engine(config.db_url(), connect_args=config.db_config())

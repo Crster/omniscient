@@ -1,6 +1,7 @@
-from models.base import Base, Field, FieldDefinition
 from sqlalchemy import ForeignKey
 from datetime import datetime
+
+from src.models.base import Base, Field, FieldDefinition, FieldLinkDefinition
 
 
 class Partylist(Base):
@@ -16,3 +17,8 @@ class Partylist(Base):
 
     # Status Field
     is_active: Field[bool] = FieldDefinition(default=True)
+    
+    # Reference Fields
+    lead = FieldLinkDefinition("Person", back_populates="leads")
+    candidates = FieldLinkDefinition("Candidate", back_populates="partylist")
+    

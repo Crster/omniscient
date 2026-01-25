@@ -1,5 +1,6 @@
 from sqlalchemy import ForeignKey
-from models.base import Base, Field, FieldDefinition
+
+from src.models.base import Base, Field, FieldDefinition, FieldLinkDefinition
 
 
 class Voter(Base):
@@ -13,5 +14,8 @@ class Voter(Base):
 
 
     # Reference Fields
+    selected_candidates = FieldLinkDefinition("VoterCandidate", back_populates="voter")
+    person = FieldLinkDefinition("Person", back_populates="voters")
+    surveyor = FieldLinkDefinition("User", back_populates="surveyed")
     person_id: Field[int] = FieldDefinition(ForeignKey("person.id"))
     surveyor_id: Field[int] = FieldDefinition(ForeignKey("user.id"))

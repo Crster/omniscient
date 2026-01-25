@@ -1,8 +1,9 @@
-from models.base import Base, Field, FieldDefinition
 from sqlalchemy import Index, ForeignKey
 from datetime import datetime
 from enum import Enum
 from uuid import uuid4
+
+from src.models.base import Base, Field, FieldDefinition, FieldLinkDefinition
 
 
 class AuditAction(str, Enum):
@@ -13,7 +14,7 @@ class AuditAction(str, Enum):
 
 class Audit(Base):
     __tablename__ = "audit"
-    
+
     id: Field[str] = FieldDefinition(primary_key=True, default=lambda: str(uuid4()))
 
     # Payload Fields
@@ -23,7 +24,10 @@ class Audit(Base):
     log: Field[str | None]
 
     # Audit Fields
-    created_by: Field[int | None] = FieldDefinition(ForeignKey("user.id"))
+    created_by_id: Field[int | None] = FieldDefinition(ForeignKey("user.id"))
     created_at: Field[datetime | None]
 
-    __table_args__ = (Index("ix_type_action", "type", "action"),)
+    # Reference Fields
+    created_by = FieldLinkDefinition("User", back_populates="audits")
+
+    __table_args__ = (Index("ix_audit_type_action", "type", "action"),)

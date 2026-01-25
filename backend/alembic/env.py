@@ -1,7 +1,7 @@
 from logging.config import fileConfig
 
-from helpers import config as appConfig # pyright: ignore[reportMissingImports]
-from models.metadata import model_metadata # pyright: ignore[reportMissingImports]
+from src.helpers import config as appConfig
+from src.models.metadata import model_metadata
 
 
 from sqlalchemy import engine_from_config

@@ -1,11 +1,12 @@
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from uuid import UUID
 from datetime import datetime
 from json import dumps
 
 Field = Mapped
 FieldDefinition = mapped_column
+FieldLinkDefinition = relationship
 
 
 class Base(DeclarativeBase):

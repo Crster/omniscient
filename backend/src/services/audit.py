@@ -1,9 +1,9 @@
-from helpers.database import DatabaseSessionDep, Annotated, Depends
-from models.base import Base
-from models.schema.audit import Audit, AuditAction
-from models.schema.user import User
 from datetime import datetime
-from uuid import uuid4
+
+from src.helpers.database import DatabaseSessionDep, Annotated, Depends
+from src.models.base import Base
+from src.models.schema.audit import Audit, AuditAction
+from src.models.schema.user import User
 
 
 class AuditService:
@@ -19,7 +19,6 @@ class AuditService:
         payload_str = payload.to_json() if payload is not None else None
 
         audit = Audit(
-            id=uuid4(),
             type=type,
             action=action,
             payload=payload_str,
@@ -29,7 +28,6 @@ class AuditService:
         )
 
         self.session.add(audit)
-        self.session.commit()
 
         return audit.id
 

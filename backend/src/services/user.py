@@ -1,6 +1,7 @@
 from sqlalchemy import select
-from helpers.database import DatabaseSessionDep, Annotated, Depends
-from models.schema.user import User
+
+from src.helpers.database import DatabaseSessionDep, Annotated, Depends
+from src.models.schema.user import User
 
 
 class UserService:
@@ -12,11 +13,9 @@ class UserService:
             name=name,
             email=email,
             password=password,
-            person_id=None,
         )
 
         self.session.add(user)
-        self.session.commit()
 
     def list_all(self):
         return self.session.execute(select(User)).all()

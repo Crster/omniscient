@@ -1,6 +1,7 @@
-from models.base import Base, Field, FieldDefinition
 from sqlalchemy import JSON
 from typing import List
+
+from src.models.base import Base, Field, FieldDefinition
 
 class Role(Base):
     __tablename__ = "role"

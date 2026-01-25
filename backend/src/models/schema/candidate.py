@@ -1,5 +1,6 @@
-from models.base import Base, Field, FieldDefinition
 from sqlalchemy import Index, ForeignKey
+
+from src.models.base import Base, Field, FieldDefinition, FieldLinkDefinition
 
 
 class Candidate(Base):
@@ -15,9 +16,14 @@ class Candidate(Base):
 
     # Ballot Fields
     partylist_id: Field[int] = FieldDefinition(ForeignKey("partylist.id"))
-    position: Field[int] = FieldDefinition(ForeignKey("position.id"))
+    position_id: Field[int] = FieldDefinition(ForeignKey("position.id"))
     balot_no: Field[int]
+    
+    # Reference Fields
+    partylist = FieldLinkDefinition("Partylist", back_populates="candidates")
+    position = FieldLinkDefinition("Position", back_populates="candidates")
+
 
     __table_args__ = (
-        Index("ix_name", "first_name", "middle_name", "last_name", "alias"),
+        Index("ix_candidate_name", "first_name", "middle_name", "last_name", "alias"),
     )

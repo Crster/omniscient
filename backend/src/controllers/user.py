@@ -1,7 +1,10 @@
 from fastapi import APIRouter, status
-from services.audit import AuditServiceDep
-from services.user import UserServiceDep
-from dto.user import CreateUserDto
+
+from src.helpers.database import DatabaseSessionDep
+from src.services.audit import AuditServiceDep
+from src.services.user import UserServiceDep
+
+from src.dto.user import CreateUserDto
 
 router = APIRouter(
     prefix="/user",
@@ -12,12 +15,15 @@ router = APIRouter(
 
 @router.post("/", summary="Create a new user", status_code=status.HTTP_201_CREATED)
 async def create_user(
+    session: DatabaseSessionDep,
     audit_service: AuditServiceDep,
     user_service: UserServiceDep,
     user_dto: CreateUserDto,
 ):
+    session.begin()
     audit_id = audit_service.create("user", "create new user from endpoint")
     user_service.create(user_dto.name, user_dto.email, user_dto.password)
+    session.commit()
 
     return audit_id
 
