@@ -1,4 +1,5 @@
 from sqlmodel import select
+from bcrypt import hashpw, gensalt
 
 from src.helpers.database import DatabaseSessionDep, Annotated, Depends
 from src.models.schema.user import User
@@ -12,7 +13,7 @@ class UserService:
         user = User(
             name=name,
             email=email,
-            password=password,
+            password=hashpw(password.encode("utf-8"), gensalt()).decode("utf-8"),
         )
 
         self.session.add(user)

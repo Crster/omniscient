@@ -23,7 +23,6 @@ async def create_user(
     user_service: UserServiceDep,
     user_dto: CreateUserDto,
 ):
-    session.begin()
     audit_id = audit_service.create("user", "create new user from endpoint", user_dto)
     user_service.create(user_dto.name, user_dto.email, user_dto.password)
     session.commit()

@@ -1,8 +1,8 @@
-"""init tables
+"""initialize tables
 
-Revision ID: 1bdd47d98f56
+Revision ID: f0222544a891
 Revises: 
-Create Date: 2026-01-25 12:03:31.470670
+Create Date: 2026-01-25 13:37:18.258528
 
 """
 from typing import Sequence, Union
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1bdd47d98f56'
+revision: str = 'f0222544a891'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -89,7 +89,7 @@ def upgrade() -> None:
     op.create_table('audit',
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('type', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('payload', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('payload', sa.JSON(), nullable=True),
     sa.Column('action', sa.Enum('CREATE', 'UPDATE', 'DELETE', name='auditaction'), nullable=False),
     sa.Column('log', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('created_by_id', sa.Integer(), nullable=True),

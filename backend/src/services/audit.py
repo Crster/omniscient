@@ -17,13 +17,11 @@ class AuditService:
     def __add_audit(
         self, type: str, action: AuditAction, payload: BaseModel | None, log: str | None
     ):
-        payload_str = payload.model_dump_json() if payload is not None else None
-
         audit = Audit(
             id=str(uuid4()),
             type=type,
             action=action,
-            payload=payload_str,
+            payload=payload,
             log=log,
             created_by_id=self.user.id if self.user is not None else None,
             created_at=datetime.utcnow(),
