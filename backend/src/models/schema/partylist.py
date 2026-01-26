@@ -6,7 +6,8 @@ class Partylist(SQLModel, table=True):
     id: int | None = Field(primary_key=True)
 
     # General Field
-    name: str
+    name: str = Field(unique=True, index=True)
+    note: str
     lead_id: int | None = Field(foreign_key="person.id")
 
     registered_at: datetime | None

@@ -9,7 +9,7 @@ class Candidate(SQLModel, table=True):
     first_name: str
     middle_name: str | None
     last_name: str
-    alias: str | None
+    alias: str | None = Field(index=True)
 
     # Ballot Fields
     partylist_id: int = Field(foreign_key="partylist.id")
@@ -17,5 +17,5 @@ class Candidate(SQLModel, table=True):
     balot_no: int
 
     __table_args__ = (
-        Index("ix_candidate_name", "first_name", "middle_name", "last_name", "alias"),
+        Index("ix_candidate_name", "first_name", "middle_name", "last_name"),
     )

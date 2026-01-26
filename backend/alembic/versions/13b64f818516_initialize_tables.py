@@ -1,20 +1,20 @@
 """initialize tables
 
-Revision ID: f0222544a891
+Revision ID: 13b64f818516
 Revises: 
-Create Date: 2026-01-25 13:37:18.258528
+Create Date: 2026-01-26 08:37:02.030507
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
+import sqlmodel.sql.sqltypes
 
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f0222544a891'
+revision: str = '13b64f818516'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -50,42 +50,65 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['spouse_id'], ['person.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('ix_person_address', 'person', ['street_1', 'street_2', 'house_number', 'purok', 'barangay', 'city', 'state', 'zip_code'], unique=False)
-    op.create_index('ix_person_name', 'person', ['first_name', 'middle_name', 'last_name'], unique=False)
+    with op.batch_alter_table('person', schema=None) as batch_op:
+        batch_op.create_index('ix_person_address', ['street_1', 'street_2', 'house_number', 'purok', 'barangay', 'city', 'state', 'zip_code'], unique=False)
+        batch_op.create_index(batch_op.f('ix_person_email'), ['email'], unique=False)
+        batch_op.create_index(batch_op.f('ix_person_mobile_number'), ['mobile_number'], unique=False)
+        batch_op.create_index('ix_person_name', ['first_name', 'middle_name', 'last_name'], unique=False)
+
     op.create_table('position',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('code', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('min_seat', sa.Integer(), nullable=False),
     sa.Column('max_seat', sa.Integer(), nullable=False),
     sa.Column('sort_index', sa.Integer(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    with op.batch_alter_table('position', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_position_code'), ['code'], unique=True)
+
     op.create_table('role',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('code', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('permissions', sa.JSON(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    with op.batch_alter_table('role', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_role_code'), ['code'], unique=True)
+
     op.create_table('partylist',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('note', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('lead_id', sa.Integer(), nullable=True),
     sa.Column('registered_at', sa.DateTime(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['lead_id'], ['person.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    with op.batch_alter_table('partylist', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_partylist_name'), ['name'], unique=True)
+
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('email', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('password', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('person_id', sa.Integer(), nullable=True),
+    sa.Column('role_id', sa.Integer(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['person_id'], ['person.id'], ),
+    sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('ix_user_account', 'user', ['name', 'email'], unique=False)
+    with op.batch_alter_table('user', schema=None) as batch_op:
+        batch_op.create_index('ix_user_account', ['name', 'email'], unique=False)
+        batch_op.create_index(batch_op.f('ix_user_email'), ['email'], unique=True)
+        batch_op.create_index(batch_op.f('ix_user_name'), ['name'], unique=True)
+
     op.create_table('audit',
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('type', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -97,7 +120,9 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['created_by_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('ix_audit_type_action', 'audit', ['type', 'action'], unique=False)
+    with op.batch_alter_table('audit', schema=None) as batch_op:
+        batch_op.create_index('ix_audit_type_action', ['type', 'action'], unique=False)
+
     op.create_table('candidate',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('first_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -111,7 +136,10 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['position_id'], ['position.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('ix_candidate_name', 'candidate', ['first_name', 'middle_name', 'last_name', 'alias'], unique=False)
+    with op.batch_alter_table('candidate', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_candidate_alias'), ['alias'], unique=False)
+        batch_op.create_index('ix_candidate_name', ['first_name', 'middle_name', 'last_name'], unique=False)
+
     op.create_table('voter',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('voter_no', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
@@ -122,6 +150,9 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['surveyor_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    with op.batch_alter_table('voter', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_voter_voter_no'), ['voter_no'], unique=True)
+
     op.create_table('votercandidate',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('voter_id', sa.Integer(), nullable=False),
@@ -140,17 +171,42 @@ def downgrade() -> None:
     """Downgrade schema."""
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('votercandidate')
+    with op.batch_alter_table('voter', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_voter_voter_no'))
+
     op.drop_table('voter')
-    op.drop_index('ix_candidate_name', table_name='candidate')
+    with op.batch_alter_table('candidate', schema=None) as batch_op:
+        batch_op.drop_index('ix_candidate_name')
+        batch_op.drop_index(batch_op.f('ix_candidate_alias'))
+
     op.drop_table('candidate')
-    op.drop_index('ix_audit_type_action', table_name='audit')
+    with op.batch_alter_table('audit', schema=None) as batch_op:
+        batch_op.drop_index('ix_audit_type_action')
+
     op.drop_table('audit')
-    op.drop_index('ix_user_account', table_name='user')
+    with op.batch_alter_table('user', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_user_name'))
+        batch_op.drop_index(batch_op.f('ix_user_email'))
+        batch_op.drop_index('ix_user_account')
+
     op.drop_table('user')
+    with op.batch_alter_table('partylist', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_partylist_name'))
+
     op.drop_table('partylist')
+    with op.batch_alter_table('role', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_role_code'))
+
     op.drop_table('role')
+    with op.batch_alter_table('position', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_position_code'))
+
     op.drop_table('position')
-    op.drop_index('ix_person_name', table_name='person')
-    op.drop_index('ix_person_address', table_name='person')
+    with op.batch_alter_table('person', schema=None) as batch_op:
+        batch_op.drop_index('ix_person_name')
+        batch_op.drop_index(batch_op.f('ix_person_mobile_number'))
+        batch_op.drop_index(batch_op.f('ix_person_email'))
+        batch_op.drop_index('ix_person_address')
+
     op.drop_table('person')
     # ### end Alembic commands ###

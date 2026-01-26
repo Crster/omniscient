@@ -5,7 +5,7 @@ class Voter(SQLModel, table=True):
     id: int | None = Field(primary_key=True)
 
     # Election Fields
-    voter_no: str | None
+    voter_no: str | None = Field(unique=True, index=True)
     precinct_no: str | None
 
     # Reference Fields

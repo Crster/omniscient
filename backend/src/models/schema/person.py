@@ -1,7 +1,12 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Index
 from datetime import datetime
 from enum import Enum
+from pydantic import computed_field
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from src.models.schema.user import User
 
 
 class PersonGender(str, Enum):
@@ -19,8 +24,8 @@ class Person(SQLModel, table=True):
     last_name: str
 
     # Contact Fields
-    mobile_number: str | None
-    email: str | None
+    mobile_number: str | None = Field(index=True)
+    email: str | None = Field(index=True)
 
     # Address Fields
     street_1: str
@@ -42,6 +47,15 @@ class Person(SQLModel, table=True):
     father_id: int | None = Field(foreign_key="person.id")
     mother_id: int | None = Field(foreign_key="person.id")
     spouse_id: int | None = Field(foreign_key="person.id")
+
+    # Reference Fields
+    user: Optional["User"] = Relationship(back_populates="person")
+
+    # Computed Fields
+    @computed_field
+    @property
+    def full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
 
     __table_args__ = (
         Index("ix_person_name", "first_name", "middle_name", "last_name"),
