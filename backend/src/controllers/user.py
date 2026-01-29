@@ -47,7 +47,7 @@ async def list_users(user_service: UserServiceDep) -> list[UserListForMainView]:
                 user_id=result.id,
                 role=glom(result, "role.description", default=None),
                 name=glom(result, "person.full_name", default=None) or result.name or result.email,
-                barangay=glom(result, "person.barangay", default=None),
+                barangay=glom(result, "person.barangay", default=""),
                 status="active" if result.is_active else "inactive",
             )
         )
