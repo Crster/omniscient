@@ -32,7 +32,6 @@ class AuditService:
         )
 
         self.session.add(audit)
-        self.session.commit()
 
         return audit.id
 

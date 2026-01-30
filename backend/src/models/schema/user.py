@@ -18,6 +18,7 @@ class User(SQLModel, table=True):
     role_id: int | None = Field(default=None, foreign_key="role.id")
 
     # Status Fields
+    is_verified: bool = Field(default=False)
     is_active: bool = Field(default=True)
 
     # Reference Fields

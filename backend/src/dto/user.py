@@ -1,11 +1,11 @@
 from pydantic import BaseModel, EmailStr
 
-class CreateUserDto(BaseModel):
+class NewUserDto(BaseModel):
     name: str
     email: EmailStr
-    password: str
+    role_id: int
     
-class UserListForMainView(BaseModel):
+class UserMasterList(BaseModel):
     user_id: int
     role: str | None
     name: str
