@@ -16,21 +16,21 @@ class PersonGender(str, Enum):
 
 
 class Person(SQLModel, table=True):
-    id: int | None = Field(primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
 
     # Name Fields
     first_name: str
-    middle_name: str | None
+    middle_name: str | None = Field(default=None)
     last_name: str
 
     # Contact Fields
-    mobile_number: str | None = Field(index=True)
-    email: str | None = Field(index=True)
+    mobile_number: str | None = Field(default=None, index=True)
+    email: str | None = Field(default=None, index=True)
 
     # Address Fields
     street_1: str
-    street_2: str | None
-    house_number: str | None
+    street_2: str | None = Field(default=None)
+    house_number: str | None = Field(default=None)
     purok: str
     barangay: str
     city: str
@@ -40,13 +40,13 @@ class Person(SQLModel, table=True):
     # Birth Fields
     age: int | None = Field(default=0)
     date_of_birth: datetime
-    date_of_death: datetime | None
+    date_of_death: datetime | None = Field(default=None)
     gender: PersonGender
 
     # Relatives Fields
-    father_id: int | None = Field(foreign_key="person.id")
-    mother_id: int | None = Field(foreign_key="person.id")
-    spouse_id: int | None = Field(foreign_key="person.id")
+    father_id: int | None = Field(default=None, foreign_key="person.id")
+    mother_id: int | None = Field(default=None, foreign_key="person.id")
+    spouse_id: int | None = Field(default=None, foreign_key="person.id")
 
     # Reference Fields
     user: Optional["User"] = Relationship(back_populates="person")

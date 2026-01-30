@@ -4,14 +4,12 @@ from typing import Any
 
 from src.helpers.database import DatabaseSessionDep, Annotated, Depends
 from src.models.schema.audit import Audit, AuditAction
-from src.models.schema.user import User
+from src.services.auth import AuthServiceDep
 
 
 class AuditService:
-    user: User | None
-
-    def __init__(self, session: DatabaseSessionDep):
-        self.user = None
+    def __init__(self, session: DatabaseSessionDep, auth: AuthServiceDep):
+        self.user = auth.get_current_user()
         self.session = session
 
     def add(
@@ -27,7 +25,7 @@ class AuditService:
             action=action,
             payload=payload,
             log=log,
-            created_by_id=self.user.id if self.user is not None else None,
+            created_by_id=self.user.user_id if self.user is not None else None,
             created_at=datetime.utcnow(),
         )
 

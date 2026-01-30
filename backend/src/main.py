@@ -3,9 +3,9 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from os import path
 
-from src.controllers import user
 from src.helpers import config
 from src.helpers.exception import ServiceException
+from src.controllers import user, person, survey
 
 
 app = FastAPI()
@@ -25,6 +25,8 @@ async def service_exception_handler(req: Request, exc: ServiceException):
 
 # Register controllers
 app.include_router(user.router, prefix="/api")
+app.include_router(person.router, prefix="/api")
+app.include_router(survey.router, prefix="/api")
 
 # Mount frontend build
 if path.exists(config.app_frontend_build()):

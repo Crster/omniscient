@@ -36,5 +36,5 @@ async def create_user(
 
 
 @router.get("/", summary="List paginated user for main view")
-async def list_users(user_service: UserServiceDep) -> list[UserMasterList]:
+async def list_user(user_service: UserServiceDep) -> list[UserMasterList]:
     return user_service.generate_masterlist()

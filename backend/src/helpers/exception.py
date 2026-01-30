@@ -14,7 +14,7 @@ class EntityNotFoundError(ServiceException):
     def __init__(self, entity: str, entity_id: Any):
         super().__init__(
             message=f"{entity}({entity_id}) was not found.",
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         )
 
 

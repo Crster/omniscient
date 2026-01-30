@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field
 
 
 class VoterCandidate(SQLModel, table=True):
-    id: int | None = Field(primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
 
     # Reference Fields
     voter_id: int = Field(foreign_key="voter.id")
